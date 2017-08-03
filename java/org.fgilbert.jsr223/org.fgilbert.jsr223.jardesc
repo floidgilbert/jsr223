@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="D:/Gdrive/Work/jsr223/R/jsr223/inst/java/org.fgilbert.jsr223-0.3.0.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/org.fgilbert.jsr223/org.fgilbert.jsr223.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" manifestLocation="/org.fgilbert.jsr223/manifest.txt" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=org.fgilbert.jsr223/src&lt;org.fgilbert.jsr223"/>
+    </selectedElements>
+</jardesc>
