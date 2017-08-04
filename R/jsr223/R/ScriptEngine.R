@@ -13,12 +13,10 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
     controller = NULL # Initialized in constructor
     , controller.j2r = NULL # Initialized in constructor
 
-    , ARRAY_ORDER_COLUMN_MAJOR = NULL # Initialized in constructor
-    , ARRAY_ORDER_ROW_MAJOR = NULL # Initialized in constructor
-    , ARRAY_ORDER_ROW_MAJOR_JAVA = NULL # Initialized in constructor
     , coerce.factors = DEFAULT_COERCE_FACTORS
     , data.frame.row.major = DEFAULT_DATA_FRAME_ROW_MAJOR
     , interpolate = DEFAULT_INTERPOLATE
+    , JDX_ARRAY_ORDER = NULL # Initialized in constructor
     , JDX_SC_USER_DEFINED = NULL # Initialized in constructor
     , length.one.vector.as.array = DEFAULT_LENGTH_ONE_VECTOR_AS_ARRAY
     , script.engine.information = list()
@@ -103,9 +101,9 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
 
     , putJavaValue = function(identifier, value, is.response.value) {
       if (is.response.value) {
-        rJava::.jcall(private$controller, "V", "putCallbackResponse", jdx::convertToJava(value, scalars.as.objects = FALSE, length.one.vector.as.array = private$length.one.vector.as.array, coerce.factors = private$coerce.factors, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major))
+        rJava::.jcall(private$controller, "V", "putCallbackResponse", jdx::convertToJava(value, scalars.as.objects = FALSE, length.one.vector.as.array = private$length.one.vector.as.array, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major, coerce.factors = private$coerce.factors))
       } else {
-        rJava::.jcall(private$controller, "V", "setScriptEngineValue", identifier, jdx::convertToJava(value, scalars.as.objects = FALSE, length.one.vector.as.array = private$length.one.vector.as.array, coerce.factors = private$coerce.factors, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major))
+        rJava::.jcall(private$controller, "V", "setScriptEngineValue", identifier, jdx::convertToJava(value, scalars.as.objects = FALSE, length.one.vector.as.array = private$length.one.vector.as.array, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major, coerce.factors = private$coerce.factors))
       }
     }
 
@@ -147,15 +145,14 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
       # Intialize private members. These operations cannot be done in R6Class(private = list(...)).
       private$controller <- rJava::.jnew("org/fgilbert/jsr223/Controller", engine.name)
       private$controller.j2r <- rJava::.jcall(private$controller, "Lorg/fgilbert/jdx/JavaToR;", "getResponse")
-      private$ARRAY_ORDER_COLUMN_MAJOR <- rJava::.jfield("org.fgilbert.jdx.JavaToR$ArrayOrder", sig = NULL, "COLUMN_MAJOR")
-      private$ARRAY_ORDER_ROW_MAJOR <- rJava::.jfield("org.fgilbert.jdx.JavaToR$ArrayOrder", sig = NULL, "ROW_MAJOR")
-      private$ARRAY_ORDER_ROW_MAJOR_JAVA <- rJava::.jfield("org.fgilbert.jdx.JavaToR$ArrayOrder", sig = NULL, "ROW_MAJOR_JAVA")
-      private$JDX_SC_USER_DEFINED <- jdx::javaToRconstants()$SC_USER_DEFINED
+      jdx.constants <- jdx::jdxConstants()
+      private$JDX_ARRAY_ORDER <- jdx.constants$ARRAY_ORDER
+      private$JDX_SC_USER_DEFINED <- jdx.constants$SC_USER_DEFINED
       private$STANDARD_OUTPUT_CONSOLE <- rJava::.jfield("org.fgilbert.jsr223.Controller$StandardOutputMode", sig = NULL, "CONSOLE")
       private$STANDARD_OUTPUT_QUIET <- rJava::.jfield("org.fgilbert.jsr223.Controller$StandardOutputMode", sig = NULL, "QUIET")
       private$STANDARD_OUTPUT_BUFFER <- rJava::.jfield("org.fgilbert.jsr223.Controller$StandardOutputMode", sig = NULL, "BUFFER")
 
-      # Synchronize standard output mode with Java side.
+      self$setArrayOrder(DEFAULT_ARRAY_ORDER)
       self$setStandardOutputMode(DEFAULT_STANDARD_OUTPUT_MODE)
 
       # Populate engine information list
@@ -175,23 +172,15 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
     # the script engine.
 
     , getArrayOrder = function() {
-      order <- rJava::.jcall(private$controller, "Lorg/fgilbert/jdx/JavaToR$ArrayOrder;", "getArrayOrder")
-      if (rJava::.jequals(order, private$ARRAY_ORDER_ROW_MAJOR))
-        return("row-major")
-      if (rJava::.jequals(order, private$ARRAY_ORDER_ROW_MAJOR_JAVA))
-        return("row-major-java")
-      "column-major"
+      jdx::arrayOrderToString(
+        rJava::.jcall(private$controller, "Lorg/fgilbert/jdx/JavaToR$ArrayOrder;", "getArrayOrder")
+      )
     }
 
     , setArrayOrder = function(value) {
-      order <- switch (value,
-        `row-major` = private$ARRAY_ORDER_ROW_MAJOR
-        , `row-major-java` = private$ARRAY_ORDER_ROW_MAJOR_JAVA
-        , `column-major` = private$ARRAY_ORDER_COLUMN_MAJOR
-        , ... = NULL
-      )
+      order <- private$JDX_ARRAY_ORDER[[value]]
       if (is.null(order))
-        stop(sprintf("Valid array order values are 'column-major', 'row-major', or 'row-major-java'."))
+        stop(sprintf("Valid array order values are 'column-major', 'row-major', and 'row-major-java'."))
       r <- self$getArrayOrder()
       rJava::.jcall(private$controller, "V", "setArrayOrder", order)
       invisible(r)
@@ -295,6 +284,7 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
     }
 
     #///argument 1 (type 'list') cannot be handled by 'cat'. try something besides cat. Maybe that one thing that prints out structures...
+    #///maybe bail on this all together.
     # Thanks to Jeroen Ooms and the V8 package for the idea...
     , console = function() {
       message("\n", self$getScriptEngineInformation()$language.name, " console. Press ESC, CTRL + C, or enter 'exit' to exit the console.")
@@ -369,7 +359,7 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
         if ("R" %in% names)
           stop("The identifier 'R' is reserved.")
         # It is not necessary to set scalars.as.objects for lists. It is handled automatically.
-        rJava::.jcall(private$controller, "V", "putEvaluationRequest", script, discard.return.value, jdx::convertToJava(bindings, length.one.vector.as.array = private$length.one.vector.as.array, coerce.factors = private$coerce.factors, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major))
+        rJava::.jcall(private$controller, "V", "putEvaluationRequest", script, discard.return.value, jdx::convertToJava(bindings, length.one.vector.as.array = private$length.one.vector.as.array, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major, coerce.factors = private$coerce.factors))
       }
       private$processEvaluationResponse()
     }
@@ -407,7 +397,7 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
     , invokeFunction = function(function.name, ...) {
       if (length(function.name) != 1L || !is.character(function.name))
         stop("'function.name' must be a character vector of length 1.")
-      arguments <- rJava::.jarray(lapply(list(...), jdx::convertToJava, scalars.as.objects = TRUE, length.one.vector.as.array = private$length.one.vector.as.array, coerce.factors = private$coerce.factors, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major))
+      arguments <- rJava::.jarray(lapply(list(...), jdx::convertToJava, scalars.as.objects = TRUE, length.one.vector.as.array = private$length.one.vector.as.array, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major, coerce.factors = private$coerce.factors))
       rJava::.jcall(private$controller, "V", "putInvokeFunctionRequest", function.name, arguments)
       private$processEvaluationResponse()
     }
@@ -417,7 +407,7 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
         stop("'object.name' must be a character vector of length 1.")
       if (length(method.name) != 1L || !is.character(method.name))
         stop("'method.name' must be a character vector of length 1.")
-      arguments <- rJava::.jarray(lapply(list(...), jdx::convertToJava, scalars.as.objects = TRUE, length.one.vector.as.array = private$length.one.vector.as.array, coerce.factors = private$coerce.factors, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major))
+      arguments <- rJava::.jarray(lapply(list(...), jdx::convertToJava, scalars.as.objects = TRUE, length.one.vector.as.array = private$length.one.vector.as.array, array.order = private$array.order, data.frame.row.major = private$data.frame.row.major, coerce.factors = private$coerce.factors))
       rJava::.jcall(private$controller, "V", "putInvokeMethodRequest", object.name, method.name, arguments)
       private$processEvaluationResponse()
     }

@@ -787,7 +787,7 @@ assertMessage(
   {
     js$setArrayOrder("invalid")
   }
-  , "Valid array order values are 'column-major', 'row-major', or 'row-major-java'."
+  , "Valid array order values are 'column-major', 'row-major', and 'row-major-java'."
 )
 
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)

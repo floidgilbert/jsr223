@@ -31,7 +31,7 @@ CompiledScript <- R6::R6Class("CompiledScript",
         if ("R" %in% names)
           stop("The identifier 'R' is reserved.")
         # It is not necessary to set scalars.as.objects for lists. It is handled automatically.
-        rJava::.jcall(engine.private$controller, "V", "putEvaluationRequest", private$compiled.script, discard.return.value, jdx::convertToJava(bindings, length.one.vector.as.array = engine.private$length.one.vector.as.array, coerce.factors = engine.private$coerce.factors, row.major = engine.private$row.major))
+        rJava::.jcall(engine.private$controller, "V", "putEvaluationRequest", private$compiled.script, discard.return.value, jdx::convertToJava(bindings, length.one.vector.as.array = engine.private$length.one.vector.as.array, array.order = engine.private$array.order, data.frame.row.major = engine.private$data.frame.row.major, coerce.factors = engine.private$coerce.factors))
       }
       engine.private$processEvaluationResponse()
     }
