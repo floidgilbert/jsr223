@@ -6,6 +6,7 @@
 #///review comments here and in jdx. make sure they are true.
 #///use jsonlite to validate n-dimensional arrays row-major, row-minor.
 #///make sure coercelogical and byte array stuff works for n-dimensional
+#///add environments to testing hashed and unhashed
 
 
 # Introduction ------------------------------------------------------------
@@ -428,7 +429,7 @@ assertMessage(
   {
     js$value <- c(TRUE, NA, FALSE)
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
 
@@ -436,7 +437,7 @@ assertMessage(
   {
     js$value <- as.array(c(TRUE, NA, FALSE))
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
 
@@ -445,7 +446,7 @@ assertMessage(
   {
     js$value <- as.factor(c(TRUE, NA, FALSE))
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
@@ -454,7 +455,7 @@ assertMessage(
   {
     js$value <- list(c(TRUE, NA, FALSE))
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
 
@@ -462,7 +463,7 @@ assertMessage(
   {
     js$value <- data.frame(a = c(TRUE, NA, FALSE))
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
 
@@ -470,7 +471,7 @@ assertMessage(
   {
     js$value <- list(a = c(TRUE, NA, FALSE))
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
 
@@ -478,7 +479,7 @@ assertMessage(
   {
     js$value <- matrix(c(TRUE, NA, FALSE, TRUE), 2, 2)
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
 
@@ -486,7 +487,16 @@ assertMessage(
   {
     js %~% "TestDataClass.getBoxedBooleanArray1dNulls()"
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+#///add other checks because this one failed. Amazing.
+assertMessage(
+  {
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
 
@@ -497,7 +507,7 @@ assertMessage(
     js %~% "b[1] = null;"
     js$b
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
   , message.type = "warning"
 )
 
@@ -505,7 +515,7 @@ assertMessage(
   {
     js %~% "TestDataClass.getBoxedByteArray1dNulls()"
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
   , message.type = "warning"
 )
 
@@ -513,7 +523,7 @@ assertMessage(
   {
     js %~% "TestDataClass.getBoxedByteArray2dNulls()"
   }
-  , jdx::javaToRconstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
   , message.type = "warning"
 )
 
