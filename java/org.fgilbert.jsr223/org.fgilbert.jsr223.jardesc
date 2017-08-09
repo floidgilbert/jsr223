@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
-    <jar path="D:/Gdrive/Work/jsr223/R/jsr223/inst/java/org.fgilbert.jsr223-0.3.0.jar"/>
+    <jar path="D:/Offline/Work/jsr223/R/jsr223/inst/java/org.fgilbert.jsr223-0.3.0.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/org.fgilbert.jsr223/org.fgilbert.jsr223.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
