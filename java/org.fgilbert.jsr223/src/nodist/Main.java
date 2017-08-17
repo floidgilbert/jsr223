@@ -24,11 +24,21 @@ import org.fgilbert.jsr223.Controller;
 class Main {
 
 	public static void main(String[] args) {
-		Integer[][][][][] array = {{{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}, {{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}};
+//		Integer[][][][][] array = {{{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}, {{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}};
 //		Integer[][][] array = {{{0, 1, 2}, {0, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}};
-		JavaToR j2r = new JavaToR(array, ArrayOrder.ROW_MAJOR);
-		Object o = j2r.getValueObject();
-		System.out.println(o);
+//		int[][][] array = {{{1,2,3},{4,5,6},{7,8,9}},{{10,11,12},{13,14,15},{16,17,18}},{{19,20,21},{22,23,24},{25,26,27}}};
+//		int[][][] array = {{{1,10,19},{4,13,22},{7,16,25}},{{2,11,20},{5,14,23},{8,17,26}},{{3,12,21},{6,15,24},{9,18,27}}};
+//		int[][][] array = {{{1, 4, 7}, {2, 5, 8}, {3, 6, 9}}, {{10, 13, 16}, {11, 14, 17}, {12, 15, 18}}, {{19, 22, 25}, {20, 23, 26}, {21, 24, 27}}};
+//		JavaToR j2r = new JavaToR(array, ArrayOrder.ROW_MAJOR_JAVA);
+//		Object[] r = j2r.getValueObjectArray1d();
+//		System.out.println(r.length);
+//		j2r = new JavaToR(new String[][] {{}}, ArrayOrder.COLUMN_MAJOR);
+//		j2r = new JavaToR(new String[][] {}, ArrayOrder.ROW_MAJOR);
+//		j2r = new JavaToR(new String[][] {}, ArrayOrder.ROW_MAJOR_JAVA);
+		JavaToR j2r = new JavaToR(new int[][] {{}}, ArrayOrder.ROW_MAJOR);
+		Object[] r = j2r.getValueObjectArray1d();
+		System.out.println(r.length);
+		Object o = new int[] {};
 	}
 	
 	public static void mainXMX(String[] args) {

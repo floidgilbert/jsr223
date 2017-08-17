@@ -13,6 +13,7 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
     controller = NULL # Initialized in constructor
     , controller.j2r = NULL # Initialized in constructor
 
+    , array.order = DEFAULT_ARRAY_ORDER
     , coerce.factors = DEFAULT_COERCE_FACTORS
     , data.frame.row.major = DEFAULT_DATA_FRAME_ROW_MAJOR
     , interpolate = DEFAULT_INTERPOLATE
@@ -152,7 +153,7 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
       private$STANDARD_OUTPUT_QUIET <- rJava::.jfield("org.fgilbert.jsr223.Controller$StandardOutputMode", sig = NULL, "QUIET")
       private$STANDARD_OUTPUT_BUFFER <- rJava::.jfield("org.fgilbert.jsr223.Controller$StandardOutputMode", sig = NULL, "BUFFER")
 
-      self$setArrayOrder(DEFAULT_ARRAY_ORDER)
+      self$setArrayOrder(private$array.order)
       self$setStandardOutputMode(DEFAULT_STANDARD_OUTPUT_MODE)
 
       # Populate engine information list
@@ -172,16 +173,15 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
     # the script engine.
 
     , getArrayOrder = function() {
-      jdx::arrayOrderToString(
-        rJava::.jcall(private$controller, "Lorg/fgilbert/jdx/JavaToR$ArrayOrder;", "getArrayOrder")
-      )
+      private$array.order
     }
 
     , setArrayOrder = function(value) {
       order <- private$JDX_ARRAY_ORDER[[value]]
       if (is.null(order))
         stop(sprintf("Valid array order values are 'column-major', 'row-major', and 'row-major-java'."))
-      r <- self$getArrayOrder()
+      r <- private$array.order
+      private$array.order <- value # Save local copy to use quickly with jdx::convertToJava() and self$getArrayOrder()
       rJava::.jcall(private$controller, "V", "setArrayOrder", order)
       invisible(r)
     }

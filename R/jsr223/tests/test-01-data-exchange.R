@@ -7,6 +7,7 @@
 #///use jsonlite to validate n-dimensional arrays row-major, row-minor.
 #///make sure coercelogical and byte array stuff works for n-dimensional
 #///add environments to testing hashed and unhashed
+#///probably remove .jar files from the git repository. will bloat it.
 
 
 # Introduction ------------------------------------------------------------
@@ -48,8 +49,8 @@
 # data frame
 # factor
 # list
+# environment
 # formula - not supported
-# environment - not supported
 # expression - not supported
 # function - not supported
 # table - same as multidimensional array
@@ -276,13 +277,6 @@ assertMessage(
 
 assertMessage(
   {
-    js$value <- new.env()
-  }
-  , "Values of class 'environment' are not supported."
-)
-
-assertMessage(
-  {
     js$value <- expression({1 + 1})
   }
   , "method setScriptEngineValue with signature (Ljava/lang/String;)V not found"
@@ -322,13 +316,6 @@ assertMessage(
     js$value <- as.POSIXlt(Sys.time(), "GMT")
   }
   , "Values of class 'POSIXlt' are not supported."
-)
-
-assertMessage(
-  {
-    js$value <- array(0, c(1, 1, 1))
-  }
-  , "Arrays of three or more dimensions are not supported. Use lists of matrices, or consider using ND4J (http://nd4j.org/)."
 )
 
 # Test unsupported type in evaluation
@@ -391,26 +378,26 @@ assertMessage(
 # Test unsupported type in a map
 assertMessage(
   {
-    js$setRowMajor(FALSE)
+    js$setDataFrameRowMajor(FALSE)
     js$value <- mtcars[1:3, ]
     js %@% "value.cyl = new java.util.Random(10);"
     js %~% "value;"
   }
   , ERR_JAVA_UTIL_RANDOM
 )
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 # Test unsupported type in a map in an ArrayList
 assertMessage(
   {
-    js$setRowMajor(TRUE)
+    js$setDataFrameRowMajor(TRUE)
     js$value <- mtcars[1:3, ]
     js %@% "value[0].cyl = new java.util.Random(10);"
     js %~% "value;"
   }
   , ERR_JAVA_UTIL_RANDOM
 )
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 # Test unsupported type in a nested map.
 assertMessage(
@@ -491,14 +478,34 @@ assertMessage(
   , message.type = "warning"
 )
 
-#///add other checks because this one failed. Amazing.
 assertMessage(
   {
+    js$setArrayOrder("row-major")
     js %~% "TestDataClass.getBoxedBooleanArray2dNulls()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
 )
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major-java")
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("column-major")
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 assertMessage(
   {
@@ -579,10 +586,10 @@ l1 <- list(
   NA_real_
   , NA_integer_
   , NA_character_
-  , NA # NA is logical and will be coerced to TRUE with a warning.
+  , NA # NA is logical and will be coerced to FALSE with a warning.
 )
 l1 <- appendValuesAsArrays(l1)
-l2 <- list(NA_real_, NA_integer_, NA_character_, TRUE, NA_real_, NA_integer_, NA_character_, TRUE)
+l2 <- list(NA_real_, NA_integer_, NA_character_, FALSE, NA_real_, NA_integer_, NA_character_, FALSE)
 
 js$setLengthOneVectorAsArray(FALSE)
 suppressWarnings(testSetAndGet(l1, l2))
@@ -642,8 +649,8 @@ l1 <- list(
 )
 l1 <- appendValuesAsArrays(l1)
 l2 <- c(l1, l1)
-l2[[1]] <- c(TRUE, TRUE, TRUE)
-l2[[5]] <- c(TRUE, TRUE, TRUE)
+l2[[1]] <- c(FALSE, FALSE, FALSE)
+l2[[5]] <- c(FALSE, FALSE, FALSE)
 
 suppressWarnings(testSetAndGet(l1, l2))
 
@@ -681,7 +688,7 @@ testSetAndGet(list(as.list(v)), list(v))
 v <- NA_character_
 testSetAndGet(list(as.list(v)), list(list(NULL)))
 v <- NA
-suppressWarnings(testSetAndGet(list(as.list(v)), list(TRUE)))
+suppressWarnings(testSetAndGet(list(as.list(v)), list(FALSE)))
 v <- -1.1
 testSetAndGet(list(as.list(v)), list(v))
 v <- -1L
@@ -699,7 +706,7 @@ testSetAndGet(list(as.list(c(v, NA))), list(c(v, NA)))
 v <- -1:20
 testSetAndGet(list(as.list(c(v, NA))), list(c(v, NA)))
 v <- c(TRUE, FALSE, TRUE)
-suppressWarnings(testSetAndGet(list(as.list(c(v, NA))), list(c(v, TRUE))))
+suppressWarnings(testSetAndGet(list(as.list(c(v, NA))), list(c(v, FALSE))))
 v <- letters
 testSetAndGet(list(as.list(c(v, NA))), list(c(v, NA)))
 v <- as.raw(0:255)
@@ -763,7 +770,7 @@ assertIdentical(c("a", "b", NA_character_), js$value)
 js %@% "var value = [true, false, true]"
 assertIdentical(c(TRUE, FALSE, TRUE), js$value)
 js %@% "var value = [true, false, null]"
-assertIdentical(c(TRUE, FALSE, TRUE), suppressWarnings(js$value))
+assertIdentical(c(TRUE, FALSE, FALSE), suppressWarnings(js$value))
 
 # Raw vector of length one
 js %@% "
@@ -946,9 +953,9 @@ l1 <- list(
 )
 l2 <- list(
   c(TRUE)
-  , c(TRUE, TRUE)
+  , c(TRUE, FALSE)
   , c(FALSE)
-  , c(FALSE, TRUE)
+  , c(FALSE, FALSE)
   , c("TRUE", "A")
   , c("TRUE", "1")
   , c("TRUE", "1.1")
@@ -1023,9 +1030,11 @@ l1 <- list(
   , matrix(character(), 0, 0)
   , matrix(raw(), 0, 0)
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(l1)
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(l1)
+js$setArrayOrder("row-major-java")
 testSetAndGet(l1)
 
 # By default, rJava converts matrices as row-major. The default behavior for
@@ -1043,7 +1052,7 @@ testSetAndGet(l1)
 #     matrix(0, 0, 1) becomes double[][] value = {{}};
 #     matrix(0, 1, 0) becomes double[][] value = {};
 
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 # The expression `matrix(character())` produces a matrix of zero rows, one
 # column. In the column-major setting, this will produce a Java matrix with one
 # element containing an array with zero elements (see the comments above).
@@ -1072,7 +1081,7 @@ assertIdentical(matrix(raw(), 0, 1), js$value)
 js$value <- matrix(raw(), 1, 0)
 assertIdentical(matrix(raw(), 0, 0), js$value)
 
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
 # In the row-major setting, the results are opposite of the column-major setting.
 js$value <- matrix(character())
 assertIdentical(matrix(character(), 0, 0), js$value)
@@ -1099,7 +1108,33 @@ assertIdentical(matrix(raw(), 0, 0), js$value)
 js$value <- matrix(raw(), 1, 0)
 assertIdentical(matrix(raw(), 1, 0), js$value)
 
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setArrayOrder("row-major-java")
+js$value <- matrix(character())
+assertIdentical(matrix(character(), 0, 0), js$value)
+js$value <- matrix(character(), 1, 0)
+assertIdentical(matrix(character(), 1, 0), js$value)
+
+js$value <- matrix(numeric())
+assertIdentical(matrix(numeric(), 0, 0), js$value)
+js$value <- matrix(numeric(), 1, 0)
+assertIdentical(matrix(numeric(), 1, 0), js$value)
+
+js$value <- matrix(integer())
+assertIdentical(matrix(integer(), 0, 0), js$value)
+js$value <- matrix(integer(), 1, 0)
+assertIdentical(matrix(integer(), 1, 0), js$value)
+
+js$value <- matrix(logical())
+assertIdentical(matrix(logical(), 0, 0), js$value)
+js$value <- matrix(logical(), 1, 0)
+assertIdentical(matrix(logical(), 1, 0), js$value)
+
+js$value <- matrix(raw())
+assertIdentical(matrix(raw(), 0, 0), js$value)
+js$value <- matrix(raw(), 1, 0)
+assertIdentical(matrix(raw(), 1, 0), js$value)
+
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
 # Matrices of Size One ----------------------------------------------------
@@ -1128,13 +1163,15 @@ l1 <- list(
   , matrix(as.raw(255))
 )
 l2 <- l1
-l2[[12]] <- matrix(TRUE)
-js$setRowMajor(FALSE)
+l2[[12]] <- matrix(FALSE)
+js$setArrayOrder("row-major")
 suppressWarnings(testSetAndGet(l1, l2))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major-java")
+suppressWarnings(testSetAndGet(l1, l2))
+js$setArrayOrder("column-major")
 suppressWarnings(testSetAndGet(l1, l2))
 
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
 # Matrices - One Row/Column -----------------------------------------------
@@ -1168,14 +1205,16 @@ l1 <- list(
   , matrix(as.raw(250:255), 6, 1)
 )
 l2 <- l1
-l2[[17]] <- matrix(rep(TRUE, times = 6), 1, 6)
-l2[[18]] <- matrix(rep(TRUE, times = 6), 6, 1)
-js$setRowMajor(FALSE)
+l2[[17]] <- matrix(rep(FALSE, times = 6), 1, 6)
+l2[[18]] <- matrix(rep(FALSE, times = 6), 6, 1)
+js$setArrayOrder("row-major")
 suppressWarnings(testSetAndGet(l1, l2))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major-java")
+suppressWarnings(testSetAndGet(l1, l2))
+js$setArrayOrder("column-major")
 suppressWarnings(testSetAndGet(l1, l2))
 
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
 # Matrices ----------------------------------------------------------------
@@ -1197,15 +1236,18 @@ l1 <- list(
   , matrix(as.raw(0:255), 64)
 )
 l2 <- l1
-l2[[7]] <- matrix(c(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE), 2, 3)
-js$setRowMajor(FALSE)
+l2[[7]] <- matrix(c(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE), 2, 3)
+js$setArrayOrder("row-major")
 suppressWarnings(testSetAndGet(l1, l2))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major-java")
+suppressWarnings(testSetAndGet(l1, l2))
+js$setArrayOrder("column-major")
 suppressWarnings(testSetAndGet(l1, l2))
 
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
+#///redo. or else, just do as n-dimensional arrays from collections
 # Matrices from Collections -----------------------------------------------
 
 cat("Matrices from Collections\n")
@@ -1475,114 +1517,235 @@ assertIdentical(matrix(c(1L, 2L, NA_integer_, 4L), 4, 2), js$value)
 js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
 
 
-
 # N-Dimensional Arrays of Length Zero -------------------------------------
 
-cat("N-Dimensional Arrays of Length Zero\n")
-l1 <- list(
-  array(numeric(), c(0, 0, 0))
-  , array(integer(), c(0, 0, 0))
-  , array(logical(), c(0, 0, 0))
-  , array(character(), c(0, 0, 0))
-  , array(raw(), c(0, 0, 0))
+# See section "Matrices of Length Zero"
+
+
+# N-Dimensional Arrays - Row Major ----------------------------------------
+
+cat("N-Dimensional Arrays - Row Major\n")
+
+js$setArrayOrder("row-major")
+
+# Two-dimensional
+l2 <- list(
+  array(integer(0), c(0, 0))
+  , array(numeric(0), c(0, 0))
+  , array(logical(0), c(0, 0))
+  , array(character(0), c(0, 0))
+  , array(raw(0), c(0, 0))
 )
-js$setRowMajor(FALSE)
-testSetAndGet(l1)
-js$setRowMajor(TRUE)
-testSetAndGet(l1)
+for (i in 0:5) {
+  for (j in 0:5) {
+    l1 <- list(
+      array(1:(i * j), c(i, j))
+      , array(as.numeric(1:(i * j)), c(i, j))
+      , array(TRUE, c(i, j))
+      , array(as.character(1:(i * j)), c(i, j))
+      , array(as.raw(1:(i * j)), c(i, j))
+    )
+    if (i == 0) {
+      testSetAndGet(l1, l2)
+    } else {
+      testSetAndGet(l1)
+    }
+  }
+}
 
-# By default, rJava converts matrices as row-major. The default behavior for
-# zero-length matrices is as follows, assuming the variable names is
-# 'value'.
-#
-#     matrix(0, 0, 0) becomes double[][] value = {};
-#     matrix(0, 0, 1) becomes double[][] value = {};
-#     matrix(0, 1, 0) becomes double[][] value = {{}};
-#
-# jdx supports column-major matrices. It mimics the zero-length
-# row-major behavior as follows.
-#
-#     matrix(0, 0, 0) becomes double[][] value = {};
-#     matrix(0, 0, 1) becomes double[][] value = {{}};
-#     matrix(0, 1, 0) becomes double[][] value = {};
+# Three-dimensional
+for (i in 0:5) {
+  for (j in 0:5) {
+    for (k in 0:5) {
+      l1 <- list(
+        array(1:(i * j), c(i, j, k))
+        , array(as.numeric(1:(i * j)), c(i, j, k))
+        , array(TRUE, c(i, j, k))
+        , array(as.character(1:(i * j * k)), c(i, j, k))
+        , array(as.raw(1:(i * j * k)), c(i, j, k))
+      )
+      if (i == 0) {
+        dimensions <- c(0, 0, 0)
+        l2 <- list(
+          array(integer(0), dimensions)
+          , array(numeric(0), dimensions)
+          , array(logical(0), dimensions)
+          , array(character(0), dimensions)
+          , array(raw(0), dimensions)
+        )
+        testSetAndGet(l1, l2)
+      } else if (i > 0 & j == 0) {
+        dimensions <- c(i, 0, 0)
+        l2 <- list(
+          array(integer(0), dimensions)
+          , array(numeric(0), dimensions)
+          , array(logical(0), dimensions)
+          , array(character(0), dimensions)
+          , array(raw(0), dimensions)
+        )
+        testSetAndGet(l1, l2)
+      } else {
+        testSetAndGet(l1)
+      }
+    }
+  }
+}
 
-js$setRowMajor(FALSE)
-# The expression `matrix(character())` produces a matrix of zero rows, one
-# column. In the column-major setting, this will produce a Java matrix with one
-# element containing an array with zero elements (see the comments above).
-js$value <- matrix(character())
-assertIdentical(matrix(character(), 0, 1), js$value)
-js$value <- matrix(character(), 1, 0)
-assertIdentical(matrix(character(), 0, 0), js$value)
+# Higher dimensions are tested sufficiently in jdx.
 
-js$value <- matrix(numeric())
-assertIdentical(matrix(numeric(), 0, 1), js$value)
-js$value <- matrix(numeric(), 1, 0)
-assertIdentical(matrix(numeric(), 0, 0), js$value)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
-js$value <- matrix(integer())
-assertIdentical(matrix(integer(), 0, 1), js$value)
-js$value <- matrix(integer(), 1, 0)
-assertIdentical(matrix(integer(), 0, 0), js$value)
+# N-Dimensional Arrays - Column Major -------------------------------------
 
-js$value <- matrix(logical())
-assertIdentical(matrix(logical(), 0, 1), js$value)
-js$value <- matrix(logical(), 1, 0)
-assertIdentical(matrix(logical(), 0, 0), js$value)
+cat("N-Dimensional Arrays - Column Major\n")
 
-js$value <- matrix(raw())
-assertIdentical(matrix(raw(), 0, 1), js$value)
-js$value <- matrix(raw(), 1, 0)
-assertIdentical(matrix(raw(), 0, 0), js$value)
+js$setArrayOrder("column-major")
 
-js$setRowMajor(TRUE)
-# In the row-major setting, the results are opposite of the column-major setting.
-js$value <- matrix(character())
-assertIdentical(matrix(character(), 0, 0), js$value)
-js$value <- matrix(character(), 1, 0)
-assertIdentical(matrix(character(), 1, 0), js$value)
+# Two-dimensional
+l2 <- list(
+  array(integer(0), c(0, 0))
+  , array(numeric(0), c(0, 0))
+  , array(logical(0), c(0, 0))
+  , array(character(0), c(0, 0))
+  , array(raw(0), c(0, 0))
+)
+for (i in 0:5) {
+  for (j in 0:5) {
+    l1 <- list(
+      array(1:(i * j), c(i, j))
+      , array(as.numeric(1:(i * j)), c(i, j))
+      , array(TRUE, c(i, j))
+      , array(as.character(1:(i * j)), c(i, j))
+      , array(as.raw(1:(i * j)), c(i, j))
+    )
+    if (j == 0) {
+      testSetAndGet(l1, l2)
+    } else {
+      testSetAndGet(l1)
+    }
+  }
+}
 
-js$value <- matrix(numeric())
-assertIdentical(matrix(numeric(), 0, 0), js$value)
-js$value <- matrix(numeric(), 1, 0)
-assertIdentical(matrix(numeric(), 1, 0), js$value)
+# Three-dimensional
+for (i in 0:5) {
+  for (j in 0:5) {
+    for (k in 0:5) {
+      l1 <- list(
+        array(1:(i * j), c(i, j, k))
+        , array(as.numeric(1:(i * j)), c(i, j, k))
+        , array(TRUE, c(i, j, k))
+        , array(as.character(1:(i * j * k)), c(i, j, k))
+        , array(as.raw(1:(i * j * k)), c(i, j, k))
+      )
+      if (k == 0) {
+        dimensions <- c(0, 0, 0)
+        l2 <- list(
+          array(integer(0), dimensions)
+          , array(numeric(0), dimensions)
+          , array(logical(0), dimensions)
+          , array(character(0), dimensions)
+          , array(raw(0), dimensions)
+        )
+        testSetAndGet(l1, l2)
+      } else if (k > 0 & j == 0) {
+        dimensions <- c(0, 0, k)
+        l2 <- list(
+          array(integer(0), dimensions)
+          , array(numeric(0), dimensions)
+          , array(logical(0), dimensions)
+          , array(character(0), dimensions)
+          , array(raw(0), dimensions)
+        )
+        testSetAndGet(l1, l2)
+      } else {
+        testSetAndGet(l1)
+      }
+    }
+  }
+}
 
-js$value <- matrix(integer())
-assertIdentical(matrix(integer(), 0, 0), js$value)
-js$value <- matrix(integer(), 1, 0)
-assertIdentical(matrix(integer(), 1, 0), js$value)
+# Higher dimensions are tested sufficiently in jdx.
 
-js$value <- matrix(logical())
-assertIdentical(matrix(logical(), 0, 0), js$value)
-js$value <- matrix(logical(), 1, 0)
-assertIdentical(matrix(logical(), 1, 0), js$value)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
-js$value <- matrix(raw())
-assertIdentical(matrix(raw(), 0, 0), js$value)
-js$value <- matrix(raw(), 1, 0)
-assertIdentical(matrix(raw(), 1, 0), js$value)
+# N-Dimensional Arrays - Row Major Java -----------------------------------
 
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+cat("N-Dimensional Arrays - Row Major Java\n")
+
+js$setArrayOrder("row-major-java")
+
+# Two-dimensional
+l2 <- list(
+  array(integer(0), c(0, 0))
+  , array(numeric(0), c(0, 0))
+  , array(logical(0), c(0, 0))
+  , array(character(0), c(0, 0))
+  , array(raw(0), c(0, 0))
+)
+for (i in 0:5) {
+  for (j in 0:5) {
+    l1 <- list(
+      array(1:(i * j), c(i, j))
+      , array(as.numeric(1:(i * j)), c(i, j))
+      , array(TRUE, c(i, j))
+      , array(as.character(1:(i * j)), c(i, j))
+      , array(as.raw(1:(i * j)), c(i, j))
+    )
+    if (i == 0) {
+      testSetAndGet(l1, l2)
+    } else {
+      testSetAndGet(l1)
+    }
+  }
+}
+
+# Three-dimensional
+for (i in 0:5) {
+  for (j in 0:5) {
+    for (k in 0:5) {
+      l1 <- list(
+        array(1:(i * j), c(i, j, k))
+        , array(as.numeric(1:(i * j)), c(i, j, k))
+        , array(TRUE, c(i, j, k))
+        , array(as.character(1:(i * j * k)), c(i, j, k))
+        , array(as.raw(1:(i * j * k)), c(i, j, k))
+      )
+      if (k == 0) {
+        dimensions <- c(0, 0, 0)
+        l2 <- list(
+          array(integer(0), dimensions)
+          , array(numeric(0), dimensions)
+          , array(logical(0), dimensions)
+          , array(character(0), dimensions)
+          , array(raw(0), dimensions)
+        )
+        testSetAndGet(l1, l2)
+      } else if (k > 0 & i == 0) {
+        dimensions <- c(0, 0, k)
+        l2 <- list(
+          array(integer(0), dimensions)
+          , array(numeric(0), dimensions)
+          , array(logical(0), dimensions)
+          , array(character(0), dimensions)
+          , array(raw(0), dimensions)
+        )
+        testSetAndGet(l1, l2)
+      } else {
+        testSetAndGet(l1)
+      }
+    }
+  }
+}
+
+# Higher dimensions are tested sufficiently in jdx.
+
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
+# N-Dimensional Arrays from Collections -----------------------------------
 
+#///do logical NA, empty, everything, complex, whatever.
 
-#///
-# N-Dimensional Arrays ----------------------------------------------------
-
-
-
-
-#///no longer the case.
-# Currently, copying R arrays greater than 2 dimensions to Java is not
-# supported. The recommendation is to use ND4J (http://nd4j.org). There are
-# several reasons for this, but one reason is that n-dimensional arrays in Java
-# are very unwieldy because they are comprised of pointers to other array
-# objects which may be of various lengths. ND4J is a much better way to handle
-# these arrays and it supports fast linear algebra operations.
-
-# When n-dimensional arrays are copied to R, they are converted to lists of
-# (lists of) matrices as follows.
 
 # This is an 3-dimensional array created from JS colletions.
 
@@ -2155,9 +2318,11 @@ js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 
+#///add environments everywhere
 # Lists - Empty and Empty Values ------------------------------------------
 
-cat("Lists - Empty and Empty Values\n")
+cat("Lists, Environments - Empty and Empty Values\n")
+testSetAndGet(list(new.env()), list(list()))
 testSetAndGet(list(list()))
 testSetAndGet(list(list(integer())))
 testSetAndGet(list(list(a = integer())))
