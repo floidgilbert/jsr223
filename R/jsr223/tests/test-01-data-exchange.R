@@ -1,14 +1,11 @@
-#///probably move/copy this file to jdx. dunno.
-#///test high-dimensional stuff. we can handle it on the way back from Java. document this.
-#///no longer going to try for multi-dimensional arrays. going to create lists of lists and throw a warning.
-#///need to check if row.major is respected at the matrix level when absorbing a multi-dimensional array from Java.
-#///add tests for > 2 dimensional arrays coming back from Java.
-#///review comments here and in jdx. make sure they are true.
-#///use jsonlite to validate n-dimensional arrays row-major, row-minor.
-#///make sure coercelogical and byte array stuff works for n-dimensional
+#///is jsr223 thread-safe?
+#///probably move/copy this file to jdx. dunno. "suggest" jsr223.
+#///review comments everywhere.
+#///make sure coerce logical and byte array stuff works for n-dimensional and collections of n-dimensional
 #///add environments to testing hashed and unhashed
 #///probably remove .jar files from the git repository. will bloat it.
-
+#///add environments and n-dim arrays to lists.
+#///Consider posting about jdx relative to the rJava bug for multi-dim arrays
 
 # Introduction ------------------------------------------------------------
 

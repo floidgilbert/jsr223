@@ -35,10 +35,12 @@ class Main {
 //		j2r = new JavaToR(new String[][] {{}}, ArrayOrder.COLUMN_MAJOR);
 //		j2r = new JavaToR(new String[][] {}, ArrayOrder.ROW_MAJOR);
 //		j2r = new JavaToR(new String[][] {}, ArrayOrder.ROW_MAJOR_JAVA);
-		JavaToR j2r = new JavaToR(new int[][] {{}}, ArrayOrder.ROW_MAJOR);
-		Object[] r = j2r.getValueObjectArray1d();
-		System.out.println(r.length);
-		Object o = new int[] {};
+//		JavaToR j2r = new JavaToR(new int[][] {{}}, ArrayOrder.ROW_MAJOR);
+//		Object[] r = j2r.getValueObjectArray1d();
+//		System.out.println(r.length);
+//		Object o = new int[] {};
+//		System.out.println(o.getClass().getName());
+		System.out.println(Double.TYPE.equals(double.class));
 	}
 	
 	public static void mainXMX(String[] args) {
