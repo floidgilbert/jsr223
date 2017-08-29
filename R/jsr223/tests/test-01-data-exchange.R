@@ -6,6 +6,7 @@
 #///probably remove .jar files from the git repository. will bloat it.
 #///add environments and n-dim arrays to lists.
 #///Consider posting about jdx relative to the rJava bug for multi-dim arrays
+#///also test warnings, boolean and raw, for collections and arrays.
 
 # Introduction ------------------------------------------------------------
 
@@ -478,7 +479,16 @@ assertMessage(
 assertMessage(
   {
     js$setArrayOrder("row-major")
-    js %~% "TestDataClass.getBoxedBooleanArray2dNulls()"
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls1()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major")
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls2()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
@@ -487,7 +497,16 @@ assertMessage(
 assertMessage(
   {
     js$setArrayOrder("row-major-java")
-    js %~% "TestDataClass.getBoxedBooleanArray2dNulls()"
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls1()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major-java")
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls2()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
@@ -496,7 +515,16 @@ assertMessage(
 assertMessage(
   {
     js$setArrayOrder("column-major")
-    js %~% "TestDataClass.getBoxedBooleanArray2dNulls()"
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls1()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("column-major")
+    js %~% "TestDataClass.getBoxedBooleanArray2dNulls2()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
@@ -517,6 +545,28 @@ assertMessage(
 
 assertMessage(
   {
+    js %~% "var a = new java.lang.Byte(1);"
+    js %~% "var b = [a, a, a];"
+    js %~% "var c = [a, null, a];"
+    js %~% "[b, c, b];"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js %~% "var a = new java.lang.Byte(1);"
+    js %~% "var b = [a, a, a];"
+    js %~% "var c = [a, null, a];"
+    js %~% "[[b, c, b], [b, c, b]];"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
     js %~% "TestDataClass.getBoxedByteArray1dNulls()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
@@ -525,11 +575,59 @@ assertMessage(
 
 assertMessage(
   {
-    js %~% "TestDataClass.getBoxedByteArray2dNulls()"
+    js$setArrayOrder("row-major")
+    js %~% "TestDataClass.getBoxedByteArray2dNulls1()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
   , message.type = "warning"
 )
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major")
+    js %~% "TestDataClass.getBoxedByteArray2dNulls2()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major-java")
+    js %~% "TestDataClass.getBoxedByteArray2dNulls1()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major-java")
+    js %~% "TestDataClass.getBoxedByteArray2dNulls2()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("column-major")
+    js %~% "TestDataClass.getBoxedByteArray2dNulls1()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("column-major")
+    js %~% "TestDataClass.getBoxedByteArray2dNulls2()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
 # NULL Values -------------------------------------------------------------
@@ -1244,7 +1342,6 @@ suppressWarnings(testSetAndGet(l1, l2))
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
-#///redo. or else, just do as n-dimensional arrays from collections
 # Matrices from Collections -----------------------------------------------
 
 cat("Matrices from Collections\n")
@@ -1256,110 +1353,141 @@ cat("Matrices from Collections\n")
 # compatible types, it will be converted to a matrix. Otherwise, a list of
 # objects is returned.
 v <- matrix(1.1:9.1, 3, 3)
-l1 <- list(v[, 1], v[, 2], v[, 3])
-js$setRowMajor(FALSE)
+l1 <- list(as.list(v[, 1]), as.list(v[, 2]), as.list(v[, 3]))
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(t(v)))
+l1 <- list(v[, 1], v[, 2], v[, 3])
 l1[[4]] <- c(1.1, 2.2, 3.3, 4.4) # No longer a matrix-shaped collection because vectors are of differing length
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 v <- matrix(1:9, 3, 3)
-l1 <- list(v[, 1], v[, 2], v[, 3])
-js$setRowMajor(FALSE)
+l1 <- list(as.list(v[, 1]), as.list(v[, 2]), as.list(v[, 3]))
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 v <- matrix(as.raw(247:255), 3, 3)
-l1 <- list(v[, 1], v[, 2], v[, 3])
-js$setRowMajor(FALSE)
+l1 <- list(as.list(v[, 1]), as.list(v[, 2]), as.list(v[, 3]))
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 v <- matrix(letters[1:9], 3, 3)
-l1 <- list(v[, 1], v[, 2], v[, 3])
-js$setRowMajor(FALSE)
+l1 <- list(as.list(v[, 1]), as.list(v[, 2]), as.list(v[, 3]))
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 v <- matrix(c(TRUE, FALSE, TRUE), 3, 3)
-l1 <- list(v[, 1], v[, 2], v[, 3])
-js$setRowMajor(FALSE)
+l1 <- list(as.list(v[, 1]), as.list(v[, 2]), as.list(v[, 3]))
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 # A mix of numeric, integer, and raw columns will be converted to a numeric matrix.
 l1 <- list(as.raw(253:255), 1:3, 1.1:3.1)
 v <- matrix(c(-3:-1, 1:3, 1.1:3.1), 3, 3)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(as.raw(253:255), 1.1:3.1, 1:3)
 v <- matrix(c(-3:-1, 1.1:3.1, 1:3), 3, 3)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(1.1:3.1, as.raw(253:255), 1:3)
 v <- matrix(c(1.1:3.1, -3:-1, 1:3), 3, 3)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(1.1:3.1, 1:3, as.raw(253:255))
 v <- matrix(c(1.1:3.1, 1:3, -3:-1), 3, 3)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(1:3, 1.1:3.1, as.raw(253:255))
 v <- matrix(c(1:3, 1.1:3.1, -3:-1), 3, 3)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(1:3, as.raw(253:255), 1.1:3.1)
 v <- matrix(c(1:3, -3:-1, 1.1:3.1), 3, 3)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 # A mix of integer and raw columns will be converted to an integer matrix.
 l1 <- list(1:3, as.raw(253:255))
 v <- matrix(c(1:3, -3:-1), 3, 2)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(as.raw(253:255), 1:3)
 v <- matrix(c(-3:-1, 1:3), 3, 2)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 # A mix of Java null and String/Character values will be converted to a character matrix.
 # rJava converts NA_character_ to Java null.
 l1 <- list(c(NA_character_, NA_character_, NA_character_), letters[1:3])
 v <- matrix(c(NA_character_, NA_character_, NA_character_, letters[1:3]), 3, 2)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 # Mixed types within columns will also be converted to the most general type.
@@ -1377,9 +1505,11 @@ v <- matrix(
   , 3
   , 3
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(
@@ -1394,9 +1524,11 @@ v <- matrix(
   , 2
   , 2
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(t(v)))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1), list(t(v)))
 
 # If mixed types are not compatible, a list is returned instead of a matrix.
@@ -1404,63 +1536,77 @@ l1 <- list(
   list(as.raw(255), "a")
   , list("a", as.raw(255))
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 l1 <- list(
   list(as.raw(255), TRUE)
   , list(FALSE, as.raw(255))
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 l1 <- list(
   list(1L, "a")
   , list("a", 1L)
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 l1 <- list(
   list(1L, TRUE)
   , list(FALSE, 1L)
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 l1 <- list(
   list(1, "a")
   , list("a", 1)
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 l1 <- list(
   list(1, TRUE)
   , list(FALSE, 1)
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 l1 <- list(
   list("a", TRUE)
   , list(FALSE, "a")
 )
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
-js$setRowMajor(TRUE)
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1))
+js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 
@@ -1507,11 +1653,14 @@ a[0] = 1; a[1] = 2; a[2] = null; a[3] = 4;
 value[0] = a;
 value[1] = a;
 "
-js$setRowMajor(TRUE)
-assertIdentical(matrix(c(1L, 2L, NA_integer_, 4L), 2, 4, byrow = TRUE), js$value)
-js$setRowMajor(FALSE)
+js$setArrayOrder("column-major")
 assertIdentical(matrix(c(1L, 2L, NA_integer_, 4L), 4, 2), js$value)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setArrayOrder("row-major")
+assertIdentical(matrix(c(1L, 2L, NA_integer_, 4L), 2, 4, byrow = TRUE), js$value)
+js$setArrayOrder("row-major-java")
+assertIdentical(matrix(c(1L, 2L, NA_integer_, 4L), 2, 4, byrow = TRUE), js$value)
+
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
 # N-Dimensional Arrays of Length Zero -------------------------------------
@@ -1665,6 +1814,7 @@ for (i in 0:5) {
 
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
+
 # N-Dimensional Arrays - Row Major Java -----------------------------------
 
 cat("N-Dimensional Arrays - Row Major Java\n")
@@ -1741,38 +1891,82 @@ js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 # N-Dimensional Arrays from Collections -----------------------------------
 
-#///do logical NA, empty, everything, complex, whatever.
+# Higher dimensions are tested sufficiently in jdx with the exception of mixed types.
 
+range <- 0:255
+numeric.matrix <- array(as.numeric(range), c(256, 1))
+integer.matrix <- array(range, c(256, 1))
+logical.matrix <- array(rep(c(TRUE, FALSE), times = 128), c(256, 1))
+character.matrix <- array(as.numeric(range), c(256, 1))
+raw.matrix <- array(as.raw(range), c(256, 1))
 
-# This is an 3-dimensional array created from JS colletions.
+# Mixed types using column-major and row-major-java
 
-js$setRowMajor(FALSE)
-js %@% "var value = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]"
+l1 <- list(numeric.matrix, integer.matrix, raw.matrix)
+a <- array(as.numeric(c(range, range, 0:127, -128:-1)), c(256, 1, 3))
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(a))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(a))
+
+l1 <- list(numeric.matrix, raw.matrix, integer.matrix)
+a <- array(as.numeric(c(range, 0:127, -128:-1, range)), c(256, 1, 3))
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(a))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(a))
+
+l1 <- list(integer.matrix, raw.matrix, numeric.matrix)
+a <- array(as.numeric(c(range, 0:127, -128:-1, range)), c(256, 1, 3))
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(a))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(a))
+
+l1 <- list(integer.matrix, numeric.matrix, raw.matrix)
+a <- array(as.numeric(c(range, range, 0:127, -128:-1)), c(256, 1, 3))
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(a))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(a))
+
+l1 <- list(raw.matrix, numeric.matrix, integer.matrix)
+a <- array(as.numeric(c(0:127, -128:-1, range, range)), c(256, 1, 3))
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(a))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(a))
+
+l1 <- list(raw.matrix, integer.matrix, numeric.matrix)
+a <- array(as.numeric(c(0:127, -128:-1, range, range)), c(256, 1, 3))
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(a))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(a))
+
+l1 <- list(integer.matrix, raw.matrix)
+a <- array(as.integer(c(range, 0:127, -128:-1)), c(256, 1, 2))
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(a))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(a))
+
+l1 <- list(raw.matrix, integer.matrix)
+a <- array(as.integer(c(0:127, -128:-1, range)), c(256, 1, 2))
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(a))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(a))
+
+# Mixed types using row-major
+
+js$setArrayOrder("row-major")
+js %~% "value.toString()"
+
 js$value
-js %@% "var value = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [[10, 11, 12], [13, 14, 15], [16, 17, 18]]]"
-js$value
+dim(js$value)
 
-js$setRowMajor(TRUE)
-js %@% "var value = [[[1, 2, 3], [4, 5, 6], [7, 8, 9]], [[10, 11, 12], [13, 14, 15], [16, 17, 18]]]"
-js$value
-js %@% "var value = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]"
-js$value
-
-#///
-# Object[] arrays should be handled the same way as collections.
-js %@% "
-var ObjectArray1d = Java.type('java.lang.Object[]');
-var value = new ObjectArray1d(4);
-value[0] = 1;
-value[1] = 2;
-value[2] = null;
-value[3] = 4;
-"
-assertIdentical(c(1L, 2L, NA_integer_, 4L), js$value)
-
-
-
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 # Data Frames - Errors ----------------------------------------------------
 

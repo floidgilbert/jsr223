@@ -9,6 +9,10 @@ package nodist;
 //import java.math.BigInteger;
 //
 import java.util.Arrays;
+
+import static org.junit.Assert.assertArrayEquals;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 //import java.util.Collection;
 //import java.util.Iterator;
@@ -23,7 +27,7 @@ import org.fgilbert.jsr223.Controller;
 
 class Main {
 
-	public static void main(String[] args) {
+	public static void mainXSF(String[] args) {
 //		Integer[][][][][] array = {{{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}, {{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}};
 //		Integer[][][] array = {{{0, 1, 2}, {0, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}};
 //		int[][][] array = {{{1,2,3},{4,5,6},{7,8,9}},{{10,11,12},{13,14,15},{16,17,18}},{{19,20,21},{22,23,24},{25,26,27}}};
@@ -40,25 +44,82 @@ class Main {
 //		System.out.println(r.length);
 //		Object o = new int[] {};
 //		System.out.println(o.getClass().getName());
-		System.out.println(Double.TYPE.equals(double.class));
+		
+//		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
+//		dimensions = new int[] {3, 2, 3};
+//		Object[] arrayExpected = new int[][][] {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}, {{13, 14, 15}, {16, 17, 18}}};
+//		Object[] arrayActual = (int[][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions); 
+//		assertArrayEquals(arrayExpected, arrayActual);
+//
+//		data = new int[] {1, 3, 5, 2, 4, 6, 7, 9, 11, 8, 10, 12, 13, 15, 17, 14, 16, 18};
+//		dimensions = new int[] {3, 3, 2};
+//		arrayExpected = new int[][][] {{{1, 2}, {3, 4}, {5, 6}}, {{7, 8}, {9, 10}, {11, 12}}, {{13, 14}, {15, 16}, {17, 18}}};
+//		arrayActual = (Object[]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions); 
+//		assertArrayEquals(arrayExpected, arrayActual);
+		
+//		int[] data;
+//		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
+//		int[] dimensions;
+//		dimensions = new int[] {3, 2, 3};
+//		int[][][] nnn = (int[][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+//		System.out.println(nnn.length);
+//		Object o;
+//		o = java.util.Arrays.asList(nnn);
+//		System.out.println(nnn.length);
+
+//		int[] data;
+//		data = new int[] {1, 4, 7, 2, 5, 8, 3, 6, 9};
+//		int[] dimensions;
+//		dimensions = new int[] {3, 3};
+//		int[][] nn = (int[][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+//		Object o = java.util.Arrays.asList(nn);
+//		JavaToR j2r = new JavaToR(o); 
+//		System.out.println(j2r.getRdataCompositeCode());
+//		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
+//		dimensions = new int[] {3, 2, 3};
+//		int[][][] nnn = (int[][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+//		o = java.util.Arrays.asList(nnn);
+//		j2r = new JavaToR(o);
+//		System.out.println(j2r.getRdataCompositeCode());
+		
+		int[] data;
+		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18, 1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
+		int[] dimensions;
+		dimensions = new int[] {2, 3, 2, 3};
+		int[][][][] n = (int[][][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+		ArrayList<Object> al1 = new ArrayList();
+		for (int i = 0; i < dimensions[0]; i++) {
+			ArrayList<Object> al2 = new ArrayList();
+			for (int j = 0; j < dimensions[1]; j++) {
+				ArrayList<Object> al3 = new ArrayList();
+				for (int k = 0; k < dimensions[2]; k++) {
+					ArrayList<Object> al4 = new ArrayList();
+					for (int l = 0; l < dimensions[3]; l++) {
+						al4.add(n[i][j][k][l]);
+					}
+					al3.add(al4);
+				}
+				al2.add(al3);
+			}
+			al1.add(al2);
+		}
+		JavaToR j2r = new JavaToR(al1);
+		System.out.println(j2r.getRdataCompositeCode());
 	}
 	
-	public static void mainXMX(String[] args) {
-//		Object[] oa = {1, 2.2, "3"};
-//		ArrayList<Object> col = new ArrayList<Object>(Arrays.asList(oa));
-//		List<Object> col = Arrays.asList(oa);
-//		Iterator<?> iter = col.iterator();
-//		Object o = iter.next();
-//		System.out.println(o.getClass().isArray());
-//		System.out.println(o.getClass().isArray());
-//		List<Object> a = Arrays.asList(oa);
-//		JavaToR j2r = new JavaToR(oa);
-//		Object[] o2 = j2r.getValueObjectArray1d();
-//		System.out.println(j2r.getRdataCompositeCode());
-		int[][] n = {};
-		Class<?> o = n.getClass();
-		System.out.println(n.length);
-		System.out.println(o.getComponentType().isArray());
+	public static void mainIOI(String[] args) {
+		int iterations = 1000000;
+		int[] data1 = new int[2000];
+		int[] data2 = new int[data1.length * 2];
+		final long startTime = System.currentTimeMillis();
+//		int k = 0;
+		for (int i = 0; i < iterations; i++) {
+//		  System.arraycopy(data1, 0, data2, data1.length, data1.length);
+			for (int j = 0; j < data1.length; j++)
+				data2[j] = data1[j];
+		}
+		final long endTime = System.currentTimeMillis();
+		System.out.println("Total execution time: " + (endTime - startTime) );		
 	}
 	
 	public static int[] oneD() {
@@ -117,45 +178,39 @@ class Main {
         return flatList.toArray(new Integer[flatList.size()]);
     }
 	
-	public static void mainSMS(String[] args) {
-		String c = "abc";
-		Object o = c;
-		System.out.println(o.toString());
-		
-//		int[] n = {1,2,3,3,4};
-//		int[] ns = Arrays.stream(n).map((int i) -> {if (i == 3) return 0; else return i;}).toArray();
-//		System.out.println(Arrays.toString(n));
-//		System.out.println(Arrays.toString(ns));
-		
-//		Object a = new Object();
-//		int[] n = oneD();
-//		String[] s = {"alex"};
-//		Object[][] o = {{"abc"}};
-//		System.out.println(o.getClass().getComponentType().getComponentType());
+	public static void main(String[] args) {
 //		int[][] nn = twoD();
-//		int[][][] nnn = threeD();
-//		int[][][][] nnnn = {};
-//		System.out.println(Array.getLength(nn));
-//		Class<?> c = null;
+//		Object oo = Utility.deepAsList(nn);
+		Object oo = Utility.deepAsList(new Integer[][] {{}});
 		return;
 	}
 	
-	public static void mainSLX(String[] args) {
+	public static void mainRWR(String[] args) {
 //		Object o = Utility.createNdimensionalArray(new int[] {1, 2, 3, 4}, new int[] {2, 2}, false);
-		int max = 32;
+		int max = 2000;
 		int[] data = new int[max];
+		int[] data2 = new int[max];
+		double[] data3 = new double[max];
 		for (int i = 0; i < max; i++)
 			data[i] = i + 1;
-		int[] dimensions = new int[] {1, 1, 0};
-		Object o = Utility.createNdimensionalArrayRowMajor(data, dimensions);
-		o = Utility.createNdimensionalArrayColumnMajor(data, dimensions);
-//		int[][][] n = (int[][][]) o; 
-//		System.out.println(n[0][0].length);
-		System.out.println(o.getClass().getName());
+//		int[] dimensions = new int[] {1, 1, 0};
+//		Object o = Utility.createNdimensionalArrayRowMajor(data, dimensions);
+//		o = Utility.createNdimensionalArrayColumnMajor(data, dimensions);
+		final long startTime = System.currentTimeMillis();
+		int iterations = 100000;
+		for (int i = 0; i < iterations; i++) {
+//			data3 = Arrays.stream(data).asDoubleStream().toArray();
+			for (int j = 0; j < data.length; j++) {
+				data3[j] = (double) data[j];
+//				data3[j] = Array.getDouble(data, j);
+			}
+		}
+		final long endTime = System.currentTimeMillis();
+		System.out.println("Total execution time: " + (endTime - startTime) );		
 		return;
 	}
 	
-	public static void mainFFF(String[] args) {
+	public static void mainDXD(String[] args) {
 		Controller controller = null;
 		try {
 			controller = new Controller("js");
@@ -174,13 +229,39 @@ class Main {
 //			controller.putEvaluationRequest("m = new LinkedHashMapClass();", true);
 //			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate. 
 //			controller.putEvaluationRequest("m.put('a', null); m.put('b', 2); a.add(m);", true);
-//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate. 
-			controller.putEvaluationRequest("var a = {'a':1, 'b':2, 'c':'abc'}", true);
+//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+//			controller.setArrayOrder(org.fgilbert.jdx.JavaToR.ArrayOrder.ROW_MAJOR);
+			controller.setArrayOrder(org.fgilbert.jdx.JavaToR.ArrayOrder.COLUMN_MAJOR);
+//			int iterations = 50000;
+//			final long startTime = System.currentTimeMillis();
+//			for (int i = 0; i < iterations; i++) {
+//			controller.putEvaluationRequest("var value = [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]]", true);
+//			controller.putEvaluationRequest("eval('[[1., 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]')", false);
+//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+			controller.putEvaluationRequest("var a = new java.lang.Byte(1);", false);
 			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+			controller.putEvaluationRequest("var b = [a, a, a];", false);
+			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+			controller.putEvaluationRequest("var c = [1, 2, 3];", false);
+			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+			controller.putEvaluationRequest("[[b], [c]];", false);
+			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+//			controller.putEvaluationRequest("", false);
+//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+//			int typeCode = controller.getScriptEngineValue("value");
+//			}
+//			final long endTime = System.currentTimeMillis();
+			JavaToR j2r = controller.getResponse();
+			Object[] o = j2r.getValueObjectArray1d();
+			o = j2r.getValueObjectArray1d();
+//			System.out.println("Total execution time: " + (endTime - startTime) );		
+//			controller.setArrayOrder(org.fgilbert.jdx.JavaToR.ArrayOrder.COLUMN_MAJOR);
+//			controller.putEvaluationRequest("var value = [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]]", true);
+//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
 //			controller.setScriptEngineValue("a", new boolean[] {});
 //			JavaToR j2r = controller.getResponse();
-			int typeCode = controller.getScriptEngineValue("a");
-			System.out.println(String.format("%X", typeCode));
+//			int typeCode = controller.getScriptEngineValue("value");
+//			System.out.println(String.format("%X", typeCode));
 //			Object o = controller.getResponse().getValueObject();
 //			System.out.println(String.format("%X", typeCode));
 //			System.out.println(controller.getScriptEngineValueClassName("a"));
@@ -189,7 +270,6 @@ class Main {
 //			typeCode = controller.waitForEvaluation();
 //			System.out.println(typeCode);
 //			System.out.println(controller.getResponseBoolean());
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
