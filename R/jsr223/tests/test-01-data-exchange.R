@@ -1,4 +1,3 @@
-#///is jsr223 thread-safe?
 #///probably move/copy this file to jdx. dunno. "suggest" jsr223.
 #///review comments everywhere.
 #///make sure coerce logical and byte array stuff works for n-dimensional and collections of n-dimensional
@@ -7,6 +6,8 @@
 #///add environments and n-dim arrays to lists.
 #///Consider posting about jdx relative to the rJava bug for multi-dim arrays
 #///also test warnings, boolean and raw, for collections and arrays.
+#///test n-dimensional arrays in lists for all arrayorders. Notice that in some cases, you will get a higher-dimensional array. maybe this needs to be a setting.
+#///add warning to jdx and jsr223 docs that list(matrix) will return a 3-dim array. so, use named lists instead. another example is list(factor) or list(vector)
 
 # Introduction ------------------------------------------------------------
 
@@ -1961,10 +1962,41 @@ testSetAndGet(list(l1), list(a))
 # Mixed types using row-major
 
 js$setArrayOrder("row-major")
-js %~% "value.toString()"
 
-js$value
-dim(js$value)
+a <- array(as.numeric(1:18), c(3, 3, 2))
+# js$value <- a
+# js %~% "java.util.Arrays.deepToString(value);"
+
+js %@% "var ByteClass = Java.type('java.lang.Byte');"
+js %@% "function b(value) {return new ByteClass(value);}"
+
+js %@% "var value = [[[1, 10], [4, 13], [7, 16]], [[2.0, 11.0], [5.0, 14.0], [8.0, 17.0]], [[b(3), b(12)], [b(6), b(15)], [b(9), b(18)]]];"
+assertIdentical(a, js$value)
+
+js %@% "var value = [[[1, 10], [4, 13], [7, 16]], [[b(2), b(11)], [b(5), b(14)], [b(8), b(17)]], [[3.0, 12.0], [6.0, 15.0], [9.0, 18.0]]];"
+assertIdentical(a, js$value)
+
+js %@% "var value = [[[1.0, 10.0], [4.0, 13.0], [7.0, 16.0]], [[2, 11], [5, 14], [8, 17]], [[b(3), b(12)], [b(6), b(15)], [b(9), b(18)]]];"
+assertIdentical(a, js$value)
+
+js %@% "var value = [[[1, 10], [4, 13], [7, 16]], [[b(2), b(11)], [b(5), b(14)], [b(8), b(17)]], [[3.0, 12.0], [6.0, 15.0], [9.0, 18.0]]];"
+assertIdentical(a, js$value)
+
+js %@% "var value = [[[b(1), b(10)], [b(4), b(13)], [b(7), b(16)]], [[2, 11], [5, 14], [8, 17]], [[3.0, 12.0], [6.0, 15.0], [9.0, 18.0]]];"
+assertIdentical(a, js$value)
+
+js %@% "var value = [[[b(1), b(10)], [b(4), b(13)], [b(7), b(16)]], [[2.0, 11.0], [5.0, 14.0], [8.0, 17.0]], [[3, 12], [6, 15], [9, 18]]];"
+assertIdentical(a, js$value)
+
+a <- array(1:12, c(2, 3, 2))
+# js$value <- a
+# js %~% "java.util.Arrays.deepToString(value);"
+
+js %@% "var value = [[[1, 7], [3, 9], [5, 11]], [[b(2), b(8)], [b(4), b(10)], [b(6), b(12)]]];"
+assertIdentical(a, js$value)
+
+js %@% "var value = [[[b(1), b(7)], [b(3), b(9)], [b(5), b(11)]], [[2, 8], [4, 10], [6, 12]]];"
+assertIdentical(a, js$value)
 
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
@@ -2012,7 +2044,7 @@ assertMessage(
 
 cat("Data Frames - Empty and Empty Values - Column Major\n")
 
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 js$setCoerceFactors(FALSE); js$setStringsAsFactors(FALSE)
 
 # Empty and one-column data frames come back as lists.
@@ -2055,7 +2087,7 @@ value.clear();
 assertIdentical(list(), js$value)
 
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 
@@ -2063,11 +2095,11 @@ js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 cat("Data Frames - Empty and Empty Values - Row Major\n")
 
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 js$setCoerceFactors(FALSE); js$setStringsAsFactors(FALSE)
 
 # Empty and one-column data frames come back as lists. When
-# js$setRowMajor(TRUE), the object is always an empty list.
+# js$setDataFrameRowMajor(TRUE), the object is always an empty list.
 testSetAndGet(list(data.frame()), list(list()))
 testSetAndGet(list(data.frame(a = integer())), list(list()))
 testSetAndGet(list(data.frame(a = character())), list(list()))
@@ -2094,7 +2126,7 @@ value.clear();
 assertIdentical(js$value, list())
 
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 
@@ -2102,7 +2134,7 @@ js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 cat("Data Frames - One Row - Column Major\n")
 
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 js$setCoerceFactors(FALSE); js$setStringsAsFactors(FALSE)
 
 # For column-major, data frames with one column are returned as a list with a
@@ -2120,7 +2152,7 @@ df <- data.frame(
   , stringsAsFactors = FALSE
 )
 df2 <- df
-df2$c <- TRUE
+df2$c <- FALSE
 suppressWarnings(testSetAndGet(list(df), list(df2)))
 
 df$c <- as.factor(df$c) # Convert the logical vector to a factor.
@@ -2162,7 +2194,7 @@ df2$c <- TRUE
 testSetAndGet(list(df), list(df2))
 
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 
@@ -2170,7 +2202,7 @@ js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 cat("Data Frames - One Row - Row Major\n")
 
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 js$setCoerceFactors(FALSE); js$setStringsAsFactors(FALSE)
 
 # For column-major, data frames with one column are returned as a list with a
@@ -2188,7 +2220,7 @@ df <- data.frame(
   , stringsAsFactors = FALSE
 )
 df2 <- df
-df2$c <- TRUE
+df2$c <- FALSE
 suppressWarnings(testSetAndGet(list(df), list(df2)))
 
 df$c <- as.factor(df$c) # Convert the logical vector to a factor.
@@ -2230,7 +2262,7 @@ df2$c <- TRUE
 testSetAndGet(list(df), list(df2))
 
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 
@@ -2238,7 +2270,7 @@ js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 cat("Data Frames - n Rows - Column Major\n")
 
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 js$setCoerceFactors(FALSE); js$setStringsAsFactors(FALSE)
 
 df <- data.frame(names = row.names(mtcars), mtcars, stringsAsFactors = FALSE)
@@ -2256,7 +2288,7 @@ df <- data.frame(
   , stringsAsFactors = FALSE
 )
 df2 <- df
-df2$e <- c(rep(c(TRUE, FALSE), times = 9), TRUE, TRUE)
+df2$e <- c(rep(c(TRUE, FALSE), times = 9), FALSE, FALSE)
 suppressWarnings(testSetAndGet(list(df), list(df2)))
 
 assertIdentical("java.util.LinkedHashMap", js$getJavaClassName("value"))
@@ -2358,14 +2390,14 @@ js$value <- k
 assertIdentical(k, js$value)
 
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 # Data Frames - n Rows - Row Major ----------------------------------------
 
 cat("Data Frames - n Rows - Row Major\n")
 
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 js$setCoerceFactors(FALSE); js$setStringsAsFactors(FALSE)
 
 df <- data.frame(names = row.names(mtcars), mtcars, stringsAsFactors = FALSE)
@@ -2383,7 +2415,7 @@ df <- data.frame(
   , stringsAsFactors = FALSE
 )
 df2 <- df
-df2$e <- c(rep(c(TRUE, FALSE), times = 9), TRUE, TRUE)
+df2$e <- c(rep(c(TRUE, FALSE), times = 9), FALSE, FALSE)
 suppressWarnings(testSetAndGet(list(df), list(df2)))
 
 assertIdentical("java.util.ArrayList", js$getJavaClassName("value"))
@@ -2505,17 +2537,16 @@ js$value <- k
 assertIdentical(k, js$value)
 
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 
-#///add environments everywhere
 # Lists - Empty and Empty Values ------------------------------------------
 
-cat("Lists, Environments - Empty and Empty Values\n")
+cat("Lists - Empty and Empty Values\n")
 testSetAndGet(list(new.env()), list(list()))
 testSetAndGet(list(list()))
-testSetAndGet(list(list(integer())))
+testSetAndGet(list(list(integer())), list(array(0L, c(1, 0))))
 testSetAndGet(list(list(a = integer())))
 
 l1 <- list(
@@ -2602,11 +2633,11 @@ testSetAndGet(list(l1))
 l1 <- list(
   a = data.frame()
 )
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 testSetAndGet(list(l1), list(list(a = list())))
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 testSetAndGet(list(l1), list(list(a = list())))
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 # An empty Java Map object is converted to an empty list.
 js %@% "var value = new java.util.LinkedHashMap();"
@@ -2642,7 +2673,7 @@ l1 <- list(
   , d = NA_character_
 )
 l2 <- l1
-l2$c <- TRUE
+l2$c <- FALSE
 js$setLengthOneVectorAsArray(TRUE)
 js$setStringsAsFactors(FALSE)
 df <- as.data.frame(l2, stringsAsFactors = FALSE)
@@ -2750,20 +2781,20 @@ l2[[1]] <- letters
 l2[[2]] <- letters
 js$setCoerceFactors(FALSE)
 # Critical to test row-major/column-major setting in list context.
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 testSetAndGet(list(l1), list(l2))
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 testSetAndGet(list(l1), list(l2))
 # Convert to named list and test again.
 names(l1) <- letters[1:length(l1)]
 names(l2) <- letters[1:length(l1)]
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 testSetAndGet(list(l1), list(l2))
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 testSetAndGet(list(l1), list(l2))
 testSetAndGet(list(l1), list(l2))
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 # Critical to test StringsAsFactors setting in list context.
 l1 <- list({v <- mtcars; row.names(v) <- NULL; data.frame(names = row.names(mtcars), v, stringsAsFactors = FALSE)})
@@ -2834,7 +2865,7 @@ assertIdentical(js$value, list(a = 1L, b = list(c = "abc", d = NULL)))
 cat("Java Types\n")
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
 js$setLengthOneVectorAsArray(jsr223:::DEFAULT_LENGTH_ONE_VECTOR_AS_ARRAY)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 cat("Java Errors\n")
@@ -2978,7 +3009,7 @@ testJavaToR("getStringArray1dAlphabetLower", letters)
 testJavaToR("getStringArray1dNulls", c(NA_character_, "b", NA_character_, "d", NA_character_))
 
 cat("Java Types - Primitive 2D Arrays - Column Major\n")
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 testJavaToR("getBooleanArray2d0x0", matrix(TRUE, 0, 0))
 testJavaToR("getBooleanArray2d2x0", matrix(TRUE, 0, 2))
 testJavaToR("getBooleanArray2d2x1", matrix(c(FALSE, TRUE), 1, 2))
@@ -3027,10 +3058,10 @@ testJavaToR("getShortArray2d2x1", matrix(c(SHORT_MIN, SHORT_MAX), 1, 2))
 testJavaToR("getShortArray2d2x2", matrix(c(SHORT_MIN, -1L, 0L, SHORT_MAX), 2, 2, byrow = FALSE))
 testJavaToR("getShortArray2dRagged1", list(integer(), SHORT_MIN, integer(), c(0L, SHORT_MAX), integer()))
 testJavaToR("getShortArray2dRagged2", list(SHORT_MIN, integer(), c(0L, SHORT_MAX)))
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 cat("Java Types - Boxed 2D Arrays - Column Major\n")
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 testJavaToR("getBigDecimalArray2d0x0", matrix(numeric(), 0, 0))
 testJavaToR("getBigDecimalArray2d2x0", matrix(numeric(), 0, 2))
 testJavaToR("getBigDecimalArray2d2x1", matrix(c(DOUBLE_MIN, DOUBLE_MAX), 1, 2))
@@ -3112,10 +3143,10 @@ testJavaToR("getStringArray2d2x2", matrix(c("", " ", "a", "Z"), 2, 2, byrow = FA
 testJavaToR("getStringArray2dNulls", matrix(c(NA_character_, "", NA_character_, "a", NA_character_, "Z"), 3, 2))
 testJavaToR("getStringArray2dRagged1", list(character(), "", character(), c("a", "Z"), character()))
 testJavaToR("getStringArray2dRagged2", list("", character(), c("a", "Z")))
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 cat("Java Types - Primitive 2D Arrays - Row Major\n")
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 testJavaToR("getBooleanArray2d0x0", matrix(TRUE, 0, 0))
 testJavaToR("getBooleanArray2d2x0", matrix(TRUE, 2, 0))
 testJavaToR("getBooleanArray2d2x1", matrix(c(FALSE, TRUE)))
@@ -3164,10 +3195,10 @@ testJavaToR("getShortArray2d2x1", matrix(c(SHORT_MIN, SHORT_MAX)))
 testJavaToR("getShortArray2d2x2", matrix(c(SHORT_MIN, -1L, 0L, SHORT_MAX), 2, 2, byrow = TRUE))
 testJavaToR("getShortArray2dRagged1", list(integer(), SHORT_MIN, integer(), c(0L, SHORT_MAX), integer()))
 testJavaToR("getShortArray2dRagged2", list(SHORT_MIN, integer(), c(0L, SHORT_MAX)))
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 cat("Java Types - Boxed 2D Arrays - Row Major\n")
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 testJavaToR("getBigDecimalArray2d0x0", matrix(numeric(), 0, 0))
 testJavaToR("getBigDecimalArray2d2x0", matrix(numeric(), 2, 0))
 testJavaToR("getBigDecimalArray2d2x1", matrix(c(DOUBLE_MIN, DOUBLE_MAX)))
@@ -3249,7 +3280,7 @@ testJavaToR("getStringArray2d2x2", matrix(c("", " ", "a", "Z"), 2, 2, byrow = TR
 testJavaToR("getStringArray2dNulls", matrix(c(NA_character_, "", NA_character_, "a", NA_character_, "Z"), 2, 3, byrow = TRUE))
 testJavaToR("getStringArray2dRagged1", list(character(), "", character(), c("a", "Z"), character()))
 testJavaToR("getStringArray2dRagged2", list("", character(), c("a", "Z")))
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 # Miscellaneous -----------------------------------------------------------
 
