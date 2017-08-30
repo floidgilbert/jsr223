@@ -1,12 +1,5 @@
-#///probably move/copy this file to jdx. dunno. "suggest" jsr223.
 #///review comments everywhere.
-#///make sure coerce logical and byte array stuff works for n-dimensional and collections of n-dimensional
-#///add environments to testing hashed and unhashed
-#///probably remove .jar files from the git repository. will bloat it.
-#///add environments and n-dim arrays to lists.
 #///Consider posting about jdx relative to the rJava bug for multi-dim arrays
-#///also test warnings, boolean and raw, for collections and arrays.
-#///test n-dimensional arrays in lists for all arrayorders. Notice that in some cases, you will get a higher-dimensional array. maybe this needs to be a setting.
 #///add warning to jdx and jsr223 docs that list(matrix) will return a 3-dim array. so, use named lists instead. another example is list(factor) or list(vector)
 
 # Introduction ------------------------------------------------------------
@@ -497,6 +490,24 @@ assertMessage(
 
 assertMessage(
   {
+    js$setArrayOrder("row-major")
+    js %~% "[[TestDataClass.getBoxedBooleanArray2dNulls2(), TestDataClass.getBoxedBooleanArray2dNulls2()], [TestDataClass.getBoxedBooleanArray2dNulls2(), TestDataClass.getBoxedBooleanArray2dNulls2()]]"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major")
+    js %~% "org.fgilbert.jdx.TestData.getBoxedBooleanArray3dNulls()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
     js$setArrayOrder("row-major-java")
     js %~% "TestDataClass.getBoxedBooleanArray2dNulls1()"
   }
@@ -515,6 +526,24 @@ assertMessage(
 
 assertMessage(
   {
+    js$setArrayOrder("row-major-java")
+    js %~% "[[TestDataClass.getBoxedBooleanArray2dNulls2(), TestDataClass.getBoxedBooleanArray2dNulls2()], [TestDataClass.getBoxedBooleanArray2dNulls2(), TestDataClass.getBoxedBooleanArray2dNulls2()]]"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major-java")
+    js %~% "org.fgilbert.jdx.TestData.getBoxedBooleanArray3dNulls()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
     js$setArrayOrder("column-major")
     js %~% "TestDataClass.getBoxedBooleanArray2dNulls1()"
   }
@@ -526,6 +555,24 @@ assertMessage(
   {
     js$setArrayOrder("column-major")
     js %~% "TestDataClass.getBoxedBooleanArray2dNulls2()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("column-major")
+    js %~% "[[TestDataClass.getBoxedBooleanArray2dNulls2(), TestDataClass.getBoxedBooleanArray2dNulls2()], [TestDataClass.getBoxedBooleanArray2dNulls2(), TestDataClass.getBoxedBooleanArray2dNulls2()]]"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("column-major")
+    js %~% "org.fgilbert.jdx.TestData.getBoxedBooleanArray3dNulls()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
   , message.type = "warning"
@@ -594,6 +641,24 @@ assertMessage(
 
 assertMessage(
   {
+    js$setArrayOrder("row-major")
+    js %~% "[[TestDataClass.getBoxedByteArray2dNulls2(), TestDataClass.getBoxedByteArray2dNulls2()], [TestDataClass.getBoxedByteArray2dNulls2(), TestDataClass.getBoxedByteArray2dNulls2()]]"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major")
+    js %~% "org.fgilbert.jdx.TestData.getBoxedByteArray3dNulls()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
     js$setArrayOrder("row-major-java")
     js %~% "TestDataClass.getBoxedByteArray2dNulls1()"
   }
@@ -612,6 +677,24 @@ assertMessage(
 
 assertMessage(
   {
+    js$setArrayOrder("row-major-java")
+    js %~% "[[TestDataClass.getBoxedByteArray2dNulls2(), TestDataClass.getBoxedByteArray2dNulls2()], [TestDataClass.getBoxedByteArray2dNulls2(), TestDataClass.getBoxedByteArray2dNulls2()]]"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("row-major-java")
+    js %~% "org.fgilbert.jdx.TestData.getBoxedByteArray3dNulls()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
     js$setArrayOrder("column-major")
     js %~% "TestDataClass.getBoxedByteArray2dNulls1()"
   }
@@ -623,6 +706,24 @@ assertMessage(
   {
     js$setArrayOrder("column-major")
     js %~% "TestDataClass.getBoxedByteArray2dNulls2()"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("column-major")
+    js %~% "[[TestDataClass.getBoxedByteArray2dNulls2(), TestDataClass.getBoxedByteArray2dNulls2()], [TestDataClass.getBoxedByteArray2dNulls2(), TestDataClass.getBoxedByteArray2dNulls2()]]"
+  }
+  , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
+  , message.type = "warning"
+)
+
+assertMessage(
+  {
+    js$setArrayOrder("column-major")
+    js %~% "org.fgilbert.jdx.TestData.getBoxedByteArray3dNulls()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
   , message.type = "warning"
@@ -2731,25 +2832,29 @@ assertMessage(
 # Factors in lists...
 js$setCoerceFactors(TRUE)
 f <- factor(letters)
-testSetAndGet(list(list(f)), list(list(as.character(f))))
+testSetAndGet(list(list(a = f)), list(list(a = as.character(f))))
 f <- factor(1:26)
-testSetAndGet(list(list(f)), list(list(as.integer(f))))
+testSetAndGet(list(list(a = f)), list(list(a = as.integer(f))))
 f <- factor(c(1.2, Inf, -Inf))
-testSetAndGet(list(list(f)), list(list(c(1.2, Inf, -Inf))))
+testSetAndGet(list(list(a = f)), list(list(a = c(1.2, Inf, -Inf))))
 js$setCoerceFactors(FALSE)
 f <- factor(letters)
-testSetAndGet(list(list(f)), list(list(as.character(f))))
+testSetAndGet(list(list(a = f)), list(list(a = as.character(f))))
 f <- factor(1:26)
-testSetAndGet(list(list(f)), list(list(as.character(f))))
+testSetAndGet(list(list(a = f)), list(list(a = as.character(f))))
 f <- factor(c(1.2, Inf, -Inf))
-testSetAndGet(list(list(f)), list(list(as.character(c(1.2, Inf, -Inf)))))
+testSetAndGet(list(list(a = f)), list(a = list(a = as.character(c(1.2, Inf, -Inf)))))
 js$setCoerceFactors(FALSE)
 
 # All supported R types/structures in a single list object
+
 l1 <- list(
   factor(letters)
 
   , as.array(letters)
+
+  , eval({v <- new.env(); v$a <- letters; v})
+  , eval({v <- new.env(hash = FALSE); v$a <- letters; v})
 
   , 2.1
   , 1L
@@ -2770,6 +2875,13 @@ l1 <- list(
   , matrix(integer(), 0, 0)
   , matrix(as.raw(0:255), 32, 8)
 
+  , array(-1.1:16.1, c(3, 3, 2))
+  , array(-1:16, c(3, 3, 2))
+  , array(letters[1:16], c(3, 3, 2))
+  , array(c(TRUE, FALSE, TRUE), c(3, 3, 2))
+  , array(integer(), c(0, 0, 0))
+  , array(as.raw(0:255), c(4, 8, 8))
+
   , eval({v <- mtcars; row.names(v) <- NULL; v})
 
   , list()
@@ -2779,22 +2891,40 @@ l1 <- list(
 l2 <- l1
 l2[[1]] <- letters
 l2[[2]] <- letters
+l2[[3]] <- list(a = letters)
+l2[[4]] <- list(a = letters)
 js$setCoerceFactors(FALSE)
 # Critical to test row-major/column-major setting in list context.
 js$setDataFrameRowMajor(TRUE)
 testSetAndGet(list(l1), list(l2))
 js$setDataFrameRowMajor(FALSE)
 testSetAndGet(list(l1), list(l2))
+js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(l2))
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(l2))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(l2))
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 # Convert to named list and test again.
-names(l1) <- letters[1:length(l1)]
-names(l2) <- letters[1:length(l1)]
+more.letters <- c(letters, paste0(letters, letters))
+names(l1) <- more.letters[1:length(l1)]
+names(l2) <- more.letters[1:length(l1)]
 js$setDataFrameRowMajor(TRUE)
 testSetAndGet(list(l1), list(l2))
 js$setDataFrameRowMajor(FALSE)
 testSetAndGet(list(l1), list(l2))
-testSetAndGet(list(l1), list(l2))
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
 js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
+js$setArrayOrder("column-major")
+testSetAndGet(list(l1), list(l2))
+js$setArrayOrder("row-major")
+testSetAndGet(list(l1), list(l2))
+js$setArrayOrder("row-major-java")
+testSetAndGet(list(l1), list(l2))
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 # Critical to test StringsAsFactors setting in list context.
 l1 <- list({v <- mtcars; row.names(v) <- NULL; data.frame(names = row.names(mtcars), v, stringsAsFactors = FALSE)})
@@ -2860,12 +2990,12 @@ js %@% "var value = {'a':1, 'b':{'c':'abc', 'd':null}}"
 assertIdentical(js$value, list(a = 1L, b = list(c = "abc", d = NULL)))
 
 
-# Java Types --------------------------------------------------------------
+# Java --------------------------------------------------------------------
 
-cat("Java Types\n")
+cat("Java\n")
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
 js$setLengthOneVectorAsArray(jsr223:::DEFAULT_LENGTH_ONE_VECTOR_AS_ARRAY)
-js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 js$setStringsAsFactors(jsr223:::DEFAULT_STRINGS_AS_FACTORS)
 
 cat("Java Errors\n")
@@ -2971,7 +3101,7 @@ testJavaToR("getBoxedBooleanArray1d0x0", logical())
 testJavaToR("getBoxedBooleanArray1d1x1", TRUE)
 testJavaToR("getBoxedBooleanArray1d1x2", c(FALSE, TRUE))
 suppressWarnings(
-  testJavaToR("getBoxedBooleanArray1dNulls", c(TRUE, FALSE, TRUE, TRUE, TRUE))
+  testJavaToR("getBoxedBooleanArray1dNulls", c(FALSE, FALSE, FALSE, TRUE, FALSE))
 )
 testJavaToR("getBoxedByteArray1d0x0", raw())
 testJavaToR("getBoxedByteArray1d1x1", as.raw(0x80L))
@@ -3009,7 +3139,7 @@ testJavaToR("getStringArray1dAlphabetLower", letters)
 testJavaToR("getStringArray1dNulls", c(NA_character_, "b", NA_character_, "d", NA_character_))
 
 cat("Java Types - Primitive 2D Arrays - Column Major\n")
-js$setDataFrameRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testJavaToR("getBooleanArray2d0x0", matrix(TRUE, 0, 0))
 testJavaToR("getBooleanArray2d2x0", matrix(TRUE, 0, 2))
 testJavaToR("getBooleanArray2d2x1", matrix(c(FALSE, TRUE), 1, 2))
@@ -3058,10 +3188,10 @@ testJavaToR("getShortArray2d2x1", matrix(c(SHORT_MIN, SHORT_MAX), 1, 2))
 testJavaToR("getShortArray2d2x2", matrix(c(SHORT_MIN, -1L, 0L, SHORT_MAX), 2, 2, byrow = FALSE))
 testJavaToR("getShortArray2dRagged1", list(integer(), SHORT_MIN, integer(), c(0L, SHORT_MAX), integer()))
 testJavaToR("getShortArray2dRagged2", list(SHORT_MIN, integer(), c(0L, SHORT_MAX)))
-js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 cat("Java Types - Boxed 2D Arrays - Column Major\n")
-js$setDataFrameRowMajor(FALSE)
+js$setArrayOrder("column-major")
 testJavaToR("getBigDecimalArray2d0x0", matrix(numeric(), 0, 0))
 testJavaToR("getBigDecimalArray2d2x0", matrix(numeric(), 0, 2))
 testJavaToR("getBigDecimalArray2d2x1", matrix(c(DOUBLE_MIN, DOUBLE_MAX), 1, 2))
@@ -3081,7 +3211,10 @@ testJavaToR("getBoxedBooleanArray2d2x0", matrix(TRUE, 0, 2))
 testJavaToR("getBoxedBooleanArray2d2x1", matrix(c(FALSE, TRUE),1, 2))
 testJavaToR("getBoxedBooleanArray2d2x2", matrix(c(FALSE, TRUE, TRUE, FALSE), 2, 2, byrow = FALSE))
 suppressWarnings(
-  testJavaToR("getBoxedBooleanArray2dNulls", matrix(c(TRUE, FALSE, TRUE, TRUE, TRUE, TRUE), 3, 2))
+  testJavaToR("getBoxedBooleanArray2dNulls1", matrix(c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE), 3, 2))
+)
+suppressWarnings(
+  testJavaToR("getBoxedBooleanArray2dNulls2", matrix(c(FALSE, TRUE, TRUE, FALSE, FALSE, TRUE), 2, 3))
 )
 testJavaToR("getBoxedBooleanArray2dRagged1", list(logical(), c(TRUE, FALSE), logical(), FALSE, TRUE, logical()))
 testJavaToR("getBoxedBooleanArray2dRagged2", list(c(TRUE, FALSE), logical(), FALSE, TRUE))
@@ -3090,7 +3223,10 @@ testJavaToR("getBoxedByteArray2d2x0", matrix(as.raw(0), 0, 2))
 testJavaToR("getBoxedByteArray2d2x1", matrix(c(BYTE_MIN, BYTE_MAX), 1, 2))
 testJavaToR("getBoxedByteArray2d2x2", matrix(as.raw(c(BYTE_MIN, 0xff, 0, BYTE_MAX)), 2, 2, byrow = FALSE))
 suppressWarnings(
-  testJavaToR("getBoxedByteArray2dNulls", matrix(as.raw(c(0, BYTE_MIN, 0, BYTE_MIN, 0, BYTE_MAX)), 3, 2))
+  testJavaToR("getBoxedByteArray2dNulls1", matrix(as.raw(c(0, BYTE_MIN, 0, BYTE_MIN, 0, BYTE_MAX)), 3, 2))
+)
+suppressWarnings(
+  testJavaToR("getBoxedByteArray2dNulls2", matrix(as.raw(c(BYTE_MIN, BYTE_MAX, BYTE_MIN, 0, BYTE_MIN, BYTE_MAX)), 2, 3))
 )
 testJavaToR("getBoxedByteArray2dRagged1", list(raw(), as.raw(0x80L), raw(), as.raw(c(0x00L, 0x7FL)), raw()))
 testJavaToR("getBoxedByteArray2dRagged2", list(as.raw(0x80L), raw(), as.raw(c(0x00L, 0x7FL))))
@@ -3143,10 +3279,10 @@ testJavaToR("getStringArray2d2x2", matrix(c("", " ", "a", "Z"), 2, 2, byrow = FA
 testJavaToR("getStringArray2dNulls", matrix(c(NA_character_, "", NA_character_, "a", NA_character_, "Z"), 3, 2))
 testJavaToR("getStringArray2dRagged1", list(character(), "", character(), c("a", "Z"), character()))
 testJavaToR("getStringArray2dRagged2", list("", character(), c("a", "Z")))
-js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 cat("Java Types - Primitive 2D Arrays - Row Major\n")
-js$setDataFrameRowMajor(TRUE)
+js$setArrayOrder("row-major")
 testJavaToR("getBooleanArray2d0x0", matrix(TRUE, 0, 0))
 testJavaToR("getBooleanArray2d2x0", matrix(TRUE, 2, 0))
 testJavaToR("getBooleanArray2d2x1", matrix(c(FALSE, TRUE)))
@@ -3195,10 +3331,10 @@ testJavaToR("getShortArray2d2x1", matrix(c(SHORT_MIN, SHORT_MAX)))
 testJavaToR("getShortArray2d2x2", matrix(c(SHORT_MIN, -1L, 0L, SHORT_MAX), 2, 2, byrow = TRUE))
 testJavaToR("getShortArray2dRagged1", list(integer(), SHORT_MIN, integer(), c(0L, SHORT_MAX), integer()))
 testJavaToR("getShortArray2dRagged2", list(SHORT_MIN, integer(), c(0L, SHORT_MAX)))
-js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 cat("Java Types - Boxed 2D Arrays - Row Major\n")
-js$setDataFrameRowMajor(TRUE)
+js$setArrayOrder("row-major")
 testJavaToR("getBigDecimalArray2d0x0", matrix(numeric(), 0, 0))
 testJavaToR("getBigDecimalArray2d2x0", matrix(numeric(), 2, 0))
 testJavaToR("getBigDecimalArray2d2x1", matrix(c(DOUBLE_MIN, DOUBLE_MAX)))
@@ -3218,7 +3354,10 @@ testJavaToR("getBoxedBooleanArray2d2x0", matrix(TRUE, 2, 0))
 testJavaToR("getBoxedBooleanArray2d2x1", matrix(c(FALSE, TRUE)))
 testJavaToR("getBoxedBooleanArray2d2x2", matrix(c(FALSE, TRUE, TRUE, FALSE), 2, 2, byrow = TRUE))
 suppressWarnings(
-  testJavaToR("getBoxedBooleanArray2dNulls", matrix(c(TRUE, FALSE, TRUE, TRUE, TRUE, TRUE), 2, 3, byrow = TRUE))
+  testJavaToR("getBoxedBooleanArray2dNulls1", matrix(c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE), 2, 3, byrow = TRUE))
+)
+suppressWarnings(
+  testJavaToR("getBoxedBooleanArray2dNulls2", matrix(c(FALSE, TRUE, TRUE, FALSE, FALSE, TRUE), 3, 2, byrow = TRUE))
 )
 testJavaToR("getBoxedBooleanArray2dRagged1", list(logical(), c(TRUE, FALSE), logical(), FALSE, TRUE, logical()))
 testJavaToR("getBoxedBooleanArray2dRagged2", list(c(TRUE, FALSE), logical(), FALSE, TRUE))
@@ -3227,7 +3366,10 @@ testJavaToR("getBoxedByteArray2d2x0", matrix(as.raw(0), 2, 0))
 testJavaToR("getBoxedByteArray2d2x1", matrix(c(BYTE_MIN, BYTE_MAX)))
 testJavaToR("getBoxedByteArray2d2x2", matrix(as.raw(c(BYTE_MIN, 0xff, 0, BYTE_MAX)), 2, 2, byrow = TRUE))
 suppressWarnings(
-  testJavaToR("getBoxedByteArray2dNulls", matrix(as.raw(c(0, BYTE_MIN, 0, BYTE_MIN, 0, BYTE_MAX)), 2, 3, byrow = TRUE))
+  testJavaToR("getBoxedByteArray2dNulls1", matrix(as.raw(c(0, BYTE_MIN, 0, BYTE_MIN, 0, BYTE_MAX)), 2, 3, byrow = TRUE))
+)
+suppressWarnings(
+  testJavaToR("getBoxedByteArray2dNulls2", matrix(as.raw(c(BYTE_MIN, BYTE_MAX, BYTE_MIN, 0, BYTE_MIN, BYTE_MAX)), 3, 2, byrow = TRUE))
 )
 testJavaToR("getBoxedByteArray2dRagged1", list(raw(), as.raw(0x80L), raw(), as.raw(c(0x00L, 0x7FL)), raw()))
 testJavaToR("getBoxedByteArray2dRagged2", list(as.raw(0x80L), raw(), as.raw(c(0x00L, 0x7FL))))
@@ -3280,7 +3422,187 @@ testJavaToR("getStringArray2d2x2", matrix(c("", " ", "a", "Z"), 2, 2, byrow = TR
 testJavaToR("getStringArray2dNulls", matrix(c(NA_character_, "", NA_character_, "a", NA_character_, "Z"), 2, 3, byrow = TRUE))
 testJavaToR("getStringArray2dRagged1", list(character(), "", character(), c("a", "Z"), character()))
 testJavaToR("getStringArray2dRagged2", list("", character(), c("a", "Z")))
-js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
+
+cat("Java Types - Primitive 2D Arrays - Row Major Java\n")
+js$setArrayOrder("row-major-java")
+testJavaToR("getBooleanArray2d0x0", matrix(TRUE, 0, 0))
+testJavaToR("getBooleanArray2d2x0", matrix(TRUE, 2, 0))
+testJavaToR("getBooleanArray2d2x1", matrix(c(FALSE, TRUE)))
+testJavaToR("getBooleanArray2d2x2", matrix(c(FALSE, TRUE, TRUE, FALSE), 2, 2, byrow = TRUE))
+testJavaToR("getBooleanArray2dRagged1", list(logical(), c(TRUE, FALSE), logical(), FALSE, TRUE, logical()))
+testJavaToR("getBooleanArray2dRagged2", list(c(TRUE, FALSE), logical(), FALSE, TRUE))
+testJavaToR("getByteArray2d0x0", matrix(as.raw(0), 0, 0))
+testJavaToR("getByteArray2d2x0", matrix(as.raw(0), 2, 0))
+testJavaToR("getByteArray2d2x1", matrix(c(BYTE_MIN, BYTE_MAX)))
+testJavaToR("getByteArray2d2x2", matrix(as.raw(c(BYTE_MIN, 0xff, 0, BYTE_MAX)), 2, 2, byrow = TRUE))
+testJavaToR("getByteArray2dRagged1", list(raw(), as.raw(0x80L), raw(), as.raw(c(0x00L, 0x7FL)), raw()))
+testJavaToR("getByteArray2dRagged2", list(as.raw(0x80L), raw(), as.raw(c(0x00L, 0x7FL))))
+testJavaToR("getCharacterArray2d0x0", matrix("", 0, 0))
+testJavaToR("getCharacterArray2d2x0", matrix("", 2, 0))
+testJavaToR("getCharacterArray2d2x1", matrix(c("1", "2")))
+testJavaToR("getCharacterArray2d2x2", matrix(c("1", "2", "3", "4"), 2, 2, byrow = TRUE))
+testJavaToR("getCharacterArray2dRagged1", list(character(), "1", character(), c("2", "3"), character()))
+testJavaToR("getCharacterArray2dRagged2", list("1", character(), c("2", "3")))
+testJavaToR("getDoubleArray2d0x0", matrix(0, 0, 0))
+testJavaToR("getDoubleArray2d2x0", matrix(0, 2, 0))
+testJavaToR("getDoubleArray2d2x1", matrix(c(DOUBLE_MIN, DOUBLE_MAX)))
+testJavaToR("getDoubleArray2d2x2", matrix(c(DOUBLE_MIN, -1, 0, DOUBLE_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getDoubleArray2dRagged1", list(numeric(), DOUBLE_MIN, numeric(), c(0, DOUBLE_MAX), numeric()))
+testJavaToR("getDoubleArray2dRagged2", list(DOUBLE_MIN, numeric(), c(0, DOUBLE_MAX)))
+testJavaToR("getFloatArray2d0x0", matrix(0, 0, 0))
+testJavaToR("getFloatArray2d2x0", matrix(0, 2, 0))
+testJavaToR("getFloatArray2d2x1", matrix(c(FLOAT_MIN, FLOAT_MAX)), identical = FALSE)
+testJavaToR("getFloatArray2d2x2", matrix(c(FLOAT_MIN, -1, 0, FLOAT_MAX), 2, 2, byrow = TRUE), identical = FALSE)
+testJavaToR("getFloatArray2dRagged1", list(numeric(), FLOAT_MIN, numeric(), c(0, FLOAT_MAX), numeric()), identical = FALSE)
+testJavaToR("getFloatArray2dRagged2", list(FLOAT_MIN, numeric(), c(0, FLOAT_MAX)), identical = FALSE)
+testJavaToR("getIntArray2d0x0", matrix(0L, 0, 0))
+testJavaToR("getIntArray2d2x0", matrix(0L, 2, 0))
+testJavaToR("getIntArray2d2x1", matrix(c(INTEGER_MIN, INTEGER_MAX)))
+testJavaToR("getIntArray2d2x2", matrix(c(INTEGER_MIN, -1L, 0L, INTEGER_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getIntArray2dRagged1", list(integer(), INTEGER_MIN, integer(), c(0L, INTEGER_MAX), integer()))
+testJavaToR("getIntArray2dRagged2", list(INTEGER_MIN, integer(), c(0L, INTEGER_MAX)))
+testJavaToR("getLongArray2d0x0", matrix(0, 0, 0))
+testJavaToR("getLongArray2d2x0", matrix(0, 2, 0))
+testJavaToR("getLongArray2d2x1", matrix(c(LONG_MIN, LONG_MAX)))
+testJavaToR("getLongArray2d2x2", matrix(c(LONG_MIN, -1, 0, LONG_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getLongArray2dRagged1", list(numeric(), LONG_MIN, numeric(), c(0, LONG_MAX), numeric()))
+testJavaToR("getLongArray2dRagged2", list(LONG_MIN, numeric(), c(0, LONG_MAX)))
+testJavaToR("getShortArray2d0x0", matrix(0L, 0, 0))
+testJavaToR("getShortArray2d2x0", matrix(0L, 2, 0))
+testJavaToR("getShortArray2d2x1", matrix(c(SHORT_MIN, SHORT_MAX)))
+testJavaToR("getShortArray2d2x2", matrix(c(SHORT_MIN, -1L, 0L, SHORT_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getShortArray2dRagged1", list(integer(), SHORT_MIN, integer(), c(0L, SHORT_MAX), integer()))
+testJavaToR("getShortArray2dRagged2", list(SHORT_MIN, integer(), c(0L, SHORT_MAX)))
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
+
+cat("Java Types - Boxed 2D Arrays - Row Major Java\n")
+js$setArrayOrder("row-major-java")
+testJavaToR("getBigDecimalArray2d0x0", matrix(numeric(), 0, 0))
+testJavaToR("getBigDecimalArray2d2x0", matrix(numeric(), 2, 0))
+testJavaToR("getBigDecimalArray2d2x1", matrix(c(DOUBLE_MIN, DOUBLE_MAX)))
+testJavaToR("getBigDecimalArray2d2x2", matrix(c(0, 10, DOUBLE_MIN, DOUBLE_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getBigDecimalArray2dNulls", matrix(c(NA_real_, 0, NA_real_, 1, NA_real_, 10), 2, 3, byrow = TRUE))
+testJavaToR("getBigDecimalArray2dRagged1", list(numeric(), c(0, 1), numeric(), 10, 1, numeric()))
+testJavaToR("getBigDecimalArray2dRagged2", list(c(0, 1), numeric(), 10, 0))
+testJavaToR("getBigIntegerArray2d0x0", matrix(numeric(), 0, 0))
+testJavaToR("getBigIntegerArray2d2x0", matrix(numeric(), 2, 0))
+testJavaToR("getBigIntegerArray2d2x1", matrix(c(LONG_MIN, LONG_MAX)))
+testJavaToR("getBigIntegerArray2d2x2", matrix(c(0, 10, LONG_MIN, LONG_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getBigIntegerArray2dNulls", matrix(c(NA_real_, 0, NA_real_, 1, NA_real_, 10), 2, 3, byrow = TRUE))
+testJavaToR("getBigIntegerArray2dRagged1", list(numeric(), c(0, 1), numeric(), 10, 1, numeric()))
+testJavaToR("getBigIntegerArray2dRagged2", list(c(0, 1), numeric(), 10, 0))
+testJavaToR("getBoxedBooleanArray2d0x0", matrix(TRUE, 0, 0))
+testJavaToR("getBoxedBooleanArray2d2x0", matrix(TRUE, 2, 0))
+testJavaToR("getBoxedBooleanArray2d2x1", matrix(c(FALSE, TRUE)))
+testJavaToR("getBoxedBooleanArray2d2x2", matrix(c(FALSE, TRUE, TRUE, FALSE), 2, 2, byrow = TRUE))
+suppressWarnings(
+  testJavaToR("getBoxedBooleanArray2dNulls1", matrix(c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE), 2, 3, byrow = TRUE))
+)
+suppressWarnings(
+  testJavaToR("getBoxedBooleanArray2dNulls2", matrix(c(FALSE, TRUE, TRUE, FALSE, FALSE, TRUE), 3, 2, byrow = TRUE))
+)
+testJavaToR("getBoxedBooleanArray2dRagged1", list(logical(), c(TRUE, FALSE), logical(), FALSE, TRUE, logical()))
+testJavaToR("getBoxedBooleanArray2dRagged2", list(c(TRUE, FALSE), logical(), FALSE, TRUE))
+testJavaToR("getBoxedByteArray2d0x0", matrix(as.raw(0), 0, 0))
+testJavaToR("getBoxedByteArray2d2x0", matrix(as.raw(0), 2, 0))
+testJavaToR("getBoxedByteArray2d2x1", matrix(c(BYTE_MIN, BYTE_MAX)))
+testJavaToR("getBoxedByteArray2d2x2", matrix(as.raw(c(BYTE_MIN, 0xff, 0, BYTE_MAX)), 2, 2, byrow = TRUE))
+suppressWarnings(
+  testJavaToR("getBoxedByteArray2dNulls1", matrix(as.raw(c(0, BYTE_MIN, 0, BYTE_MIN, 0, BYTE_MAX)), 2, 3, byrow = TRUE))
+)
+suppressWarnings(
+  testJavaToR("getBoxedByteArray2dNulls2", matrix(as.raw(c(BYTE_MIN, BYTE_MAX, BYTE_MIN, 0, BYTE_MIN, BYTE_MAX)), 3, 2, byrow = TRUE))
+)
+testJavaToR("getBoxedByteArray2dRagged1", list(raw(), as.raw(0x80L), raw(), as.raw(c(0x00L, 0x7FL)), raw()))
+testJavaToR("getBoxedByteArray2dRagged2", list(as.raw(0x80L), raw(), as.raw(c(0x00L, 0x7FL))))
+testJavaToR("getBoxedCharacterArray2d0x0", matrix("", 0, 0))
+testJavaToR("getBoxedCharacterArray2d2x0", matrix("", 2, 0))
+testJavaToR("getBoxedCharacterArray2d2x1", matrix(c("1", "2")))
+testJavaToR("getBoxedCharacterArray2d2x2", matrix(c("1", "2", "3", "4"), 2, 2, byrow = TRUE))
+testJavaToR("getBoxedCharacterArray2dNulls", matrix(c(NA_character_, "1", NA_character_, "2", NA_character_, "3"), 2, 3, byrow = TRUE))
+testJavaToR("getBoxedCharacterArray2dRagged1", list(character(), "1", character(), c("2", "3"), character()))
+testJavaToR("getBoxedCharacterArray2dRagged2", list("1", character(), c("2", "3")))
+testJavaToR("getBoxedDoubleArray2d0x0", matrix(0, 0, 0))
+testJavaToR("getBoxedDoubleArray2d2x0", matrix(0, 2, 0))
+testJavaToR("getBoxedDoubleArray2d2x1", matrix(c(DOUBLE_MIN, DOUBLE_MAX)))
+testJavaToR("getBoxedDoubleArray2d2x2", matrix(c(DOUBLE_MIN, -1, 0, DOUBLE_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getBoxedDoubleArray2dNulls", matrix(c(NA_real_, DOUBLE_MIN, NA_real_, DOUBLE_MIN, NA_real_, DOUBLE_MAX), 2, 3, byrow = TRUE))
+testJavaToR("getBoxedDoubleArray2dRagged1", list(numeric(), DOUBLE_MIN, numeric(), c(0, DOUBLE_MAX), numeric()))
+testJavaToR("getBoxedDoubleArray2dRagged2", list(DOUBLE_MIN, numeric(), c(0, DOUBLE_MAX)))
+testJavaToR("getBoxedFloatArray2d0x0", matrix(0, 0, 0))
+testJavaToR("getBoxedFloatArray2d2x0", matrix(0, 2, 0))
+testJavaToR("getBoxedFloatArray2d2x1", matrix(c(FLOAT_MIN, FLOAT_MAX)), identical = FALSE)
+testJavaToR("getBoxedFloatArray2d2x2", matrix(c(FLOAT_MIN, -1, 0, FLOAT_MAX), 2, 2, byrow = TRUE), identical = FALSE)
+testJavaToR("getBoxedFloatArray2dNulls", matrix(c(NA_real_, FLOAT_MIN, NA_real_, FLOAT_MIN, NA_real_, FLOAT_MAX), 2, 3, byrow = TRUE), identical = FALSE)
+testJavaToR("getBoxedFloatArray2dRagged1", list(numeric(), FLOAT_MIN, numeric(), c(0, FLOAT_MAX), numeric()), identical = FALSE)
+testJavaToR("getBoxedFloatArray2dRagged2", list(FLOAT_MIN, numeric(), c(0, FLOAT_MAX)), identical = FALSE)
+testJavaToR("getBoxedIntegerArray2d0x0", matrix(0L, 0, 0))
+testJavaToR("getBoxedIntegerArray2d2x0", matrix(0L, 2, 0))
+testJavaToR("getBoxedIntegerArray2d2x1", matrix(c(INTEGER_MIN, INTEGER_MAX)))
+testJavaToR("getBoxedIntegerArray2d2x2", matrix(c(INTEGER_MIN, -1L, 0L, INTEGER_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getBoxedIntegerArray2dNulls", matrix(c(NA_integer_, INTEGER_MIN, NA_integer_, INTEGER_MIN, NA_integer_, INTEGER_MAX), 2, 3, byrow = TRUE))
+testJavaToR("getBoxedIntegerArray2dRagged1", list(integer(), INTEGER_MIN, integer(), c(0L, INTEGER_MAX), integer()))
+testJavaToR("getBoxedIntegerArray2dRagged2", list(INTEGER_MIN, integer(), c(0L, INTEGER_MAX)))
+testJavaToR("getBoxedLongArray2d0x0", matrix(0, 0, 0))
+testJavaToR("getBoxedLongArray2d2x0", matrix(0, 2, 0))
+testJavaToR("getBoxedLongArray2d2x1", matrix(c(LONG_MIN, LONG_MAX)))
+testJavaToR("getBoxedLongArray2d2x2", matrix(c(LONG_MIN, -1, 0, LONG_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getBoxedLongArray2dNulls", matrix(c(NA_real_, LONG_MIN, NA_real_, LONG_MIN, NA_real_, LONG_MAX), 2, 3, byrow = TRUE))
+testJavaToR("getBoxedLongArray2dRagged1", list(numeric(), LONG_MIN, numeric(), c(0, LONG_MAX), numeric()))
+testJavaToR("getBoxedLongArray2dRagged2", list(LONG_MIN, numeric(), c(0, LONG_MAX)))
+testJavaToR("getBoxedShortArray2d0x0", matrix(0L, 0, 0))
+testJavaToR("getBoxedShortArray2d2x0", matrix(0L, 2, 0))
+testJavaToR("getBoxedShortArray2d2x1", matrix(c(SHORT_MIN, SHORT_MAX)))
+testJavaToR("getBoxedShortArray2d2x2", matrix(c(SHORT_MIN, -1L, 0L, SHORT_MAX), 2, 2, byrow = TRUE))
+testJavaToR("getBoxedShortArray2dNulls", matrix(c(NA_integer_, SHORT_MIN, NA_integer_, SHORT_MIN, NA_integer_, SHORT_MAX), 2, 3, byrow = TRUE))
+testJavaToR("getBoxedShortArray2dRagged1", list(integer(), SHORT_MIN, integer(), c(0L, SHORT_MAX), integer()))
+testJavaToR("getBoxedShortArray2dRagged2", list(SHORT_MIN, integer(), c(0L, SHORT_MAX)))
+testJavaToR("getStringArray2d0x0", matrix("", 0, 0))
+testJavaToR("getStringArray2d2x0", matrix("", 2, 0))
+testJavaToR("getStringArray2d2x1", matrix(c("", ""), 2, 1))
+testJavaToR("getStringArray2d2x2", matrix(c("", " ", "a", "Z"), 2, 2, byrow = TRUE))
+testJavaToR("getStringArray2dNulls", matrix(c(NA_character_, "", NA_character_, "a", NA_character_, "Z"), 2, 3, byrow = TRUE))
+testJavaToR("getStringArray2dRagged1", list(character(), "", character(), c("a", "Z"), character()))
+testJavaToR("getStringArray2dRagged2", list("", character(), c("a", "Z")))
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
+
+cat("Java Types - Boxed 3D Arrays - Column Major\n")
+js$setArrayOrder("column-major")
+suppressWarnings(
+  testJavaToR("getBoxedBooleanArray3dNulls", array(c(FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE, FALSE, TRUE), c(2, 3, 2)))
+)
+testJavaToR("getBoxedBooleanArray3dRagged", list(list(c(TRUE, FALSE), logical(0), FALSE, TRUE), list(c(TRUE, FALSE), TRUE, FALSE, TRUE)))
+suppressWarnings(
+  testJavaToR("getBoxedByteArray3dNulls", array(as.raw(c(BYTE_MIN, BYTE_MAX, BYTE_MIN, 0, BYTE_MIN, BYTE_MAX, BYTE_MIN, BYTE_MAX, BYTE_MIN, BYTE_MIN, BYTE_MIN, BYTE_MAX)), c(2, 3, 2)))
+)
+testJavaToR("getBoxedByteArray3dRagged", list(list(BYTE_MIN, raw(0), c(as.raw(0), BYTE_MAX)), list(BYTE_MIN, as.raw(1), c(as.raw(0), BYTE_MAX))))
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
+
+cat("Java Types - Boxed 3D Arrays - Row Major\n")
+js$setArrayOrder("row-major")
+suppressWarnings(
+  testJavaToR("getBoxedBooleanArray3dNulls", array(c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE), c(2, 3, 2)))
+)
+testJavaToR("getBoxedBooleanArray3dRagged", list(list(c(TRUE, FALSE), logical(0), FALSE, TRUE), list(c(TRUE, FALSE), TRUE, FALSE, TRUE)))
+suppressWarnings(
+  testJavaToR("getBoxedByteArray3dNulls", array(as.raw(c(BYTE_MIN, BYTE_MIN, BYTE_MIN, BYTE_MIN, BYTE_MIN, BYTE_MIN, BYTE_MAX, BYTE_MAX, 0, BYTE_MIN, BYTE_MAX, BYTE_MAX)), c(2, 3, 2)))
+)
+testJavaToR("getBoxedByteArray3dRagged", list(list(BYTE_MIN, raw(0), c(as.raw(0), BYTE_MAX)), list(BYTE_MIN, as.raw(1), c(as.raw(0), BYTE_MAX))))
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
+
+cat("Java Types - Boxed 3D Arrays - Row Major Java\n")
+js$setArrayOrder("row-major-java")
+suppressWarnings(
+  testJavaToR("getBoxedBooleanArray3dNulls", array(c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE), c(3, 2, 2)))
+)
+testJavaToR("getBoxedBooleanArray3dRagged", list(list(c(TRUE, FALSE), logical(0), FALSE, TRUE), list(c(TRUE, FALSE), TRUE, FALSE, TRUE)))
+suppressWarnings(
+  testJavaToR("getBoxedByteArray3dNulls", array(as.raw(c(BYTE_MIN, BYTE_MIN, BYTE_MIN, BYTE_MAX, 0, BYTE_MAX, BYTE_MIN, BYTE_MIN, BYTE_MIN, BYTE_MAX, BYTE_MIN, BYTE_MAX)), c(3, 2, 2)))
+)
+testJavaToR("getBoxedByteArray3dRagged", list(list(BYTE_MIN, raw(0), c(as.raw(0), BYTE_MAX)), list(BYTE_MIN, as.raw(1), c(as.raw(0), BYTE_MAX))))
+js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
+
 
 # Miscellaneous -----------------------------------------------------------
 

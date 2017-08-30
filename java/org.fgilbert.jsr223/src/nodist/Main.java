@@ -1,28 +1,11 @@
 package nodist;
 
-// https://stackoverflow.com/questions/23230854/getting-unknown-number-of-dimensions-from-a-multidimensional-array-in-java
+/// clean up this file
 
-//import java.lang.reflect.Array;
-//import java.lang.reflect.Method;
-//
-//import java.math.BigDecimal;
-//import java.math.BigInteger;
-//
 import java.util.Arrays;
-
-import static org.junit.Assert.assertArrayEquals;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-//import java.util.Collection;
-//import java.util.Iterator;
-//import java.util.Map;
 import java.util.List;
-//
-//
 import org.fgilbert.jdx.*;
-import org.fgilbert.jdx.JavaToR.ArrayOrder;
-//import org.fgilbert.jsr223.*;
 import org.fgilbert.jsr223.Controller;
 
 class Main {
