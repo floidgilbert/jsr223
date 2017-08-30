@@ -1,5 +1,5 @@
 /*
- * This project was written to optimize marshalling data and messages between the JVM and R via rJava. 
+ * This project was written to optimize exchanging data and messages between the JVM and R via rJava. 
  * A balance between performance and code clarity is the goal, but intuition has been sacrificed 
  * in many cases for the sake of speed. All code is designed to reduce the number of calls from R by rJava.   
  */
@@ -90,8 +90,10 @@ public class Controller {
 			StringBuffer sb = sw.getBuffer();
 			if (sb.length() > STANDARD_OUTPUT_BUFFER_SIZE_MAX) {
 				sb.setLength(STANDARD_OUTPUT_BUFFER_SIZE_MAX);
-				// ensureCapacity does not shrink the buffer if a smaller value is given.
-				// Therefore, trimToSize must be called first.
+				/*
+				 * ensureCapacity does not shrink the buffer if a smaller value
+				 * is given. Therefore, trimToSize must be called first.
+				 */
 				sb.trimToSize();
 				sb.ensureCapacity(STANDARD_OUTPUT_BUFFER_SIZE_MAX);
 			}
