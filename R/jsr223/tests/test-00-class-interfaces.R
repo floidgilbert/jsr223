@@ -761,7 +761,6 @@ js$setStandardOutputMode(jsr223:::DEFAULT_STANDARD_OUTPUT_MODE)
 # getArrayOrder / setArrayOrder -------------------------------------------
 
 cat("getArrayOrder / setArrayOrder\n")
-#///left off
 
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
@@ -769,19 +768,23 @@ previous.value <- js$setArrayOrder("row-major")
 assertIdentical(jsr223:::DEFAULT_ARRAY_ORDER, previous.value)
 assertIdentical("row-major", js$getArrayOrder())
 
-#///testit
+a <- array(1:4, c(2, 2))
+js$value <- a
+assertIdentical(c(1L, 3L), js %~% "value[0]")
 
 previous.value <- js$setArrayOrder("row-major-java")
 assertIdentical("row-major", previous.value)
 assertIdentical("row-major-java", js$getArrayOrder())
 
-#///testit
+js$value <- a
+assertIdentical(c(1L, 3L), js %~% "value[0]")
 
 previous.value <- js$setArrayOrder("column-major")
 assertIdentical("row-major-java", previous.value)
 assertIdentical("column-major", js$getArrayOrder())
 
-#///testit
+js$value <- a
+assertIdentical(c(1L, 2L), js %~% "value[0]")
 
 assertMessage(
   {

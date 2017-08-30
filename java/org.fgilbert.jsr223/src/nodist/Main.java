@@ -1,11 +1,9 @@
 package nodist;
 
-/// clean up this file
-
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-import org.fgilbert.jdx.*;
+//import java.util.Arrays;
+//import java.util.ArrayList;
+//import java.util.List;
+//import org.fgilbert.jdx.*;
 import org.fgilbert.jsr223.Controller;
 
 class Main {
@@ -65,135 +63,32 @@ class Main {
 //		j2r = new JavaToR(o);
 //		System.out.println(j2r.getRdataCompositeCode());
 		
-		int[] data;
-		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18, 1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
-		int[] dimensions;
-		dimensions = new int[] {2, 3, 2, 3};
-		int[][][][] n = (int[][][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
-		ArrayList<Object> al1 = new ArrayList();
-		for (int i = 0; i < dimensions[0]; i++) {
-			ArrayList<Object> al2 = new ArrayList();
-			for (int j = 0; j < dimensions[1]; j++) {
-				ArrayList<Object> al3 = new ArrayList();
-				for (int k = 0; k < dimensions[2]; k++) {
-					ArrayList<Object> al4 = new ArrayList();
-					for (int l = 0; l < dimensions[3]; l++) {
-						al4.add(n[i][j][k][l]);
-					}
-					al3.add(al4);
-				}
-				al2.add(al3);
-			}
-			al1.add(al2);
-		}
-		JavaToR j2r = new JavaToR(al1);
-		System.out.println(j2r.getRdataCompositeCode());
+//		int[] data;
+//		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18, 1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
+//		int[] dimensions;
+//		dimensions = new int[] {2, 3, 2, 3};
+//		int[][][][] n = (int[][][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+//		ArrayList<Object> al1 = new ArrayList();
+//		for (int i = 0; i < dimensions[0]; i++) {
+//			ArrayList<Object> al2 = new ArrayList();
+//			for (int j = 0; j < dimensions[1]; j++) {
+//				ArrayList<Object> al3 = new ArrayList();
+//				for (int k = 0; k < dimensions[2]; k++) {
+//					ArrayList<Object> al4 = new ArrayList();
+//					for (int l = 0; l < dimensions[3]; l++) {
+//						al4.add(n[i][j][k][l]);
+//					}
+//					al3.add(al4);
+//				}
+//				al2.add(al3);
+//			}
+//			al1.add(al2);
+//		}
+//		JavaToR j2r = new JavaToR(al1);
+//		System.out.println(j2r.getRdataCompositeCode());
 	}
-	
-	public static void mainIOI(String[] args) {
-		int iterations = 1000000;
-		int[] data1 = new int[2000];
-		int[] data2 = new int[data1.length * 2];
-		final long startTime = System.currentTimeMillis();
-//		int k = 0;
-		for (int i = 0; i < iterations; i++) {
-//		  System.arraycopy(data1, 0, data2, data1.length, data1.length);
-			for (int j = 0; j < data1.length; j++)
-				data2[j] = data1[j];
-		}
-		final long endTime = System.currentTimeMillis();
-		System.out.println("Total execution time: " + (endTime - startTime) );		
-	}
-	
-	public static int[] oneD() {
-		int[] n = {1, 2, 3};
-		return n;
-	}
-	
-	public static int[][] twoD() {
-		int[][] n = {{1, 2, 3}, {4, 5, 6}};
-//		int[][] n = {{1}};
-		return n;
-	}
-	
-	public static int[][][] threeD() {
-		int[][][] n = {{{1, 2, 3}, {4, 5, 6}}, {{1, 2, 3}, {4, 5, 6}}};
-		return n;
-	}
-	
-	public static int getNumberOfDimensions(Class<?> type) {
-		int n = -1;
-		do {
-			type = type.getComponentType();
-			n++;
-		} while (type != null);
-		return n;
-    }
-	
-	public static void mainXI(String[] args) {
-//		int[] n = oneD();
-//		int[][] nn = twoD();
-//		int[][][] nnn = threeD();
-//		//java.util.ArrayList<int[]> c = Array.newInstance(componentType, dimensions);
-//		n = Arrays.stream(nn).flatMapToInt(Arrays::stream).toArray();
-//		System.out.println(Arrays.toString(n));		
-//		n = Arrays.stream(nnn).flatMapToInt(Arrays::stream).toArray();
-//		System.out.println(Arrays.toString(n));		
-		return;
-	}
-
-	
-	public static Integer[] flatten(Object[] inputArray) throws IllegalArgumentException {
-
-        if (inputArray == null) return null;
-
-        List<Integer> flatList = new ArrayList<Integer>();
-
-        for (Object element : inputArray) {
-            if (element instanceof Integer) {
-                flatList.add((Integer) element);
-            } else if (element instanceof Object[]) {
-                flatList.addAll(Arrays.asList(flatten((Object[]) element)));
-            } else {
-                throw new IllegalArgumentException("Input must be an array of Integers or nested arrays of Integers");
-            }
-        }
-        return flatList.toArray(new Integer[flatList.size()]);
-    }
 	
 	public static void main(String[] args) {
-//		int[][] nn = twoD();
-//		Object oo = Utility.deepAsList(nn);
-		Object oo = Utility.deepAsList(new Integer[][] {{}});
-		return;
-	}
-	
-	public static void mainRWR(String[] args) {
-//		Object o = Utility.createNdimensionalArray(new int[] {1, 2, 3, 4}, new int[] {2, 2}, false);
-		int max = 2000;
-		int[] data = new int[max];
-		int[] data2 = new int[max];
-		double[] data3 = new double[max];
-		for (int i = 0; i < max; i++)
-			data[i] = i + 1;
-//		int[] dimensions = new int[] {1, 1, 0};
-//		Object o = Utility.createNdimensionalArrayRowMajor(data, dimensions);
-//		o = Utility.createNdimensionalArrayColumnMajor(data, dimensions);
-		final long startTime = System.currentTimeMillis();
-		int iterations = 100000;
-		for (int i = 0; i < iterations; i++) {
-//			data3 = Arrays.stream(data).asDoubleStream().toArray();
-			for (int j = 0; j < data.length; j++) {
-				data3[j] = (double) data[j];
-//				data3[j] = Array.getDouble(data, j);
-			}
-		}
-		final long endTime = System.currentTimeMillis();
-		System.out.println("Total execution time: " + (endTime - startTime) );		
-		return;
-	}
-	
-	public static void mainDXD(String[] args) {
 		Controller controller = null;
 		try {
 			controller = new Controller("js");
@@ -234,9 +129,9 @@ class Main {
 //			int typeCode = controller.getScriptEngineValue("value");
 //			}
 //			final long endTime = System.currentTimeMillis();
-			JavaToR j2r = controller.getResponse();
-			Object[] o = j2r.getValueObjectArray1d();
-			o = j2r.getValueObjectArray1d();
+//			JavaToR j2r = controller.getResponse();
+//			Object[] o = j2r.getValueObjectArray1d();
+//			o = j2r.getValueObjectArray1d();
 //			System.out.println("Total execution time: " + (endTime - startTime) );		
 //			controller.setArrayOrder(org.fgilbert.jdx.JavaToR.ArrayOrder.COLUMN_MAJOR);
 //			controller.putEvaluationRequest("var value = [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]]", true);

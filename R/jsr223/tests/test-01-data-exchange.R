@@ -1,7 +1,3 @@
-#///review comments everywhere.
-#///Consider posting about jdx relative to the rJava bug for multi-dim arrays
-#///add warning to jdx and jsr223 docs that list(matrix) will return a 3-dim array. so, use named lists instead. another example is list(factor) or list(vector)
-
 # Introduction ------------------------------------------------------------
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -10,8 +6,8 @@
 
 # This script tests all data exchange functionality for both jsr223 and jdx.
 # These tests were designed before jdx was separated from jsr223. The data
-# exchange tests remain as part of jsr223 because the tests involve scripting.
-# Re-writing the tests without scripting would not be profitable. #///review
+# exchange tests remain as part of jsr223 because the tests are easier
+# to write with scripting.
 
 # Reference ---------------------------------------------------------------
 
@@ -1712,8 +1708,6 @@ js$setArrayOrder("row-major-java")
 testSetAndGet(list(l1))
 
 
-# cat("Collections as Matrices - JavaScript\n")
-
 # Test boxed and unboxed arrays together.
 js %@% "
 var doubleArrayClass = Java.type('double[]');
@@ -2627,7 +2621,7 @@ js %@% "
 assertIdentical(js$value, data.frame(a = rep(1L, 3), b = rep("string", 3), c = rep(pi, 3), stringsAsFactors = FALSE))
 
 # Test large data structure. Use fewer rows than in column-major test because
-# row-major is much slower. #///note this in documentation
+# row-major is much slower.
 js$setStringsAsFactors(FALSE); js$setCoerceFactors(FALSE)
 k <- as.data.frame(names = row.names(mtcars), mtcars, stringsAsFactors = FALSE)
 row.names(k) <- NULL
@@ -2868,17 +2862,17 @@ l1 <- list(
   , c(TRUE, FALSE, TRUE)
   , as.raw(0:255)
 
-  , matrix(-1.1:7.1, 3, 3)
-  , matrix(-1:7, 3, 3)
-  , matrix(letters[1:9], 3, 3)
-  , matrix(c(TRUE, FALSE, TRUE), 3, 3)
+  , matrix(-1.1:4.1, 3, 2)
+  , matrix(-1:4, 3, 2)
+  , matrix(letters[1:6], 3, 2)
+  , matrix(c(TRUE, FALSE, TRUE), 3, 2)
   , matrix(integer(), 0, 0)
   , matrix(as.raw(0:255), 32, 8)
 
-  , array(-1.1:16.1, c(3, 3, 2))
-  , array(-1:16, c(3, 3, 2))
-  , array(letters[1:16], c(3, 3, 2))
-  , array(c(TRUE, FALSE, TRUE), c(3, 3, 2))
+  , array(-1.1:12.1, c(3, 2, 2))
+  , array(-1:12, c(3, 2, 2))
+  , array(letters[1:12], c(3, 2, 2))
+  , array(c(TRUE, FALSE, TRUE), c(3, 2, 2))
   , array(integer(), c(0, 0, 0))
   , array(as.raw(0:255), c(4, 8, 8))
 

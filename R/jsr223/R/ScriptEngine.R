@@ -1,8 +1,8 @@
-# All org.fgilbert.jsr223 methods that would otherwise return data or an object
+# All org.fgilbert.jsr223 methods that would naturally return data or an object
 # return a data type code in a 32-bit integer that corresponds to data type
 # flags in the jdx package. This type code is used by the jdx package to quickly
 # retrieve data from the JVM and construct the appropriate R object. While
-# cumbersome and unintuitive, this approach improves performance considerably.
+# cumbersome and unintuitive, this approach improves performance.
 
 # ScriptEngine R6 Class ---------------------------------------------------
 
@@ -283,8 +283,6 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
       self$compile(private$readFile(file.name))
     }
 
-    #///argument 1 (type 'list') cannot be handled by 'cat'. try something besides cat. Maybe that one thing that prints out structures...
-    #///maybe bail on this all together.
     # Thanks to Jeroen Ooms and the V8 package for the idea...
     , console = function() {
       message("\n", self$getScriptEngineInformation()$language.name, " console. Press ESC, CTRL + C, or enter 'exit' to exit the console.")
@@ -329,13 +327,18 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
         if (identical(line, "exit"))
           break
         if (has.history) {
-          save.dir <- setwd(tempdir()) # savhistory / loadhistory does not always seem to respect full paths, so change directory...
+          # IMPORTANT: savehistory / loadhistory does not work as expected in all consoles or on all platforms.
+          save.dir <- setwd(tempdir()) # savehistory / loadhistory does not always seem to respect full paths, so change directory...
           write(line, jsr223.history, append = TRUE)
           utils::loadhistory(jsr223.history)
           setwd(save.dir)
         }
         tryCatch(
-          cat(self$eval(line), "\n", sep = "")
+          {
+            o <- self$eval(line)
+            if (!is.null(o))
+              dput(o)
+          }
           , error = function(e) {
             message(e$message)
           }
