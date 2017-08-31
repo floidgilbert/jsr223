@@ -1,13 +1,12 @@
 library("jsr223")
-js <- startEngine("js")
-debug(js$console)
+js <- ScriptEngine$new("js")
+# debug(js$console)
 js$console()
 
-#/// do these things. or not. it is a terrible feature.
+# Review console message...should begin with script language name.
+
+# Note that the command history doesn't work in practically any console.
+
 # Test ESC, CTRL + C, 'exit' (case sensitive) to exit console.
-
-# Test console message...should begin with script language name.
-
-
 
 js$terminate()

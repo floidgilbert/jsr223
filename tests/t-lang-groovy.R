@@ -7,9 +7,8 @@
 # Initialize --------------------------------------------------------------
 
 library("jsr223")
-source("../R/jsr223/tests/test00.R")
-engine <- startEngine("groovy", "../engines/groovy-all-2.3.7.jar")
-
+source("../R/jsr223/tests/utility.R")
+engine <- ScriptEngine$new("groovy", "../engines/groovy-all-2.4.7.jar")
 
 # Bindings ----------------------------------------------------------------
 
@@ -43,7 +42,7 @@ engine %@% "println('You should see this message (1).');"
 engine$setStandardOutputMode("quiet")
 engine %@% "println('You should not see this message (1).');"
 
-engine$setStandardOutputMode("buffered")
+engine$setStandardOutputMode("buffer")
 engine %@% "println('You should not see this message (2).');"
 assertIdentical("You should not see this message (2).", removeCarriageReturns(engine$getStandardOutput()))
 engine %@% "println('You should not see this message (3).');"
@@ -84,7 +83,7 @@ class DoMath {
 
   int returnOne() {
     return 1;
-}
+  }
 
   int addThese(int a, int b, int c) {
     return a + b + c;
@@ -118,17 +117,18 @@ script <- "
 "
 assertIdentical("\n1\n2\n3\n", engine %~% script)
 assertIdentical("abc", engine %~% "\"abc\"")
-assertIdentical("abc1", engine %~% "n = 1i; s = \"abc${n}\"")
-assertIdentical(rep("abc1", times = 3), engine %~% "[s, s, s]")
-assertIdentical(matrix(rep("abc1", times = 6), 2, 3), engine %~% "[[s, s, s], [s, s, s]]")
-script <- "
-\"\"\"
-${n}
-2
-3
-\"\"\"
-"
-assertIdentical("\n1\n2\n3\n", engine %~% script)
+# I removed support for GStringImpl. It is up to the developer to convert it to a regular string.
+# assertIdentical("abc1", engine %~% "n = 1i; s = \"abc${n}\"")
+# assertIdentical(rep("abc1", times = 3), engine %~% "[s, s, s]")
+# assertIdentical(matrix(rep("abc1", times = 6), 2, 3), engine %~% "[[s, s, s], [s, s, s]]")
+# script <- "
+# \"\"\"
+# ${n}
+# 2
+# 3
+# \"\"\"
+# "
+# assertIdentical("\n1\n2\n3\n", engine %~% script)
 
 
 cat("Groovy Constants...\n")

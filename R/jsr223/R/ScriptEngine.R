@@ -135,11 +135,11 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
         class.path <- trimws(unlist(strsplit(class.path, .Platform$path.sep, fixed = TRUE)))
         class.path <- class.path[nzchar(class.path)]
         if (length(class.path) > 0L) {
-          rJava::.jaddClassPath(class.path)
           for (p in class.path) {
             if (!file.exists(p))
               stop(sprintf("The file %s specified in the class path does not exist.", shQuote(p, type = "sh")))
           }
+          rJava::.jaddClassPath(class.path)
         }
       }
 

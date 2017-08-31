@@ -8,8 +8,8 @@
 # Initialize --------------------------------------------------------------
 
 library("jsr223")
-source("../R/jsr223/tests/test00.R")
-engine <- startEngine("js")
+source("../R/jsr223/tests/utility.R")
+engine <- ScriptEngine$new("js")
 
 
 # Bindings ----------------------------------------------------------------
@@ -44,7 +44,7 @@ engine %@% "print('You should see this message (1).');"
 engine$setStandardOutputMode("quiet")
 engine %@% "print('You should not see this message (1).');"
 
-engine$setStandardOutputMode("buffered")
+engine$setStandardOutputMode("buffer")
 engine %@% "print('You should not see this message (2).');"
 assertIdentical("You should not see this message (2).", removeCarriageReturns(engine$getStandardOutput()))
 engine %@% "print('You should not see this message (3).');"
@@ -156,7 +156,7 @@ assertIdentical(TRUE, engine %~% 'a === b')
 
 cat("JS Date...\n")
 
-assertError(
+assertMessage(
   {
     engine %~% 'var a = new Date()'
     engine$a

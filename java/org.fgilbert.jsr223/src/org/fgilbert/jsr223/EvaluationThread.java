@@ -107,8 +107,10 @@ class EvaluationThread implements Runnable {
 		queue.put(message);
 	}
 
-	// Implementation of Runnable interface. Do not call directly. Use 'start'
-	// instead.
+	/*
+	 * Implementation of Runnable interface. Do not call directly. Use 'start'
+	 * instead.
+	 */
 	public void run() {
 		Message message = null;
 		do {

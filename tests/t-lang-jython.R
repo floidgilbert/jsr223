@@ -7,8 +7,8 @@
 # Initialize --------------------------------------------------------------
 
 library("jsr223")
-source("../R/jsr223/tests/test00.R")
-engine <- startEngine("jython", "../engines/jython-standalone-2.7.0.jar")
+source("../R/jsr223/tests/utility.R")
+engine <- ScriptEngine$new("jython", "../engines/jython-standalone-2.7.0.jar")
 
 
 # Bindings ----------------------------------------------------------------
@@ -44,7 +44,7 @@ engine %@% "print('You should see this message (1).');"
 engine$setStandardOutputMode("quiet")
 engine %@% "print('You should not see this message (1).');"
 
-engine$setStandardOutputMode("buffered")
+engine$setStandardOutputMode("buffer")
 engine %@% "print('You should not see this message (2).');"
 assertIdentical("You should not see this message (2).", removeCarriageReturns(engine$getStandardOutput()))
 engine %@% "print('You should not see this message (3).');"
@@ -69,13 +69,13 @@ assertIdentical(2, cs$eval(bindings = list(a = 2)))
 #///error when using %~% because it tries to return function
 engine %@% "
 def returnOne():
-  return 1
+    return 1;
 "
 assertIdentical(1L, engine$invokeFunction("returnOne"))
 
 engine %@% "
 def addThis(a, b, c):
-  return a + b + c;
+    return a + b + c;
 "
 assertIdentical(4, engine$invokeFunction("addThis", 1, 1, 2))
 
@@ -83,7 +83,7 @@ engine %@% "
 class Abc:
 
   def returnOne(self):
-    return 1
+    return 1;
 
   def addThis(self, a, b, c):
     return a + b + c;
@@ -240,7 +240,7 @@ cat(engine$getJavaClassName("setA"), "\n")
 
 cat("\nJython dict...\n")
 engine %~% 'dictA = {"first": 1, "second": 2}'
-assertIdentical(list(one = 2L, two = 3L), engine$dictA)
+assertIdentical(list(second = 2L, first = 1L), engine$dictA)
 cat(engine %~% 'type(dictA).__name__', "\n")
 cat(engine$getJavaClassName("dictA"), "\n")
 engine$dictB = engine$dictA

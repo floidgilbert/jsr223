@@ -8,8 +8,8 @@
 # Initialize --------------------------------------------------------------
 
 library("jsr223")
-source("../R/jsr223/tests/test00.R")
-engine <- startEngine("jruby", "../engines/jruby-complete-9.1.2.0.jar")
+source("../R/jsr223/tests/utility.R")
+engine <- ScriptEngine$new("jruby", "../engines/jruby-complete-9.1.2.0.jar")
 
 
 # Bindings ----------------------------------------------------------------
@@ -45,7 +45,7 @@ engine %@% "puts 'You should see this message (1).'"
 engine$setStandardOutputMode("quiet")
 engine %@% "puts 'You should not see this message (1).'"
 
-engine$setStandardOutputMode("buffered")
+engine$setStandardOutputMode("buffer")
 engine %@% "puts 'You should not see this message (2).'"
 assertIdentical("You should not see this message (2).", removeCarriageReturns(engine$getStandardOutput()))
 engine %@% "puts 'You should not see this message (3).'"
@@ -172,11 +172,11 @@ engine$strB = engine$strA
 assertIdentical(TRUE, engine %~% '$strA == $strB')
 
 
-#///add to special types
-cat("\nJRuby Symbol...\n")
-
-assertIdentical("abc123", engine %~% ":'abc123'")
-cat(engine %~% ":'abc123'.class.name", "\n")
+#///Removed support for symbol
+# cat("\nJRuby Symbol...\n")
+#
+# assertIdentical("abc123", engine %~% ":'abc123'")
+# cat(engine %~% ":'abc123'.class.name", "\n")
 # Identifier does not make sense in this context.
 # cat(engine$getJavaClassName(":'abc123'"), "\n")
 
@@ -205,15 +205,15 @@ assertIdentical(TRUE, engine %~% '$boolA == $boolB')
 # assertIdentical(TRUE, engine %~% '$cxA == $cxB')
 
 
+#///removed support for Ruby Rational.
 cat("\nJRuby Rational...\n")
 
-engine %@% '$rtA = Rational(2, 3)'
-assertIdentical(2 / 3, engine$rtA)
-cat(engine %~% '$rtA.class.name', "\n")
-cat(engine$getJavaClassName('rtA'), "\n")
-engine$rtB = engine$rtA
-assertIdentical(TRUE, engine %~% '$rtA == $rtB')
-
+# engine %@% '$rtA = Rational(2, 3)'
+# assertIdentical(2 / 3, engine$rtA)
+# cat(engine %~% '$rtA.class.name', "\n")
+# cat(engine$getJavaClassName('rtA'), "\n")
+# engine$rtB = engine$rtA
+# assertIdentical(TRUE, engine %~% '$rtA == $rtB')
 
 cat("\nJRuby Array...\n")
 
@@ -260,3 +260,4 @@ cat(engine$getJavaClassName('hashA'), "\n")
 # # assertIdentical(TRUE, engine %~% '$rangeA == $rangeB')
 
 engine$terminate()
+
