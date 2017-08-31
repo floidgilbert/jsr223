@@ -93,13 +93,6 @@ assertMessage(
   , "Values of class 'function' are not supported."
 )
 
-assertMessage(
-  {
-    js$set("a", array(1:16, c(2, 2, 2, 2)))
-  }
-  , "Arrays of three or more dimensions are not supported. Use lists of matrices, or consider using ND4J (http://nd4j.org/)."
-)
-
 # Comprehensive tests for data types are done elsewhere.
 js$set("a", 1)
 assertIdentical(1, js$get("a"))
@@ -140,7 +133,7 @@ assertMessage(
 
 cat("getBindings\n")
 
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 js$d <- list(1, 2, 3)
 js$c <- mtcars
 js$b <- letters
@@ -159,7 +152,7 @@ invisible(js$remove("d"))
 compare$d <- NULL
 v <- js$getBindings()
 assertIdentical(compare, v)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 # getClassPath ------------------------------------------------------------
 
@@ -807,10 +800,10 @@ assertIdentical(jsr223:::DEFAULT_COERCE_FACTORS, previous.value)
 assertIdentical(TRUE, js$getCoerceFactors())
 js$a <- as.factor(1:10)
 assertIdentical(1:10, js$a)
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 js$a <- data.frame(a = as.factor(1:10), b = 0)
 assertIdentical(1:10, js %~% "a.a")
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 js$a <- data.frame(a = as.factor(1:10), b = 0)
 assertIdentical(1L, js %~% "a[0].a")
 
@@ -819,10 +812,10 @@ assertIdentical(previous.value, TRUE)
 assertIdentical(FALSE, js$getCoerceFactors())
 js$a <- as.factor(1:10)
 assertIdentical(as.character(1:10), js$a)
-js$setRowMajor(FALSE)
+js$setDataFrameRowMajor(FALSE)
 js$a <- data.frame(a = as.factor(1:10), b = 0)
 assertIdentical(as.character(1:10), js %~% "a.a")
-js$setRowMajor(TRUE)
+js$setDataFrameRowMajor(TRUE)
 js$a <- data.frame(a = as.factor(1:10), b = 0)
 assertIdentical("1", js %~% "a[0].a")
 
@@ -834,9 +827,7 @@ assertMessage(
 )
 
 js$setCoerceFactors(jsr223:::DEFAULT_COERCE_FACTORS)
-js$setRowMajor(jsr223:::DEFAULT_ROW_MAJOR)
-
-
+js$setDataFrameRowMajor(jsr223:::DEFAULT_DATA_FRAME_ROW_MAJOR)
 
 
 # getDataFrameRowMajor / setDataFrameRowMajor -----------------------------

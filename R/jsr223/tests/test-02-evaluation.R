@@ -26,7 +26,7 @@ assertIdentical(4L, js %~% "print('abc'); 4")
 assertIdentical("abc", removeCarriageReturns(js$getStandardOutput()))
 
 # With evaluation error...
-assertError(
+assertMessage(
   {
     js %~% "throw new Error('stop execution.');"
   }
@@ -40,7 +40,7 @@ e <- tryCatch(
   , error = function(e) {return(e)}
 )
 assertIdentical("stdout before error", removeCarriageReturns(js$getStandardOutput()))
-assertError(
+assertMessage(
   {
     stop(e)
   }
@@ -49,7 +49,7 @@ assertError(
 )
 
 # With syntax error...
-assertError(
+assertMessage(
   {
     js %~% "print('ab;"
   }
@@ -81,7 +81,7 @@ assertIdentical(round(pi, 4), a)
 assertIdentical("123", s)
 
 # ...with evaluation error.
-assertError(
+assertMessage(
   {
     js %~% "R.eval('stop(\"This is an R error.\")')"
   }
@@ -95,7 +95,7 @@ s <- removeCarriageReturns(
     e <- tryCatch(js %~% "R.eval('cat(123); stop(\"This is an R error.\")')", error = function(e) {return(e)})
   )
 )
-assertError(
+assertMessage(
   {
     stop(e)
   }
@@ -105,7 +105,7 @@ assertError(
 assertIdentical("123", s)
 
 # ...with syntax error.
-assertError(
+assertMessage(
   {
     js %~% "R.eval('stop(\"This is an R error.\"')"
   }
@@ -171,7 +171,7 @@ s <- removeCarriageReturns(
   )
 )
 assertAllEqual(c("T minus 2", "T minus 1", "T minus 0"), s)
-assertError(
+assertMessage(
   {
     stop(e)
   }
@@ -217,7 +217,7 @@ s <- removeCarriageReturns(
   )
 )
 assertAllEqual(c("T minus 2", "T minus 1", "T minus 0"), s)
-assertError(
+assertMessage(
   {
     stop(e)
   }
@@ -251,7 +251,7 @@ e <- tryCatch(
   , error = function(e) {return(e)}
 )
 assertAllEqual("T minus 2T minus 1T minus 0", removeCarriageReturns(js$getStandardOutput()))
-assertError(
+assertMessage(
   {
     stop(e)
   }
