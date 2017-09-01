@@ -30,7 +30,7 @@ All code samples related to this document are available at \href{http://notavali
 
 \subsection{Terminology}
 
-The JSR-223 specification defines \dfn{scripting engine} as “a software component that executes programs written in some scripting language” ///cite. A \dfn{scripting engine} (or just \dfn{script engine}) is software that enables a scripting language to be embedded in an application. Internally, a script engine uses an \dfn{interpreter} to parse and execute source code. The terms \dfn{script engine} and \dfn{interpreter} are often used interchangeably.
+A \dfn{scripting engine} (or just \dfn{script engine}) is software that enables a scripting language to be embedded in an application. Internally, a script engine uses an \dfn{interpreter} to parse and execute source code. The terms \dfn{script engine} and \dfn{interpreter} are often used interchangeably which may lead to confusion. In this document, \dfn{script engine} refers to the software component, not the interpreter. A \dfn{script engine instance} denotes an active script engine. Finally, a \dfn{script engine environment} refers to the variables and settings of a given instance.
 
 \dfn{Bindings} refers to the name/value pairs associated with variables in a given scope or environment. Conceptually, a variable's name is bound to its value. The variable names and values in R's global environment are examples of bindings.
 
@@ -95,11 +95,11 @@ engine %~% "print(message);"
 engine$terminate()
 \end{verbatim}
 
-The \code{ScriptEngine\$new} method creates an instance of a script engine. In this example, the engine object is assigned to the variable \code{engine}. The first argument of \code{ScriptEngine\$new} specifies the type of script engine to create. In this case, we create a JavaScript engine. The third line assigns (or binds) the value \code{"Hello world"} to a global variable named \code{message} in the script engine environment. The next line executes JavaScript code using the \code{\%$\sim$\%} operator. The code writes the contents of the variable \code{message} to the console using the JavaScript method \code{print}. The last line in the example terminates the script engine and releases associated resources.
+The \code{ScriptEngine\$new} method creates a script engine instance. In the preceding example, we assign the engine object to the variable \code{engine}. The first argument of \code{ScriptEngine\$new} specifies the type of script engine to create. In this case, we create a JavaScript engine. The third line assigns (or binds) the value \code{"Hello world"} to a global variable named \code{message} in the script engine environment. The next line executes JavaScript code using the \code{\%$\sim$\%} operator. The code snippet writes the contents of the variable \code{message} to the console using the JavaScript method \code{print}. The last line in the example terminates the script engine and releases the associated resources.
 
-To create a script engine other than JavaScript, we specify a different script engine name and the path to a script engine JAR file. (See \hyperlink{scriptengineinstallation}{Script engine installation} for instructions to obtain a script engine JAR file.) The supported engine names are listed in Table \ref{tab:script-engine-type-names}. The engine names are defined by the script engine provider. \strong{Note:} Script engine names are case sensitive.
+To create a script engine other than JavaScript, we specify a different script engine name and the path to a script engine JAR file. (See \hyperlink{scriptengineinstallation}{Script engine installation} for instructions to obtain a script engine JAR file.) The supported script engine names are listed in Table \ref{tab:script-engine-type-names}. These names are defined by the script engine provider. \strong{Note:} Script engine names are case sensitive.
 
-The next snippet reproduces the “Hello world” example in Ruby script.
+The next example reproduces the “Hello world” example in Ruby script.
 
 \begin{verbatim}
 library("jsr223")
@@ -115,7 +115,7 @@ engine %~% "puts $message"
 engine$terminate()
 \end{verbatim}
 
-Two parameters are provided to the \code{ScriptEngine\$new} method: the script engine name \code{"ruby"}, and the name of the JRuby script engine JAR file. As before, we assign the value \code{"Hello world"} to a global variable named \code{message} and print it to the console. Notice that we prefix the global variable with a dollar sign: \code{\$message}. This syntax is peculiar to global variables in the Ruby language.
+In this case, two parameters are passed to the \code{ScriptEngine\$new} method: the script engine name \code{"ruby"}, and the path to the JRuby script engine JAR file. As before, we assign the value \code{"Hello world"} to a global variable named \code{message} and print it to the console. Notice that we prefix the global variable with a dollar sign: \code{\$message}. This syntax is peculiar to global variables in the Ruby language.
 
 %///add links to this table.
 \begin{table}[h]
@@ -166,7 +166,7 @@ engine$source(filename)
 engine$source(filename, discard.return.value = TRUE)
 \end{verbatim}
 
-The methods \code{eval} and \code{source} take an argument named \code{bindings} that accepts an R named list. The name/value pairs in the list replace the script engine's global environment while the script is executed. The following demonstrates this functionality. Notice that the result of \code{a + b} changes when bindings are specified.
+The methods \code{eval} and \code{source} take an argument named \code{bindings} that accepts an R named list. The name/value pairs in the list replace the script engine's global environment during script execution. The following example demonstrates this functionality. Notice that the result of \code{a + b} changes when bindings are specified.
 
 \begin{verbatim}
 engine$a <- 2
@@ -193,16 +193,16 @@ engine$eval("a + b")
 
 \subsection{Sharing data between language environments}
 
-The following two lines of R code are equivalent: they copy the contents of an R object to the script engine's environment. The syntax is the same for all supported data structures. In this case, the built-in data frame \code{iris} is copied.
+The following two lines of R code are equivalent: they convert an R object to a Java object in the script engine's environment and bind it to a variable named \code{"myValue"}. In this example, the built-in data frame \code{iris} is used, but this syntax is the same for all supported R data structures.
 
 \begin{verbatim}
 engine$myValue <- iris
 engine$set("myValue", iris)
 \end{verbatim}
 
-\noindent\strong{Note:} When vectors or n-dimensional arrays are copied to Java, names are not preserved. Column names for data frames are preserved, but row names are not.
+\noindent\strong{Note:} Element, row, and column names are not preserved when R vectors and n-dimensional arrays are converted to Java objects. Column names for data frames are preserved, but row names are not.
 
-To retrieve \code{myValue} from the script engine, the following two lines are equivalent. Again, the syntax is the same for any supported structures.
+To retrieve \code{myValue} from the script engine (i.e., to convert a Java object to an R object), use either of the following lines.
 
 \begin{verbatim}
 engine$myValue
@@ -215,12 +215,12 @@ All data structures in Java-based scripting languages are backed by Java objects
 
 Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but it was broken out into a separate package to simplify maintenance and to make its features available to other developers.
 
-The \pkg{jdx} package (and hence \pkg{jsr223}) supports copying R vectors, factors, n-dimensional arrays (including matrices), data frames, named lists, unnamed lists, nested lists (i.e. lists containing lists), and environments to the script engine (and the Java platform). Row-major and column-major ordering options are available for both arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported. 
+The \pkg{jdx} package (and hence \pkg{jsr223}) supports converting R vectors, factors, n-dimensional arrays (such as matrices), data frames, named lists, unnamed lists, nested lists (i.e., lists containing lists), and environments to Java objects. Row-major and column-major ordering options are available for both arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported. 
 
-Java scalars, n-dimensional arrays, collections, and maps can be copied to the R environment. These structures cover all of the primary data structures used in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform.
+Java scalars, n-dimensional arrays, collections, and maps can be copied to the R environment. These structures cover all of the primary types used in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform.
 
 %///include a section or something that talks about how missing values are handled.
-For low-level data conversion details, see the vignette included with \pkg{jdx}. All of the \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223} as will be demonstrated throughout this guide.
+For data conversion details, see the vignette included with \pkg{jdx}. All of the \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}.
 
 \subsection{Setting and getting script engine options}
 
@@ -228,7 +228,7 @@ The \pkg{jsr223} \code{ScriptEngine} class exposes several methods that control 
 
 \subsection{Handling R vectors}
 
-By default, R vectors of length one are converted to Java scalars (not arrays) when passed to the script engine environment. This behavior can be changed using \code{engine\$setLengthOneVectorAsArray(TRUE)}. All other vectors are converted to native Java arrays. The following code passes a vector of ten random normal deviates to the script engine environment. The first element of the resulting array is returned. This syntax can be used in all of the supported scripting languages. \strong{Note:} Script engine arrays all use zero-based indices.
+By default, length-one R vectors are converted to Java scalars when passed to the script engine environment. Change this behavior with  \code{engine\$setLengthOneVectorAsArray(TRUE)}. ///I function.///reword preceding sentence. All other vectors are always converted to Java arrays. The following code passes a vector of ten random normal deviates to the script engine environment. The first element of the resulting array is returned. This syntax can be used in all of the supported scripting languages. \strong{Note:} Java arrays use zero-based indices.
 
 \begin{verbatim}
 engine$norms <- rnorm(10)
@@ -255,7 +255,7 @@ engine %~% "m[0][1]"
 ## [1] 3
 \end{verbatim}
 
-Three array index ordering schemes are available: row-major, column-major, and row-major-java. Before describing these schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. Java n-dimensional arrays are literally constructed in this fashion. R n-dimensional arrays, on the other hand, are stored in memory as a vector and the data is retrieved in the appropriate order using indexing arithmetic.
+The \code{setArrayOrder} script engine method controls index ordering for arrays converted from R to Java, and vice versa. Three array index ordering schemes are available: \code{'row-major'}, \code{'column-major'}, and \code{'row-major-java'}. Before describing these schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. Java n-dimensional arrays are literally constructed in this fashion. R n-dimensional arrays, on the other hand, are stored in memory as a vector and the data is retrieved in the appropriate order using indexing arithmetic.
 
 Now we describe the each of the array indexing options.
 
@@ -309,15 +309,44 @@ engine %~% "java.util.Arrays.deepToString(a);"
 
 \subsection{Handling R data frames}
 
-R data frames are copied to the script engine copied using either row-major or column-major order. Row-major order is the default. Change this setting with \code{engine\$setDataFrameRowMajor(value)} where \code{value} is \code{TRUE} or \code{FALSE}. Check this setting with \code{engine\$getDataFrameRowMajor()}.
+R data frames are copied to the script engine copied using either row-major or column-major order. Row-major order (the default) creates a list of records. This structure is common in many systems. Column-major order results in a list of columns, similar to the R structure. Column-major structures are much faster to create and are generally better for aggregate calculations. Change the data frame order setting with \code{engine\$setDataFrameRowMajor(value)} where \code{value} is \code{TRUE} or \code{FALSE}. Check this setting with \code{engine\$getDataFrameRowMajor()}.
 
-When the row-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(TRUE)}), R data frames are converted to lists of records. Specifically, a  
-\href{https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html}{\code{java.util.ArrayList}} is created. The list contains  \href{https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html}{\code{java.util.HashMap}} objects that represent the rows of the data frame. Each member of the hash map is a name/value pair of a single field in the data frame. The name of the field is the corresponding column's name. The following commented example uses R's built-in \code{iris} data set to illustrate row-major data frames.
+When the row-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(TRUE)}), an R data frame is converted to a \href{https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html}{\code{java.util.ArrayList}} object. The list contains  \href{https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html}{\code{java.util.HashMap}} objects that represent the rows of the data frame. Each member of the hash map is a name/value pair of a single field in the data frame. The name of the field is the corresponding column's name. The following example uses R's built-in \code{iris} data set to illustrate using row-major data frames in the script environment. This syntax is the same for all scripting languages. (Remember to prefix the global variables with \code{\$} in Ruby).
 
+\begin{verbatim}
+engine$setDataFrameRowMajor(TRUE)
+engine$iris <- iris
 
+# Return the number of rows.
+engine %~% "iris.size()"
 
+## [1] 150
 
-R data frames are converted to \href{https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html}{\code{java.util.HashMap}} objects that implement the \href{https://docs.oracle.com/javase/8/docs/api/java/util/Map.html}{\code{java.util.Map}} interface. The following commented example uses R's built-in \code{mtcars} data set to illustrate basic \code{java.util.Map} functionality. This syntax is supported for all scripting languages.
+# Retrieve the sepal length in the first row.
+engine %~% "iris[0].get('Sepal.Length')"
+
+## [1] 5.1
+
+# Retrieve the second row as a list.
+engine %~% "iris[1]"
+
+## $`Sepal.Length`
+## [1] 4.9
+## 
+## $Sepal.Width
+## [1] 3
+## 
+## $Petal.Length
+## [1] 1.4
+## 
+## $Petal.Width
+## [1] 0.2
+## 
+## $Species
+## [1] "setosa"
+\end{verbatim}
+
+When the column-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(FALSE)}), an R data frame is converted to a \href{https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html}{\code{java.util.HashMap}} object. The map members are arrays representing the columns in the data frame. The following commented example uses R's built-in \code{mtcars} data set to illustrate basic functionality. This syntax is supported for all scripting languages.
 
 \begin{verbatim}
 engine$setDataFrameRowMajor(FALSE)
@@ -353,48 +382,29 @@ all.equal(mtcars, engine$mtcars, check.attributes = FALSE)
 ## [1] TRUE
 \end{verbatim}
 
-Groovy and JavaScript support an additional syntax that allows map elements (i.e. data frame columns) to be accessed like object properties:
+Groovy and JavaScript support an additional syntax that allows map elements to be accessed like object properties instead of using the \code{get} and \code{put} methods.
 
 \begin{verbatim}
-# The following two lines are equivalent in both Groovy and JavaScript.
+# The following two lines are equivalent in Groovy and JavaScript.
 engine %~% "mtcars.cyl[0];"
 engine %~% "mtcars.get('cyl')[0];"
 \end{verbatim}
-
-Various Java classes are converted to R data frames when copied from the script engine environment. These details are covered in “Data interchange”. 
 
 Conversion of factors in data frames is addressed in the following section.
 
 \subsection{Handling R factors}
 
-When creating a data frame in R, character vectors are converted to factors by default. \pkg{jsr223} follows this standard when a qualifying Java object is converted to a data frame. This behavior can be modified as noted in the script below.
+R factors are comprised of a character vector of levels and an integer vector of indexes that reference the levels. For example, if the integer vector \code{5:7} is converted to a factor, the levels will be \code{c("5", "6", "7")} and the indexes will be \code{c(1L, 2L, 3L)}. The script engine \dfn{coerce factors} setting determines how the factor levels are handled when converting the factor to a Java array. When this setting is enabled (i.e., \code{engine\$setCoerceFactors(TRUE)}), an attempt is made to coerce the factor levels to integer, numeric, or logical values. If coercion fails, the character levels are used. When \dfn{coerce factors} is disabled, the factor is always converted to a string array. The \dfn{coerce factors} setting applies to standalone factors as well as factors in data frames.
 
-\begin{verbatim}
-# Retrieve the current StringsAsFactors setting.
-engine$getStringsAsFactors()
+After \pkg{jsr223} converts an R factor to a Java array, there is no consistent way to determine whether the array was originally created from an R factor. Therefore, if an R factor is copied to the script engine, and then the resulting array is returned to R, it will be converted to a vector, not a factor.
 
-## NULL
-
-# A value of NULL instructs jsr223 to use the setting found in R's
-# options("stringsAsFactors") when creating data frames.
-engine$setStringsAsFactors(NULL)
-
-# Setting TRUE converts character vectors to factors in data frames.
-engine$setStringsAsFactors(TRUE)
-
-# Setting FALSE disables conversion to factors.
-engine$setStringsAsFactors(FALSE)
-\end{verbatim}
-
-R factors are converted to arrays when copied to the script engine environment. By default, R factors are converted to string arrays, even if the factor is comprised of integers. This default behavior is changed with \code{engine\$setFactorsAsIntegers(TRUE)} which causes all factors, character or integer, to be converted to integer arrays.
-
-\pkg{jsr223} uses minimal, generic Java data structures for broad compatibility. As a consequence, there is no consistent way to determine whether an array in the script engine environment was originally created from an R factor. Therefore, if an R factor is copied to the script engine, and then the resulting array is returned to R, it will be converted to a vector, not a factor. There is one exception: a string array may be converted to a factor if it is associated with a new data frame. This behavior is controlled with the \code{StringsAsFactors} setting described above.
+When creating a data frame in R, character vectors are converted to factors by default. \pkg{jsr223} follows this standard when a qualifying Java object is converted to an R data frame. The \code{setStringsAsFactors} method modifies this behavior. The method takes one of three values: \code{NULL}, \code{TRUE}, and \code{FALSE}. If \code{NULL} is specified (the default), the R system setting is used (see \code{getOption("stringsAsFactors")}). A value of \code{TRUE} ensures that character vectors are always converted to factors for new data frames. Finally, a setting of \code{FALSE} disables conversion to factors.
 
 \subsection{Handling R lists and environments}
+///left off
+Conversion of R named lists and unnamed lists are supported by \pkg{jsr223}. List elements may be any R data structure supported by \pkg{jsr223}, including other lists (i.e. nested lists).
 
-R named lists and unnamed lists are supported by \pkg{jsr223}. List elements may be any R data structure supported by \pkg{jsr223}, including other lists (i.e. nested lists).
-
-R named lists are converted to Java objects implementing the \href{https://docs.oracle.com/javase/8/docs/api/java/util/Map.html}{\code{java.util.Map}} interface. See “Handling R data frames” for code examples using this interface. The only difference is that when a data frame is converted the resulting map elements are all arrays. For converted lists, the elements of the resulting map may be any supported data structure.
+R named lists are converted to Java objects implementing the \href{https://docs.oracle.com/javase/8/docs/api/java/util/Map.html}{\code{java.util.Map}} interface. See ///“Handling R data frames” for code examples using this interface. The only difference is that when a data frame is converted the resulting map elements are all arrays. For lists, the elements of the resulting map may be any data structure.
 
 R unnamed lists are converted to Java objects implementing the \href{https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html}{\code{java.util.ArrayList}} interface. The following code demonstrates basic \code{java.util.ArrayList} functionality.
 
@@ -425,6 +435,19 @@ engine %~% "list.size()"
 ## [1] 4
 \end{verbatim}
 
+\subsection{Converting Java objects to R objects}
+
+For data conversion details, see the vignette included with \pkg{jdx}. All of the \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}. These settings are covered in this quick start guide.
+///refer to \pkg{jdx}
+explain some details for NA 
+collections
+etc.
+rectangular arrays
+
+\subsection{Handling missing values}
+
+///
+
 \subsection{Calling script functions and methods}
 
 Functions and methods defined in script can be called (invoked) directly from R. Any R data types or structure supported by \pkg{jsr223} can be used as parameter values. The following JavaScript code shows two simple examples. 
@@ -454,7 +477,7 @@ engine$invokeMethod("Math", "abs", -3)
 
 \pkg{jsr223} features string interpolation before code execution. R code placed between \code{@\{} and \code{\}} in a script is evaluated and replaced by the a string representation of the return value. A script may contain many \code{@\{...\}} expressions.
 
-This example simply adds two numbers. A more interesting string interpolation example involving recursive functions is found in the section “Callbacks”.
+This example simply adds two numbers. A more interesting string interpolation example involving recursive functions is found in “Callbacks”.
 
 \begin{verbatim}
 a <- 1
@@ -487,7 +510,7 @@ engine %~% "R.eval('rnorm(1)')"
 ## [1] -0.06288176
 \end{verbatim}
 
-Recursive calls between R and the script engine are supported. The only recursion limitation is available stack space. The following code demonstrates recursive calls and string interpolation with a countdown.
+Recursive calls between R and the script engine are supported. The only limitation is available stack space. The following code demonstrates recursive calls and string interpolation with a countdown.
 
 \begin{verbatim}
 recursiveCountdown <- function(start.value) {
@@ -506,7 +529,7 @@ engine %~% "R.eval('recursiveCountdown(3)')"
 
 \subsection{Embedding R in another scripting language}
 
-It is often desirable to use R as an embedded language. Though \pkg{jsr223} does not provide a standalone interface to call into R, the same functionality can be achieved with the \code{RScript} command line executable, a simple R launch script, and the \pkg{jsr223} callback interface. The following R code is an example of a launch script for a Groovy script engine. It executes any Groovy script file provided as a command line parameter.
+It is often desirable to use R as an embedded language. Though \pkg{jsr223} does not provide a standalone interface to call into R, the same functionality can be achieved with the \code{RScript} command line executable, a simple R launch script, and the \pkg{jsr223} callback interface. The following R script is an example of a launch script for a Groovy script engine. It executes any Groovy script file provided as a command line parameter.
 
 \begin{verbatim}
 library("jsr223")
@@ -612,9 +635,9 @@ engine$getStandardOutputMode()
 
 \subsection{Console mode: a simple REPL}
 
-\pkg{jsr223} provides a simple read-evaluate-print-loop (REPL) for interactive code execution. This feature is inspired by Jeroen Ooms's \pkg{V8} package. Use \code{engine\$console()} to enter the REPL. Enter \samp{exit} to exit the console. The REPL supports only single line entry: no line continuations or carriage returns are allowed. This limitation arises because the Java Scripting API does not have a facility for code validation. The REPL is useful for quickly setting and inspecting variables in the script engine.
+\pkg{jsr223} provides a simple read-evaluate-print-loop (REPL) for interactive code execution. This feature is inspired by Jeroen Ooms's \pkg{V8} package. The REPL is useful for quickly setting and inspecting variables in the script engine. Use \code{engine\$console()} to enter the REPL. Enter \samp{exit} to return to the R prompt. The REPL supports only single line entry: no line continuations or carriage returns are allowed. This limitation arises from the fact that the Java Scripting API does not support code validation.
 
-Typically any R console supports retrieving a command history. Unfortunately, this feature is unreliable in our REPL. There is no standard across consoles for saving and restoring commands.
+Most developers are familiar with the command history in the R REPL.  Unfortunately, this feature is unreliable in the \pkg{jsr223} REPL because there is no standard for saving and restoring commands in R consoles.
 
 The following output was produced by a Python REPL session. The code creates a Python dictionary object and accesses the elements. The tilde character (\samp{$\sim$}) indicates a prompt.
 
@@ -632,9 +655,9 @@ Exiting console.
 
 \section{R with Groovy}
 
-\href{http://www.groovy-lang.org/}{Groovy} is a dynamic programming language that closely follows Java syntax. Our integration with Groovy enables developers to write solutions for R in natural Java syntax. Differences between Java and Groovy syntax are described in the Groovy guide “\href{http://groovy-lang.org/differences.html}{Differences with Java}” ///cite?.
+\href{http://www.groovy-lang.org/}{Groovy} is a dynamic programming language that closely follows Java syntax. The \pkg{jsr223} integration for Groovy enables developers to write solutions for R in natural Java syntax. Differences between Java and Groovy syntax are described in the Groovy guide “\href{http://groovy-lang.org/differences.html}{Differences with Java}” ///cite?.
 
-\strong{Note: } In Groovy script, top-level variables will not persist in the script engine environment unless they are explicitly declared as global variables. Global variables are defined by omitting the type definition and Groovy's \code{def} keyword. For example \code{myValue = 42} will create a global variable. The \code{@myValue} notation cannot be used. To specify a data type for a global variable, use a constructor (\code{myVar = new Integer(42)}) or a type suffix (\code{myVar = 42L}).
+\strong{Note:} In Groovy script, top-level variables will not persist in the script engine environment unless they are explicitly declared as global variables. Global variables are defined by omitting the type definition and Groovy's \code{def} keyword. For example \code{myValue = 42} will create a global variable. The \code{@myValue} notation cannot be used. To specify a data type for a global variable, use a constructor (\code{myVar = new Integer(42)}) or a type suffix (\code{myVar = 42L}).
 
 \subsection{Groovy and Java Classes}
 
@@ -1289,7 +1312,7 @@ In conclusion, \pkg{jsr223} adds to \pkg{rJava}'s excellent Java integration for
 
 % \strong{Note:} The Groovy and Python engines support using \code{engine\$invokeMethod()} to call methods of Java objects. JavaScript and Ruby do not.
 
-%///\pkg{jsr223} is not threadsafe.
+%///\pkg{jsr223} is not strictly threadsafe.
 
 %///callbacks must be on the original thread. is this true? it might not be. if there is a limitation, note it here and in callbacks.
 
