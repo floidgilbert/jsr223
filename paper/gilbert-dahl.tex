@@ -200,6 +200,8 @@ engine$myValue <- iris
 engine$set("myValue", iris)
 \end{verbatim}
 
+\noindent\strong{Note:} When vectors or n-dimensional arrays are copied to Java, names are not preserved. Column names for data frames are preserved, but row names are not.
+
 To retrieve \code{myValue} from the script engine, the following two lines are equivalent. Again, the syntax is the same for any supported structures.
 
 \begin{verbatim}
@@ -209,13 +211,13 @@ engine$get("myValue")
 
 Remove the variable with \code{engine\$remove("myValue")}. List all global variables in the script engine's environment with \code{engine\$getBindings()}.
 
-All data structures in Java-based scripting languages are backed by Java objects. Discover the Java class for any global variable using  \code{engine\$getJavaClassName(identifier)} where \code{identifier} is the variable's name.
+All data structures in Java-based scripting languages are backed by Java objects. Discover the Java class for any global variable using  \code{engine\$getJavaClassName("identifier")} where \code{identifier} is the variable's name.
 
 Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but it was broken out into a separate package to simplify maintenance and to make its features available to other developers.
 
-The \pkg{jdx} package (and hence \pkg{jsr223}) supports copying R vectors, factors, n-dimensional arrays (including matrices), data frames, names lists, unnamed lists, nested lists (i.e. lists containing lists), and environments to the script engine (and the Java platform). Row-major and column-major ordering options are available for both arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported. 
+The \pkg{jdx} package (and hence \pkg{jsr223}) supports copying R vectors, factors, n-dimensional arrays (including matrices), data frames, named lists, unnamed lists, nested lists (i.e. lists containing lists), and environments to the script engine (and the Java platform). Row-major and column-major ordering options are available for both arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported. 
 
-Java scalars, n-dimensional arrays, collections, and maps can be copied to the R environment. These structures cover practically all of the scripting data structures that you will use in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives developers instant access to a vast number of data structures available on the Java platform.
+Java scalars, n-dimensional arrays, collections, and maps can be copied to the R environment. These structures cover all of the primary data structures used in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform.
 
 %///include a section or something that talks about how missing values are handled.
 For low-level data conversion details, see the vignette included with \pkg{jdx}. All of the \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223} as will be demonstrated throughout this guide.
@@ -237,42 +239,89 @@ engine %~% "norms[0]"
 
 \subsection{Handling R matrices and other n-dimensional arrays}
 
-The \pkg{jsr223} package supports data exchange for matrices and other n-dimensional arrays. By default, n-dimensional arrays are copied in row-major order. The element corresponding to the first row, second column in a 2 x 2 R matrix is accessed as follows.
+The \pkg{jsr223} package supports data exchange for matrices and other n-dimensional arrays. By default, n-dimensional arrays are copied in row-major order. The following example demonstrates copying a simple 2 x 2 R matrix. Because the order is row-major, the last line of code returns the element in the first row, second column. Remember, script engine arrays use zero-based indices.
 
 \begin{verbatim}
-engine$matrix <- matrix(rnorm(4), 2, 2)
-engine %~% "matrix[0][1]"
+m <- matrix(1:4, 2, 2)
+m
 
-## [1] -1.355821
+##      [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4
+
+engine$m <- m
+engine %~% "m[0][1]"
+
+## [1] 3
 \end{verbatim}
 
-Three array index ordering schemes are available: 'row-major', 'column-major', and 'row-major-java'. Before describing these schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. Java n-dimensional arrays are literally constructed in this fashion. R n-dimensional arrays, on the other hand, are stored in memory as a vector and the data is retrieved in the appropriate order using indexing arithmetic.
+Three array index ordering schemes are available: row-major, column-major, and row-major-java. Before describing these schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. Java n-dimensional arrays are literally constructed in this fashion. R n-dimensional arrays, on the other hand, are stored in memory as a vector and the data is retrieved in the appropriate order using indexing arithmetic.
 
 Now we describe the each of the array indexing options.
 
 \begin{itemize}
-\item 'row-major' -- The indexes of an n-dimensional array are ordered \newline\code{[row][column][matrix]...[n]}. The \pkg{jsr223} package defaults to 'row-major' because R uses this scheme. However, this scheme is not intuitive for Java programmers when n > 2 because Java n-dimensional arrays are constructed as large objects containing smaller objects.
+\item \strong{row-major} -- The indexes of an n-dimensional array are ordered \newline\code{[row][column][matrix]...[n]}. The \pkg{jsr223} package defaults to 'row-major' because R uses this scheme. However, this scheme is not intuitive for Java programmers when n > 2 because Java n-dimensional arrays are constructed as high-order objects containing low-order objects.
 
-\item 'column-major' -- The indexes of an n-dimensional array are ordered \newline\code{[n]...[matrix][column][row]}. This ordering scheme is natural for Java programmers: the data contained in the one-dimensional arrays represent columns of the parent matrix.
+\item \strong{column-major} -- The indexes of an n-dimensional array are ordered \newline\code{[n]...[matrix][column][row]}. This ordering scheme is natural for Java programmers: the data contained in the one-dimensional arrays represent columns of the parent matrix.
 
-\item 'row-major-java' -- The indexes of an n-dimensional array are ordered \newline\code{[n]...[matrix][row][column]}. This provides Java programmers with a natural indexing scheme where the arrays at the one-dimensional level represent rows of the parent matrix. For matrices, 'row-major-java' and 'row-major' are equivalent.
+\item \strong{row-major-java} -- The indexes of an n-dimensional array are ordered \newline\code{[n]...[matrix][row][column]}. This provides Java programmers with a natural indexing scheme where the arrays at the one-dimensional level represent rows of the parent matrix. For matrices, 'row-major-java' and 'row-major' are equivalent.
 
 \end{itemize}
 
 \strong{Note:} If an R array is converted to Java using a particular array order, use the same array order when converting it back from Java to R. Otherwise, the data will be in the wrong order.
 
-In the following JavaScript example, a three-dimensional array is defined and copied to the script engine using each of the three indexing options and then printed to the console as a string. Notice 
+In the following JavaScript example, a three-dimensional array is copied to the script engine using each of the three indexing options. In each case, the Java static method \code{deepToString} creates a string representation of the array to show the resulting order of the data in the script engine.
+
+\begin{verbatim}
+a <- array(1:8, c(2, 2, 2))
+a
+
+## , , 1
+## 
+##      [,1] [,2]
+## [1,]    1    3
+## [2,]    2    4
+## 
+## , , 2
+## 
+##      [,1] [,2]
+## [1,]    5    7
+## [2,]    6    8
+
+engine$setArrayOrder("row-major")
+engine$a <- a
+engine %~% "java.util.Arrays.deepToString(a);"
+
+## [1] "[[[1, 5], [3, 7]], [[2, 6], [4, 8]]]"
+
+engine$setArrayOrder("column-major")
+engine$a <- a
+engine %~% "java.util.Arrays.deepToString(a);"
+
+## [1] "[[[1, 2], [3, 4]], [[5, 6], [7, 8]]]"
+
+engine$setArrayOrder("row-major-java")
+engine$a <- a
+engine %~% "java.util.Arrays.deepToString(a);"
+
+## [1] "[[[1, 3], [2, 4]], [[5, 7], [6, 8]]]"
+\end{verbatim}
 
 \subsection{Handling R data frames}
 
-R data frames can be copied to the script engine copied using either row-major or column-major order. Row-major order is the default. To change this setting, use \code{engine\$setDataFrameRowMajor(value)} where \code{value} is \code{TRUE} or \code{FALSE}. To check this setting, use \code{engine\$getDataFrameRowMajor()}.
+R data frames are copied to the script engine copied using either row-major or column-major order. Row-major order is the default. Change this setting with \code{engine\$setDataFrameRowMajor(value)} where \code{value} is \code{TRUE} or \code{FALSE}. Check this setting with \code{engine\$getDataFrameRowMajor()}.
 
-If the row-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(TRUE)}), R data frames are converted to lists of records. Specifically, the Java object is 
+When the row-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(TRUE)}), R data frames are converted to lists of records. Specifically, a  
+\href{https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html}{\code{java.util.ArrayList}} is created. The list contains  \href{https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html}{\code{java.util.HashMap}} objects that represent the rows of the data frame. Each member of the hash map is a name/value pair of a single field in the data frame. The name of the field is the corresponding column's name. The following commented example uses R's built-in \code{iris} data set to illustrate row-major data frames.
+
+
 
 
 R data frames are converted to \href{https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html}{\code{java.util.HashMap}} objects that implement the \href{https://docs.oracle.com/javase/8/docs/api/java/util/Map.html}{\code{java.util.Map}} interface. The following commented example uses R's built-in \code{mtcars} data set to illustrate basic \code{java.util.Map} functionality. This syntax is supported for all scripting languages.
 
 \begin{verbatim}
+engine$setDataFrameRowMajor(FALSE)
+
 # 'mtcars' is an R data frame containing information for 32 cars. 'mtcars'
 # stores vehicle names as row names. Row names are not preserved during the
 # copy. This line creates a new data frame with the vehicle names as a new 
