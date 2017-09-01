@@ -224,11 +224,13 @@ For data conversion details, see the vignette included with \pkg{jdx}. All of th
 
 \subsection{Setting and getting script engine options}
 
-The \pkg{jsr223} \code{ScriptEngine} class exposes several methods that control the settings for a script engine instance. These methods are named using the Java getter/setter convention: methods that set values begin with ``set'' and methods that retrieve values begin with ``get''. For example, if \code{engine} is a script engine object, \code{engine\$setArrayOrder('column-major')} will change the array indexing order to column-major for all n-dimensional arrays passed between R and Java. The code \code{engine\$getArrayOrder()} will retrieve the current array order setting.
+The \pkg{jsr223} \code{ScriptEngine} class exposes several methods that control the settings for a script engine instance. These methods are named using the Java getter/setter convention: methods that set values begin with ``set'' and methods that retrieve values begin with ``get''. For example, if \code{engine} is a script engine object, \code{engine\$setArrayOrder('column-major')} will change the \dfn{array order} setting to column-major for all n-dimensional arrays passed between R and Java. The code \code{engine\$getArrayOrder()} will retrieve the current \dfn{array order} setting.
 
 \subsection{Handling R vectors}
 
-By default, length-one R vectors are converted to Java scalars when passed to the script engine environment. Change this behavior with  \code{engine\$setLengthOneVectorAsArray(TRUE)}. ///I function.///reword preceding sentence. All other vectors are always converted to Java arrays. The following code passes a vector of ten random normal deviates to the script engine environment. The first element of the resulting array is returned. This syntax can be used in all of the supported scripting languages. \strong{Note:} Java arrays use zero-based indices.
+By default, length-one R vectors are converted to Java scalars when passed to the script engine environment. Change this behavior with  \code{engine\$setLengthOneVectorAsArray(TRUE)}, . ///I function.///reword preceding sentence. ///provide example.
+
+Vectors of any length other than one are always converted to Java arrays. The following code passes a vector of ten random normal deviates to the script engine environment. The first element of the resulting array is returned. This syntax can be used in all of the supported scripting languages. \strong{Note:} Java arrays use zero-based indices.
 
 \begin{verbatim}
 engine$norms <- rnorm(10)
