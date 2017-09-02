@@ -36,6 +36,10 @@ A character vector of paths to any JAR files that are required for the scripting
 \details{
 ///see vignette. other details. data exchange is not discussed here and it's a big deal.
 
+///callbacks.
+
+///script engines. other sections here.
+
 The bridge between R and the script engine is not thread-safe. Multiple R threads should not simultaneously access the same engine.
 }
 
@@ -213,6 +217,24 @@ Terminates the script engine instance and releases associated resources. Call th
 }
 
 }
+}
+
+\section{Callbacks}{
+Embedded scripts can access the R environment using the \pkg{jsr223} callback interface. When a script engine is started, \pkg{jsr223} creates a global object named \code{R} in the script engine's environment. This object is used to execute R code and set/get variables in the R session's global environment. Infinite recursive calls between R and the script engine are supported. The only limitation is available stack space.
+
+To set a variable in the R global environment, use
+
+\code{engine \%@\% "R.set('a', [1, 2, 3])"}
+
+To retrieve a variable from the R global environment, use
+
+\code{engine \%~\% "R.get('a')"}
+
+Finally, to evaluate R code, use
+
+\code{engine \%~\% "R.eval('rnorm(1)')"}
+
+\strong{Note:} Changing any of the data exchange settings will affect the behavior of the callback interface. For example, using \code{engine$setLengthOneVectorAsArray(TRUE)} will cause \code{R.get("pi")} to return an array with a single element instead of a scalar value.
 }
 
 \section{Script Engines}{
