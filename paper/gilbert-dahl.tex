@@ -45,7 +45,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 25.91-b15, mixed mode)
 
 The JRE can be obtained from  \href{http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html}{Oracle's web site}. Select the architecture (32 or 64 bit) that matches your R installation.
 
-\pkg{jsr223} runs on a standard installation of R (e.g. the R build option \code{--enable-R-shlib} is not required). \pkg{jsr223} is available on CRAN and can be installed with the usual command:
+\pkg{jsr223} runs on a standard installation of R (e.g., the R build option \code{--enable-R-shlib} is not required). \pkg{jsr223} is available on CRAN and can be installed with the usual command:
 
 \begin{verbatim}
 install.packages("jsr223")
@@ -569,11 +569,12 @@ engine$invokeMethod("Math", "abs", -3)
 
 \subsection{String interpolation}
 
-\pkg{jsr223} features string interpolation before code execution. R code placed between \code{@\{} and \code{\}} in a script is evaluated and replaced by the a string representation of the return value. A script may contain multiple \code{@\{...\}} expressions.
+\pkg{jsr223} features string interpolation before code evaluation. R code placed between \code{@\{} and \code{\}} in a code snippet is evaluated and replaced by the a string representation of the return value before the snippet is executed by the script engine. A script may contain multiple \code{@\{...\}} expressions. String interpolation is enabled by default. It can be disabled using \code{engine\$setInterpolation(FALSE)}.
+
+\strong{Note:} Interpolated decimal values may lose precision when coerced to a string.
 
 This example simply sums two numbers. The section \hyperlink{callbacks}{Callbacks} includes a more interesting interpolation example involving recursion.
 
-%///I have a better example elsewhere
 \begin{verbatim}
 a <- 1; b <- 2
 engine %~% "@{a} + @{b}"
@@ -669,7 +670,7 @@ draws = R.eval('sample(4, 2, prob = probabilities)');
 
 \subsection{Compiling script}
 
-The Java Scripting API supports compiling script to Java byte code before evaluation. If unstructured code (i.e. code not encapsulated in methods or functions) is to be executed repeatedly, compiling it will improve performance.
+The Java Scripting API supports compiling script to Java byte code before evaluation. If unstructured code (i.e., code not encapsulated in methods or functions) is to be executed repeatedly, compiling it will improve performance.
 
 \pkg{jsr223} supports compiling code snippets and source files. Both of these lines return a compiled script object:
 
@@ -773,7 +774,7 @@ Most developers are familiar with the command history in the R REPL.  Unfortunat
 
 \subsection{Groovy and Java Classes}
 
-If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e. made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor. \strong{Tip:} Supply class paths as separate elements of a vector instead of concatenating the paths with the usual path delimiters (“;” for Windows, and “:” for all others). This will help make your code platform-independent and easier to read.
+If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e., made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor. \strong{Tip:} Supply class paths as separate elements of a vector instead of concatenating the paths with the usual path delimiters (“;” for Windows, and “:” for all others). This will help make your code platform-independent and easier to read.
 
 This example uses the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library} ///cite? to sample from a bivariate normal distribution.
 
@@ -938,7 +939,7 @@ engine$terminate()
 
 \subsection{Using JavaScript solutions - Voca}
 
-\href{https://vocajs.com/}{Voca} ///cite? is a popular library that simplifies many difficult string manipulation tasks such as word wrapping and diacritic detection (e.g. the “\'{e}” caf\'{e}). Using Voca with \pkg{jsr223} is simply a matter of sourcing a single script file. This sample script loads Voca and demonstrates its functionality.
+\href{https://vocajs.com/}{Voca} ///cite? is a popular library that simplifies many difficult string manipulation tasks such as word wrapping and diacritic detection (e.g., the “\'{e}” caf\'{e}). Using Voca with \pkg{jsr223} is simply a matter of sourcing a single script file. This sample script loads Voca and demonstrates its functionality.
 
 \begin{verbatim}
 # Source the Voca library. This creates a utility object named 'v'.
@@ -1138,7 +1139,7 @@ The \href{https://www.ruby-lang.org}{Ruby} programming language is a general-pur
 
 %///https://www.youtube.com/watch?v=oEkJvvGEtB4
 
-\strong{Note:} Global variables in Ruby script must be prefixed with a dollar sign. Hence, if we create a variable \code{myValue} using a \pkg{jsr223} assignment (e.g. \code{engine\$myValue <-\, 10}), it is accessed in Ruby script as \code{\$myValue}. Do not use the dollar sign prefix when accessing global variables via \pkg{jsr223} methods (e.g. \code{engine\$get("myValue")}).
+\strong{Note:} Global variables in Ruby script must be prefixed with a dollar sign. Hence, if we create a variable \code{myValue} using a \pkg{jsr223} assignment (e.g., \code{engine\$myValue <-\, 10}), it is accessed in Ruby script as \code{\$myValue}. Do not use the dollar sign prefix when accessing global variables via \pkg{jsr223} methods (e.g., \code{engine\$get("myValue")}).
 
 \strong{Note:} We have observed a bug in JRuby's exception handling: when JRuby encounters an error, the engine may continue to throw errors erroneously in subsequent evaluation requests. If this happens, restart the script engine.
 

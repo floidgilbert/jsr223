@@ -13,11 +13,11 @@
 %///see if these aliases work
 
 \title{
-Create an Instance of a Java-Based Scripting Language Engine
+Create an Instance of a Java-based Scripting Language Engine
 }
 
 \description{
-The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \code{\link{ScriptEngine}} instance is used to execute arbitrary code and pass data back and forth between the script engine environment and \R. The script engine environment contains a global object named \code{R} that facilitates callbacks into the \R environment.
+The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \code{\link{ScriptEngine}} instance is used to execute arbitrary code and pass data back and forth between the script engine environment and R. The script engine environment contains a global object named \code{R} that facilitates callbacks into the R environment. Complete documentation is found in the vignette///.
 }
 
 \usage{
@@ -26,7 +26,7 @@ ScriptEngine$new(engine.name, class.path = "")
 
 \arguments{
   \item{engine.name}{
-A character vector of length one that specifies the type of script engine to create. Valid engine names are \samp{js} or \samp{javascript} for JavaScript, \samp{jruby}, \samp{jython}, and \samp{groovy}. The engine name is case sensitive.
+A character vector of length one that specifies the type of script engine to create. Valid engine names are \samp{js} or \samp{javascript} for JavaScript, \samp{ruby}, \samp{python}, and \samp{groovy}. The engine name is case sensitive.
 }
   \item{class.path}{
 A character vector of paths to any JAR files that are required for the scripting engine and any script dependencies. A \var{class.path} value is required for all engines except JavaScript. Scripting engine JAR files can be obtained from the language-specific web sites referenced in the section \strong{Script Engines}. Note that class paths accumulate between script engine instances started in the same R session because they all use the same Java Virtual Machine. This is a limitation of \CRANpkg{rJava}, the package that \pkg{jsr223} builds on.
@@ -36,11 +36,11 @@ A character vector of paths to any JAR files that are required for the scripting
 \details{
 ///see vignette. other details. data exchange is not discussed here and it's a big deal.
 
-The bridge between \R and the script engine is not thread-safe. Multiple \R threads should not simultaneously access the same engine.
+The bridge between R and the script engine is not thread-safe. Multiple R threads should not simultaneously access the same engine.
 }
 
 \value{
-An \CRANpkg{R6} class. See the \strong{Script Engine Settings} and \strong{Methods} sections below.
+An \CRANpkg{R6} class named \code{ScriptEngine} that represents an instance of a Java-based script engine. See the \strong{Script Engine Settings} and \strong{Methods} sections below.
 }
 
 \author{
@@ -88,7 +88,7 @@ Returns a length-one logical vector indicating whether the \var{length one vecto
 }
 
 \item{\code{setLengthOneVectorAsArray(value)}}{
-Enables or disables the \var{length one vector as array} setting. Valid values are \code{TRUE} and \code{FALSE} (the default). When disabled, length-one R vectors and factors are converted to Java scalars. When enabled, length-one R vectors and factors are converted to Java arrays. This latter effect can also be produced by wrapping the vector in the \dQuote(as-is) function before passing it to the script engine (e.g. \code{engine$myValue <- I(variable)}).
+Enables or disables the \var{length one vector as array} setting. Valid values are \code{TRUE} and \code{FALSE} (the default). When disabled, length-one R vectors and factors are converted to Java scalars. When enabled, length-one R vectors and factors are converted to Java arrays. This latter effect can also be produced by wrapping the vector in the \dQuote{as-is} function before passing it to the script engine (e.g. \code{engine$myValue <- I(variable)}).
 }
 
 \item{\code{getStandardOutputMode()}}{
@@ -117,11 +117,11 @@ This section includes \code{ScriptEngine} class methods that do not get/set scri
 \describe{
 
 \item{\code{$identifier}}{
-Retrieves the global variable named \code{identifier} from the script engine environment. This method is equivalent to using \code{get(identifier)}.
+Retrieves the global variable named \code{identifier} from the script engine environment. For example, if \code{engine} is a script engine instance, retrieve the value of a variabled named \code{myValue} using \code{engine$myValue}. Quote names that are not valid variable names in R (e.g. engine$`a-3`). This method is equivalent to \code{get(identifier)}.
 }
 
 \item{\code{$identifier <- value}}{
-Assigns \code{value} to the global variable named \code{identifier} in the script engine environment. This method is equivalent to using \code{set(identifier, value)}.
+Assigns \code{value} to the global variable named \code{identifier} in the script engine environment. The R object contained in \code{value} is converted to a Java object. For example, if \code{engine} is a script engine instance, set the value of a variabled named \code{myValue} using \code{engine$myValue <- 1}. Quote names that are not valid variable names in R (e.g. engine$`a-3` <- 1). This method is equivalent to \code{set(identifier, value)}.
 }
 
 \item{\code{\%@\% script}}{
@@ -153,11 +153,11 @@ Evaluates code contained in the \code{script} character vector. If \code{discard
 }
 
 \item{\code{finalize()}}{
-This method is called before the object is garbage-collected to release resources. It is not intended to be called directly.
+This method is called before the object is garbage-collected to release resources. Do not call this method directly. Use the \code{terminate} method instead.
 }
 
 \item{\code{get(identifier)}}{
-Retrieves the global variable named \code{identifier} from the script engine environment. This method is equivalent to using \code{$identifier}.
+Retrieves the value of a global variable in the script engine environment. The name of the variable is specified in the length-one character vector \code{identifier}. For example, if \code{engine} is a script engine instance, retrieve the value of a variabled named \code{myValue} using \code{engine$get("myValue")}. This method is equivalent to \code{$identifier}.
 }
 
 \item{\code{getBindings()}}{
@@ -180,7 +180,37 @@ Returns a named list containing information about the script engine including th
 Returns a character vector of length one containing the contents of the script engine's standard output buffer. The standard output buffer is emptied. This method is only useful when the standard output mode has been set to \code{'buffer'}. See \code{setStandardOutputMode} in \strong{Script Engine Settings} for more information.
 }
 
+\item{\code{initialize()}}{
+The constructor for this class. Do not call this method directly. Use \code{ScriptEngine$new()} instead.
+}
 
+\item{\code{invokeFunction(function.name, ...)}}{
+Invoke a function in the script engine environment. The argument \code{function.name} is a character vector containing the name of the function to be called. The \code{...} indicates any number of arguments to be passed to the script function. The return value is the result of the function converted to an R object.
+}
+
+\item{\code{invokeMethod(object.name, method.name, ...)}}{
+Invoke a method of an object in the script engine environment. The arguments \code{object.name} and \code{method.name} are character vectors containing the names of the object and method, respectively. The \code{...} indicates any number of arguments to be passed to the method. The return value is the result of the method converted to an R object. The Groovy and Python engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript and Ruby engines only support calling methods of native scripting objects.
+}
+
+\item{\code{isInitialized()}}{
+Returns \code{TRUE} or \code{FALSE} indicating whether the script engine instance is active (i.e., it has not been explicitly terminated).
+}
+
+\item{\code{remove(identifier)}}{
+Removes a variable from the script engine environment. The name of the variable is specified in the length-one character vector \code{identifier}. For example, if \code{engine} is a script engine instance, remove the variabled named \code{myValue} using \code{engine$remove("myValue")}.
+}
+
+\item{\code{set(identifier, value)}}{
+Assigns \code{value} to a global variable in the script engine environment. The name of the variable is specified in the length-one character vector \code{identifier}. The R object \code{value} is converted to a Java object. For example, if \code{engine} is a script engine instance, set the value of a variabled named \code{myValue} using \code{engine$set("myValue", 1)}. This method is equivalent to \code{$identifier <- value)}.
+}
+
+\item{\code{source(file.name, discard.return.value = FALSE, bindings = NULL)}}{
+Evaluates code contained in the file specified by the length-one character vector \code{file.name}. If \code{discard.return.value = FALSE}, the method returns the result of the last expression in the script, if any, or \code{NULL} otherwise. The \code{bindings} argument accepts an R named list. The name/value pairs in the list replace the script engine's global bindings during script execution.///examples here or refer to vig?
+}
+
+\item{\code{terminate()}}{
+Terminates the script engine instance and releases associated resources. Call this method when the script engine is no longer needed.
+}
 
 }
 }
@@ -201,16 +231,77 @@ The \pkg{jsr223} package supports the following Java-based languages. Follow a l
 \code{\link{CompiledScript}}
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+library("jsr223")
 
-## The function is currently defined as
-function (x)
-{
-  }
+# Create an instance of a JavaScript engine. Note that the
+# script engine's JAR file is not required for the class.path
+# parameter because JavaScript is included with JRE 8.
+engine <- ScriptEngine$new(engine.name = "javascript")
+
+# Evaluate arbitrary code. Multiline code is allowed.
+engine \%~\% "var a = Math.PI;"
+
+# Retrieve the value of a global JavaScript variable.
+cat("The value of 'a' is ", engine$a, ".", sep = "")
+
+# Set the value of a global variable. If the variable does
+# not exist in the engine environment, it will be created.
+engine$a <- 10
+cat("The value of 'a' is now ", engine$a, ".", sep = "")
+
+# Use callbacks to set values, get values, and execute R code
+# in the current R session via the global R object.
+engine \%@\% "R.set('a', 12);"
+cat("The value of 'a' is now ", engine \%~\% "R.get('a');", ".", sep = "")
+engine \%@\% "var randomNormal = R.eval('rnorm(5)');"
+engine$randomNormal
+
+# Use a Java object.
+engine \%@\% "java.util.Arrays.sort(randomNormal)"
+engine$randomNormal
+
+# Enable property to convert length one vectors to arrays
+# instead of scalar values.
+engine$setLengthOneVectorAsArray(TRUE)
+engine$c <- 1
+engine \%~\% "c[0]" # Returns 1
+engine$setLengthOneVectorAsArray(FALSE)
+
+# Suppress console output.
+engine$setStandardOutputMode("quiet")
+engine \%~\% "print('Hello (1)');"
+
+# Re-enable console output
+engine$setStandardOutputMode("console")
+engine \%~\% "print('Hello (2)');"
+
+# Terminate the engine.
+engine$terminate()
+
+\dontrun{
+# Create a JRuby engine by specifying the engine name and
+# the class path for the engine JAR. The JAR file path
+# will be different on your system.
+engine <- ScriptEngine$new(
+  engine.name = "jruby"
+  , class.path = "../engines/jruby-complete.jar"
+)
+
+# Assign a value to a variable. This will create a global
+# variable in the Ruby environment.
+engine$c <- pi
+
+# Reference the previous value in a code snippet. Note that
+# Ruby requires a "$" designator for global variables.
+engine \%~\% "3 * $c"
+
+# Evaluate a script file.
+engine$source("./my_script.rb")
+
+# Terminate the engine.
+engine$terminate()
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+}
+
+\keyword{ programming }
+\keyword{ interface }
