@@ -26,6 +26,7 @@ Floid R. Gilbert \email{floid.r.gilbert@gmail.com}, David B. Dahl \email{dahl@st
 
 \examples{
 # Simple example embedding JavaScript.
+library("jsr223")
 engine <- ScriptEngine$new("javascript")
 engine$radius <- 4
 engine \%~\% "var area = Math.PI * Math.pow(radius, 2)"
@@ -35,7 +36,7 @@ cat ("The area of the circle is ", engine$area, ".\n", sep = "")
 # in the current R session via the global R object.
 # Access R from JavaScript.
 engine \%@\% "R.set('a', 12);"
-engine \%@\% "print('The value of \\'a\\' is now ' + R.get('a') + '.');"
+engine \%@\% "print(\\"The value of 'a' is \\" + R.get('a') + \\".\\");"
 engine \%@\% "var randomNormal = R.eval('rnorm(5)');"
 engine$randomNormal
 

@@ -256,7 +256,7 @@ library("jsr223")
 # Create an instance of a JavaScript engine. Note that the
 # script engine's JAR file is not required for the class.path
 # parameter because JavaScript is included with JRE 8.
-engine <- ScriptEngine$new(engine.name = "javascript")
+engine <- ScriptEngine$new("javascript")
 
 # Evaluate arbitrary code. Multiline code is allowed.
 engine \%~\% "var a = Math.PI;"
@@ -273,7 +273,7 @@ cat("The value of 'a' is now ", engine$a, ".", sep = "")
 # in the current R session via the global R object.
 # Access R from JavaScript.
 engine \%@\% "R.set('a', 12);"
-engine \%@\% "print('The value of \\'a\\' is now ' + R.get('a') + '.');"
+engine \%@\% "print(\\"The value of 'a' is now \\" + R.get('a') + \\".\\");"
 engine \%@\% "var randomNormal = R.eval('rnorm(5)');"
 engine$randomNormal
 
