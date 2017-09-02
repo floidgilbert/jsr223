@@ -222,7 +222,7 @@ The \pkg{jsr223} \code{ScriptEngine} class exposes several methods that control 
 
 \hypertarget{handlingrvectors}{\subsection{Handling R vectors}}
 
-By default, length-one R vectors are converted to Java scalars when passed to the script engine environment. If a Java length-one array is desired, wrap the value in the R ``As Is'' function (e.g., \code{I(myValue)}), or set the \textit{length one vector as array} setting to \code{TRUE} using the \code{setLengthOneVectorAsArray} method. The following example demonstrates converting length-one vectors.
+By default, length-one R vectors are converted to Java scalars when passed to the script engine environment. If a Java length-one array is desired, wrap the value in the R ``as-is'' function (e.g., \code{I(myValue)}), or set the \textit{length one vector as array} setting to \code{TRUE} using the \code{setLengthOneVectorAsArray} method. The following example demonstrates converting length-one vectors.
 
 \begin{verbatim}
 # By default, length-one vectors are converted to Java scalars.
@@ -249,7 +249,7 @@ engine$getJavaClassName("myArray")
 ## [1] "[D"
 \end{verbatim}
 
-Vectors of any length other than one are always converted to native Java arrays. The following code passes a vector of ten random normal deviates to the script engine environment. The first element of the resulting array is returned. This syntax is common to all of the supported scripting languages. \strong{Note:} Java arrays use zero-based indexes.
+Vectors of any length other than one are always converted to primitive Java arrays. The following code passes a vector of ten random normal deviates to the script engine environment. The first element of the resulting array is returned. This syntax is common to all of the supported scripting languages. \strong{Note:} Java arrays use zero-based indexes.
 
 \begin{verbatim}
 set.seed(10)
@@ -515,7 +515,7 @@ Functions and methods defined in script can be called directly from R via the \c
 
 \strong{Note:} The Groovy and Python engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript and Ruby engines only support calling methods of native scripting objects.
 
-As described in \hyperlink{handlingrvectors}{Handling R vectors}, length-one vectors are converted to Java scalars by default. One way to ensure that a vector is always converted to a Java array is by wrapping it in the ``As Is'' function \code{I()}. This feature is particularly useful when passing multiple parameters to a script function. In the same function, some parameters may require scalars while others require arrays. Simply use \code{I()} to indicate which vectors should be converted to arrays.
+As described in \hyperlink{handlingrvectors}{Handling R vectors}, length-one vectors are converted to Java scalars by default. One way to ensure that a vector is always converted to a Java array is by wrapping it in the ``as-is'' function \code{I()}. This feature is particularly useful when passing multiple parameters to a script function. In the same function, some parameters may require scalars while others require arrays. Simply use \code{I()} to indicate which vectors should be converted to arrays.
 
 The following example demonstrates calling a simple JavaScript function, \code{sumThis}, that sums the elements of an array. If the first parameter is not an array, the function throws an error.
 
@@ -573,6 +573,7 @@ engine$invokeMethod("Math", "abs", -3)
 
 This example simply sums two numbers. The section \hyperlink{callbacks}{Callbacks} includes a more interesting interpolation example involving recursion.
 
+%///I have a better example elsewhere
 \begin{verbatim}
 a <- 1; b <- 2
 engine %~% "@{a} + @{b}"

@@ -40,14 +40,79 @@ The bridge between \R and the script engine is not thread-safe. Multiple \R thre
 }
 
 \value{
-An \CRANpkg{R6} class. See the \strong{Methods} section below.
+An \CRANpkg{R6} class. See the \strong{Script Engine Settings} and \strong{Methods} sections below.
 }
 
 \author{
 Floid R. Gilbert \email{floid.r.gilbert@gmail.com}, David B. Dahl \email{dahl@stat.byu.edu}
 }
 
+\section{Script Engine Settings}{
+Several script engine settings are exposed using Java-style getter/setter methods. Other methods are addressed in the \strong{Methods} section.
+
+\describe{
+\item{\code{getArrayOrder()}}{
+Returns a length-one character vector containing the current array order scheme. See \code{setArrayOrder} for more information.
+}
+
+\item{\code{setArrayOrder(value)}}{
+Sets the current array ordering scheme used for all n-dimensional arrays (such as matrices) converted to and from the script engine. Valid values are \code{'row-major'} (the default), \code{'column-major'}, and \code{'row-major-java'}. These indexing schemes are described in the ///vig.
+}
+
+\item{\code{getCoerceFactors()}}{
+Returns a length-one logical vector indicating whether the \var{coerce factors} setting is enabled. See \code{setCoerceFactors} for more information.
+}
+
+\item{\code{setCoerceFactors(value)}}{
+Enables or disables the \var{coerce factors} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, an attempt is made to coerce R factors to integer, numeric, or logical vectors before converting them to a Java array. If the attempt fails, or if the setting is disabled, the factor is converted to a Java string array. This setting applies to standalone factors as well as factors in data frames.
+}
+
+\item{\code{getDataFrameRowMajor()}}{
+Returns a length-one logical vector indicating whether the \var{data frame row major} setting is enabled. See \code{setDataFrameRowMajor} for more information.
+}
+
+\item{\code{setDataFrameRowMajor(value)}}{
+Enables or disables the \var{data frame row major} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, data frames are converted to Java objects in row-major fashion. When disabled, column-major ordering is used. See the vignette for details///.
+}
+
+\item{\code{getInterpolate()}}{
+Returns a length-one logical vector indicating whether the \var{string interpolation} setting is enabled. See \code{setInterpolate} for more information.
+}
+
+\item{\code{setInterpolate(value)}}{
+Enables or disables the \var{string interpolation} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, R code placed between \code{@\{} and \code{\}} in a script is evaluated and replaced by the a string representation of the return value. A script may contain multiple \code{@\{...\}} expressions.
+}
+
+\item{\code{getLengthOneVectorAsArray()}}{
+Returns a length-one logical vector indicating whether the \var{length one vector as array} setting is enabled. See \code{setLengthOneVectorAsArray} for more information.
+}
+
+\item{\code{setLengthOneVectorAsArray(value)}}{
+Enables or disables the \var{length one vector as array} setting. Valid values are \code{TRUE} and \code{FALSE} (the default). When disabled, length-one R vectors and factors are converted to Java scalars. When enabled, length-one R vectors and factors are converted to Java arrays. This latter effect can also be produced by wrapping the vector in the \dQuote(as-is) function before passing it to the script engine (e.g. \code{engine$myValue <- I(variable)}).
+}
+
+\item{\code{getStandardOutputMode()}}{
+Returns a length-one character vector containing the current standard output mode. See \code{setStandardOutputMode} for more information.
+}
+
+\item{\code{setStandardOutputMode(value)}}{
+Controls how text written to standard output is handled. The default value, \code{'console'}, indicates that standard output will be printed in the R console. This output cannot be captured using standard R methods. The \code{'buffer'} setting indicates that standard output will be saved in an internal buffer. This buffered output can be retrieved and cleared using the \code{getStandardOutput} method, or cleared using the \code{clearStandardOutput} method. Finally, the \code{'quiet'} setting indicates that standard output will be discarded.
+}
+
+\item{\code{getStringsAsFactors()}}{
+Returns a length-one logical vector, or \code{NULL}, indicating whether the \var{strings as factors} setting is enabled. See \code{setStringsAsFactors} for more information.
+}
+
+\item{\code{setStringsAsFactors(value)}}{
+When converting a Java object to a data frame, the \var{strings as factors} setting controls whether character vectors are converted to factors. The default value of \code{NULL} indicates that the R system setting \code{stringsAsFactors} should be used (see \code{getOption("stringsAsFactors")}). A value of \code{TRUE} ensures that character vectors are converted to factors. A setting of \code{FALSE} disables conversion to factors.
+}
+
+}
+}
+
 \section{Methods}{
+
+This section includes \code{ScriptEngine} class methods that do not get/set script engine options. See \strong{Script Engine Settings} for information on script engine options.
 
 \describe{
 
@@ -68,7 +133,7 @@ Evaluates code contained in the \code{script} character vector and returns the r
 }
 
 \item{\code{clearStandardOutput()}}{
-Empties the script engine's standard output buffer. This method is only useful when the standard output mode has been set to \code{'buffer'}. See the methods \code{getStandardOutputMode} and \code{setStandardOutputMode} for more information.
+Empties the script engine's standard output buffer. This method is only useful when the standard output mode has been set to \code{'buffer'}. See the methods \code{getStandardOutputMode} and \code{setStandardOutputMode} in \strong{Script Engine Settings} for more information.
 }
 
 \item{\code{compile(script)}}{
@@ -88,19 +153,11 @@ Evaluates code contained in the \code{script} character vector. If \code{discard
 }
 
 \item{\code{finalize()}}{
-This method is called before the object is garbage-collected to release resources. It calls the \code{terminate} method.
+This method is called before the object is garbage-collected to release resources. It is not intended to be called directly.
 }
 
 \item{\code{get(identifier)}}{
 Retrieves the global variable named \code{identifier} from the script engine environment. This method is equivalent to using \code{$identifier}.
-}
-
-\item{\code{getArrayOrder()}}{
-Returns a length-one character vector containing the current array order scheme. See \code{setArrayOrder} for more information.
-}
-
-\item{\code{setArrayOrder(value)}}{
-Sets the current array ordering scheme used for all n-dimensional arrays (such as matrices) converted to and from the script engine. Valid values are \code{'row-major'} (the default), \code{'column-major'}, and \code{'row-major-java'}. These indexing schemes are described in the ///vig.
 }
 
 \item{\code{getBindings()}}{
@@ -109,22 +166,6 @@ Lists all of the global variables in the script engine environment. This method 
 
 \item{\code{getClassPath()}}{
 Returns the class path as a character vector. The class path is set in the \code{ScriptEngine} constructor method. Note that class paths accumulate between script engine instances started in the same R session because they all use the same Java Virtual Machine. This is a limitation of \pkg{rJava}, the package that \pkg{jsr223} builds on.
-}
-
-\item{\code{getCoerceFactors()}}{
-Returns a length-one logical vector indicating whether the \var{coerce factors} setting is enabled. See \code{setCoerceFactors} for more information.
-}
-
-\item{\code{setCoerceFactors(value)}}{
-Enables or disables the \var{coerce factors} setting. Valid values are \code{TRUE} and \code{FALSE}. When enabled, an attempt is made to coerce R factors to integer, numeric, or logical vectors before converting them to a Java array. If the attempt fails, or if the setting is disabled, the factor is converted to a Java string array. This setting applies to standalone factors as well as factors in data frames.
-}
-
-\item{\code{getDataFrameRowMajor()}}{
-Returns a length-one logical vector indicating whether the \var{data frame row major} setting is enabled. See \code{setDataFrameRowMajor} for more information.
-}
-
-\item{\code{setDataFrameRowMajor(value)}}{
-A logical value (\code{TRUE} or \code{FALSE}) that enables or disables the \var{data frame row major} setting. When enabled, data frames are converted to Java objects in row-major fashion. When disabled, column-major ordering is used. See the vignette for details///.
 }
 
 \item{\code{getJavaClassName(identifier)}}{
@@ -136,11 +177,7 @@ Returns a named list containing information about the script engine including th
 }
 
 \item{\code{getStandardOutput()}}{
-Returns a character vector of length one containing the contents of the script engine's standard output buffer. The standard output buffer is emptied. This method is only useful when the standard output mode has been set to \code{'buffer'}. See \code{setStandardOutputMode} for more information.
-}
-
-\item{\code{getStandardOutputMode()}}{
-Returns a length-one character vector containing the current standard output mode. See \code{setStandardOutputMode} for more information.
+Returns a character vector of length one containing the contents of the script engine's standard output buffer. The standard output buffer is emptied. This method is only useful when the standard output mode has been set to \code{'buffer'}. See \code{setStandardOutputMode} in \strong{Script Engine Settings} for more information.
 }
 
 
@@ -149,7 +186,7 @@ Returns a length-one character vector containing the current standard output mod
 }
 
 \section{Script Engines}{
-\pkg{jsr223} supports the following Java-based script engines. Follow a link below to visit the language's supporting web site and to download script engine JAR files. Detailed instructions can be found ///vig.
+The \pkg{jsr223} package supports the following Java-based languages. Follow a link below to visit the language's supporting web site and to download script engine JAR files. Detailed instructions can be found ///vig.
 
 \href{http://groovy-lang.org}{Groovy} -- A Java-like language enhanced with modern dynamic programming features.
 
