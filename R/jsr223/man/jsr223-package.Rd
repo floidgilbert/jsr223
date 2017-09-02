@@ -9,13 +9,11 @@ A Simple Interface Between R, Java, and Java-Based Scripting Languages JavaScrip
 }
 
 \description{
-The R package \CRANpkg{jsr223} is a high-level integration for Java that makes Java objects easy to use from within R and simplifies bi-directional data exchange for a wide variety of objects. Furthermore, \pkg{jsr223} employs the \href{http://docs.oracle.com/javase/8/docs/technotes/guides/scripting/}{Java Scripting API} to bring four scripting languages and, by extension, countless libraries to the R software environment. \pkg{jsr223} uses intuitive syntax to blend JavaScript, Ruby, Python, and Groovy (a Java-like scripting language) with R script.
+The \CRANpkg{jsr223} package provides a high-level integration for Java that makes Java objects easy to use from within R and simplifies bi-directional data exchange for a wide variety of objects. Furthermore, \pkg{jsr223} employs the \href{http://docs.oracle.com/javase/8/docs/technotes/guides/scripting/}{Java Scripting API} to bring four scripting languages to the R software environment: JavaScript, Ruby, Python, and Groovy (a Java-like scripting language).
 }
 
 \details{
-\pkg{jsr223} requires the Java Runtime Environment (JRE) version 8. Both 64-bit and 32-bit editions are supported. See the vignette///.
-
-\pkg{jsr223} is built on \CRANpkg{rJava}, the low-level R to Java interface. The design of \pkg{jsr223} follows cues from \pkg{rJava}, \CRANpkg{rscala}, and \CRANpkg{V8}.
+The complete \pkg{jsr223} documentation is in the ///vignette. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed easily in the R documentation.
 }
 
 \author{
@@ -25,15 +23,30 @@ Floid R. Gilbert \email{floid.r.gilbert@gmail.com}, David B. Dahl \email{dahl@st
 \seealso{
 \code{\link{ScriptEngine}}
 }
+
 \examples{
-# Simple example for embedding JavaScript.
+# Simple example embedding JavaScript.
 engine <- ScriptEngine$new("javascript")
 engine$radius <- 4
-engine \%~\% "var area = Math.PI * Math.pow(radius, 2);"
+engine \%~\% "var area = Math.PI * Math.pow(radius, 2)"
 cat ("The area of the circle is ", engine$area, ".\n", sep = "")
-engine$terminate()
 
-#///include example of using a Java object. Proabably just do a better example in general that shows the features including lists, data frames, etc.
+# Use callbacks to set values, get values, and execute R code
+# in the current R session via the global R object.
+# Access R from JavaScript.
+engine \%@\% "R.set('a', 12);"
+engine \%@\% "print('The value of \\'a\\' is now ' + R.get('a') + '.');"
+engine \%@\% "var randomNormal = R.eval('rnorm(5)');"
+engine$randomNormal
+
+# Use a Java object.
+engine$randomNormal <- rnorm(5)
+engine$randomNormal
+engine \%@\% "java.util.Arrays.sort(randomNormal)"
+engine$randomNormal
+
+# Close the engine and release resources.
+engine$terminate()
 }
 
 \keyword{ package }

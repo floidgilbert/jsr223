@@ -17,7 +17,7 @@ Create an Instance of a Java-based Scripting Language Engine
 }
 
 \description{
-The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \code{\link{ScriptEngine}} instance is used to execute arbitrary code and pass data back and forth between the script engine environment and R. The script engine environment contains a global object named \code{R} that facilitates callbacks into the R environment. Complete documentation is found in the vignette///.
+The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \code{\link{ScriptEngine}} instance is used to execute arbitrary code and pass data back and forth between the script engine environment and R. The script engine environment contains a global object named \code{R} that facilitates callbacks into the R environment. Complete documentation is located in the \pkg{jsr223} vignette///.
 }
 
 \usage{
@@ -34,17 +34,15 @@ A character vector of paths to any JAR files that are required for the scripting
 }
 
 \details{
-///see vignette. other details. data exchange is not discussed here and it's a big deal.
+The complete \pkg{jsr223} documentation is in the ///vignette. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed easily in the R documentation.
 
-///callbacks.
+In this document, the section \strong{Script Engine Settings} describes class methods pertaining to configurable options. The section \strong{Methods} lists the rest of the class methods. The section \strong{Callbacks} provides an overview of the functionality allowing code in the script engine to access data and execute code in the R environment. Finally, \strong{Script Engines} includes links to the supported script engine providers.
 
-///script engines. other sections here.
-
-The bridge between R and the script engine is not thread-safe. Multiple R threads should not simultaneously access the same engine.
+The bridge between R and the script engine is not thread-safe; multiple R threads should not simultaneously access the same engine.
 }
 
 \value{
-An \CRANpkg{R6} class named \code{ScriptEngine} that represents an instance of a Java-based script engine. See the \strong{Script Engine Settings} and \strong{Methods} sections below.
+An \CRANpkg{R6} class named \code{ScriptEngine} that represents an instance of a Java-based script engine.
 }
 
 \author{
@@ -273,12 +271,15 @@ cat("The value of 'a' is now ", engine$a, ".", sep = "")
 
 # Use callbacks to set values, get values, and execute R code
 # in the current R session via the global R object.
+# Access R from JavaScript.
 engine \%@\% "R.set('a', 12);"
-cat("The value of 'a' is now ", engine \%~\% "R.get('a');", ".", sep = "")
+engine \%@\% "print('The value of \\'a\\' is now ' + R.get('a') + '.');"
 engine \%@\% "var randomNormal = R.eval('rnorm(5)');"
 engine$randomNormal
 
 # Use a Java object.
+engine$randomNormal <- rnorm(5)
+engine$randomNormal
 engine \%@\% "java.util.Arrays.sort(randomNormal)"
 engine$randomNormal
 
@@ -297,7 +298,7 @@ engine \%~\% "print('Hello (1)');"
 engine$setStandardOutputMode("console")
 engine \%~\% "print('Hello (2)');"
 
-# Terminate the engine.
+# Close the engine and release resources.
 engine$terminate()
 
 \dontrun{

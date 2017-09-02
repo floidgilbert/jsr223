@@ -682,7 +682,7 @@ cs <- engine$compile(script)
 cs <- engine$compileSource(filename)
 \end{verbatim}
 
-The compiled script object has a single method, \code{eval}, that is used to execute the compiled code. It can be argued that the method should be called \code{exec} in this case, but our interface follows the Java Scripting API naming scheme. The following is a trivial example that demonstrates the compiled script interface.
+The compiled script object has a single method, \code{eval}, that is used to execute the compiled code. It can be argued that the method should be called \code{exec} in this case, but our interface follows the Java Scripting API naming scheme. The following trivial example demonstrates the compiled script interface.
 
 \begin{verbatim}
 # Compile a code snippet.
@@ -698,8 +698,8 @@ cs$eval()
 ## 5
 
 # Supply new bindings...
-l1 <- list(c = 6, d = 7)
-cs$eval(bindings = l1)
+lst <- list(c = 6, d = 7)
+cs$eval(bindings = lst)
 
 ## 13
 
