@@ -1330,7 +1330,7 @@ engine$terminate()
 
 \hypertarget{softwarereview}{\section{Software review}}
 
-There are several programming language integrations that combine the strengths of R with other development environments. These language integrations can generally be classified as either R-major or R-minor. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. The built-in R integrations for C/C++ are examples of both integration types. The base R functions .C and .Call are R-major integrations that enable C/C++ compiled code to be called from R. The complementary R-minor integration permits C/C++ applications to call R as a shared library when R is built using the -{}-enable-R-shlib configuration option.
+There are several programming language integrations that combine the strengths of R with other development environments. These language integrations can generally be classified as either R-major or R-minor. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. The built-in R integrations for C/C++ are examples of both integration types. The base R functions .C and .Call are R-major integrations that enable C/C++ compiled code to be called from R. The complementary R-minor integration permits C/C++ applications to call R as a shared library when R is built using the \samp{-{}-enable-R-shlib} configuration option.
 
 \pkg{jsr223} is an R-major integration for the Java platform and the scripting languages JavaScript, Python, Ruby, and Groovy. In this software review, we provide context for the \pkg{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \CRANpkg{Rserve} ///cite and \CRANpkg{OpenCPU} ///cite are not included in this discussion because their objectives and features do not necessarily align with those of \pkg{jsr223}.
 
@@ -1340,13 +1340,13 @@ Before beginning the individual package comparisons, we point out the one unique
 
 The preeminent Java integration for R is Simon Urbanek's \pkg{rJava}. Described as a low-level R to Java interface, \pkg{rJava} is considered the Java analog to the base R functions .C and .Call. \pkg{rJava} supports creating objects, calling methods and accessing Java object fields via JNI, the Java Native Interface. JNI is a standardized programming interface that enables native (i.e. platform-specific) applications to embed the Java Virtual Machine (JVM) and use compiled Java classes.
 
-\pkg{jsr223} uses \pkg{rJava}'s low-level interface together with the Java Scripting API to provide high-level access to the Java platform through several scripting languages. In a sense, \pkg{jsr223} builds on \pkg{rJava}, extending several features, and adding many new ones///don't say this, you aren't in \pkg{rJava} anymore///. We provide a basic comparison of \pkg{rJava} and \pkg{jsr223} features.
+\pkg{jsr223} uses \pkg{rJava}'s low-level interface together with the Java Scripting API to provide high-level access to the Java platform through several scripting languages. In a sense, \pkg{jsr223} builds on \pkg{rJava} extending or adding several features. Here we provide a basic comparison of \pkg{rJava} and \pkg{jsr223} features.
 
 ///better development loop/time. no compile. immediate feedback. it's what we like about R. so we like it about \pkg{jsr223}.
 
-\noindent \textit{Data interchange}
+\noindent \textit{Data exchange}
 
-\noindent \pkg{rJava} supports the interchange of scalars, vectors, matrices, and arrays between R and the Java environment. In addition to these data structures, \pkg{jsr223} supports exchanging lists, nested lists, and data frames. \pkg{jsr223} includes several configurable data options. For example, R data frames can be converted to row-major or column-major data structures in the Java environment and R factors can be passed as either strings or integers.
+\noindent \pkg{rJava} supports data interchange for scalars, vectors, and matrices between R and the Java environment. As of this writing, \pkg{rJava} support for n- In addition to these data structures, \pkg{jsr223} supports exchanging lists, nested lists, and data frames. \pkg{jsr223} includes several configurable data options. For example, R data frames can be converted to row-major or column-major data structures in the Java environment and R factors can be passed as either strings or integers.
 
 Passing data structures between environments with \pkg{rJava} requires knowledge of JNI, Java types, and \pkg{rJava}'s programming interface. In \pkg{jsr223}, data interchange is reduced to simple R-like variable operations. To create or update a variable named \code{value} in the embedded scripting environment, simply use \code{engine\$value <-  object} where \code{engine} is a \pkg{jsr223} reference to a script engine. To retrieve the value, use \code{engine\$value}. This intuitive interface substantially reduces the learning curve and coding effort required to exchange data.
 
