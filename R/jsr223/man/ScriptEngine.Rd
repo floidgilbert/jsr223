@@ -45,10 +45,6 @@ The bridge between R and the script engine is not thread-safe; multiple R thread
 An \CRANpkg{R6} class named \code{ScriptEngine} that represents an instance of a Java-based script engine.
 }
 
-\author{
-Floid R. Gilbert \email{floid.r.gilbert@gmail.com}, David B. Dahl \email{dahl@stat.byu.edu}
-}
-
 \section{Script Engine Settings}{
 Several script engine settings are exposed using Java-style getter/setter methods. Other methods are addressed in the \strong{Methods} section.
 
