@@ -11,6 +11,8 @@
 \alias{\%@\%}
 \alias{\%@\%.ScriptEngine}
 %///see if these aliases work
+%///need to document that all set* functions return previous value.
+%///
 
 \title{
 Create an Instance of a Java-based Scripting Language Engine

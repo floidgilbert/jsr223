@@ -1,13 +1,13 @@
 Package: jsr223
 Type: Package
 Title: The Simple Interface Between R and Java-Based Scripting Languages Including JavaScript, Jython (Python), JRuby (Ruby), Groovy, and Scala
-Version: 0.3-0
+Version: 0.3.0
 Date: 2016-07-14
 Authors@R: c(person(given="Floid R.", family="Gilbert", role=c("aut","cre"), email="floid.r.gilbert@gmail.com"), person(given="David B.", family="Dahl", role=c("aut"), email="dahl@stat.byu.edu"))
 Author: Floid R. Gilbert [aut, cre], David B. Dahl [aut]
 Maintainer: Floid R. Gilbert <floid.r.gilbert@gmail.com>
 Description: This package simplifies using R with scripting languages and Java classes.
 License: GPL (>= 2) | BSD_3_clause + file LICENSE
-Imports: jdx (>= 0.1-0), rJava (>= 0.9-8), R6 (>= 2.2.0), utils (>= 3.3.0)
+Imports: jdx (>= 0.1.0), rJava (>= 0.9-8), R6 (>= 2.2.0), utils (>= 3.3.0)
 SystemRequirements: Java Runtime Environment (>= 1.8)
 
