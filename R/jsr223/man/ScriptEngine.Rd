@@ -141,7 +141,7 @@ Compiles code contained in the \code{script} character vector. Returns a \code{\
 }
 
 \item{\code{compileSource(file.name)}}{
-Compiles code contained in the file specified by \code{file.name}. Returns a \code{\link{CompiledScript}} object.
+Compiles code contained in the file specified by the length-one character vector \code{file.name}. Local file paths or URLs are accepted. Returns a \code{\link{CompiledScript}} object.
 }
 
 \item{\code{console()}}{
@@ -205,7 +205,7 @@ Assigns \code{value} to a global variable in the script engine environment. The 
 }
 
 \item{\code{source(file.name, discard.return.value = FALSE, bindings = NULL)}}{
-Evaluates code contained in the file specified by the length-one character vector \code{file.name}. If \code{discard.return.value = FALSE}, the method returns the result of the last expression in the script, if any, or \code{NULL} otherwise. The \code{bindings} argument accepts an R named list. The name/value pairs in the list replace the script engine's global bindings during script execution.///examples here or refer to vig?
+Evaluates code contained in the file specified by the length-one character vector \code{file.name}. Local file paths or URLs are accepted. If \code{discard.return.value = FALSE}, the method returns the result of the last expression in the script, if any, or \code{NULL} otherwise. The \code{bindings} argument accepts an R named list. The name/value pairs in the list replace the script engine's global bindings during script execution.///examples here or refer to vig?
 }
 
 \item{\code{terminate()}}{

@@ -8,6 +8,6 @@ Author: Floid R. Gilbert [aut, cre], David B. Dahl [aut]
 Maintainer: Floid R. Gilbert <floid.r.gilbert@gmail.com>
 Description: This package simplifies using R with scripting languages and Java classes.
 License: GPL (>= 2) | BSD_3_clause + file LICENSE
-Imports: jdx (>= 0.1.0), rJava (>= 0.9-8), R6 (>= 2.2.0), utils (>= 3.3.0)
+Imports: jdx (>= 0.1.0), rJava (>= 0.9-8), R6 (>= 2.2.0), utils (>= 3.3.0), curl (>= 3.0.0)
 SystemRequirements: Java Runtime Environment (>= 1.8)
 

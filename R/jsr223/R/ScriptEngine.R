@@ -112,6 +112,12 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
       if (length(file.name) != 1L || !is.character(file.name))
         stop("'file.name' must be a character vector of length 1 containing a valid script file name.")
       file.name <- trimws(file.name)
+      if (grepl("^(https?|ftp|file)://?", file.name)) {
+        tmp <- tempfile()
+        curl::curl_download(file.name, tmp, quiet = TRUE, mode = "wb")
+        on.exit(unlink(tmp))
+        file.name <- tmp
+      }
       if (!file.exists(file.name))
         stop(sprintf("The file '%s' could not be found or does not exist.", file.name))
       file.chars <- readChar(file.name, file.info(file.name)$size)
