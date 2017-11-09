@@ -71,7 +71,12 @@ f.setVisible(true);
 # Close the window
 engine %@% "f.dispose();"
 \end{verbatim}
-Alternatively, code can be sourced from a file using the script engine object's \code{source} method: \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local path or a URL. This approach is recommended for more lengthy scripts. Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward.
+Alternatively, code can be sourced from a file using the script engine object's \code{source} method:
+
+\begin{verbatim}
+engine$source(file.name)
+\end{verbatim}
+The variable \code{file.name} may specify a local path or a URL. Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward.
 
 The \pkg{rJava} package supports exchanging scalars, arrays, and matrices between R and Java. The following R code demonstrates copying an R matrix to a Java object, and converting it back to an R object using \pkg{rJava}.
 
