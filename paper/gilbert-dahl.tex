@@ -1,7 +1,10 @@
 % !TeX root = RJwrapper.tex
-\title{\pkg{jsr223}: A Simple R Integration for the Java Platform Using Groovy, JavaScript, JRuby, Jython, Kotlin, and Scala}
+\title{\pkg{jsr223}: A Simple R Integration for the Java Platform with Programming Languages Groovy, JavaScript, JRuby, Jython, Kotlin, and Scala}
 \author{by Floid R. Gilbert and David B. Dahl}
 
+%///consider big int or big decimal calulations in statistical context
+%///review all syntax. I've changed some things including names of arguments. I've updated some code examples.
+%///http://www.theserverside.com/feature/Top-7-takeaways-about-the-Java-platform-from-JavaOne-2015
 %///change title in project but include Ruby and Python to make it searchable.
 %///update code sample original files. Made a lot of changes in-line.
 %///use the language for state found here instead of using ``environment'': http://openjdk.java.net/jeps/222
@@ -103,17 +106,17 @@ engine$a
 
 So far, we have provided some context for \pkg{jsr223} by contrasting the package with \pkg{rJava}. A more detailed comparison with \pkg{rJava} and other relevant software packages is provided in the \hyperlink{softwarereview}{Software review}.
 
-There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223}-supported languages can be used to quickly script Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223}-supported languages. For example, Ruby gems can be used from within R. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the supported languages. This feature does not require linking to R as a shared library. However, it can only be used in scripts (not compiled code).
+There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223} languages can be used to quickly script Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223} languages. For example, Ruby gems can be used from within R. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the supported languages. This feature does not require linking to R as a shared library. However, it can only be used in scripts (not compiled code).
 
 \subsection{Document organization}
 
-We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223}-supported languages. All code samples related to this document are available at \href{http://notavalidaddresss////}{GitHub}.
+We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223} languages. All code samples related to this document are available at \href{http://notavalidaddresss////}{GitHub}.
 
 \section{Helpful terminology and concepts}
 
 Java programs are compiled to Java bytecode that is executed by an instance of a Java Virtual Machine (JVM). The JVM is an abstraction layer that provides a platform-independent execution environment for Java programs. The JVM interprets Java bytecode to machine code (i.e., processor-specific instructions). JVMs are available for a wide variety of hardware and software platforms. In principle, the same Java program will run on any platform that supports a JVM. The Java paradigm contrasts with traditional compiled languages, such as C, that are compiled directly to processor-dependent machine code, and therefore must be recompiled for every targeted architecture. Often, changes in the source code are also required to support different platforms.
 
-Today, there are several programming languages that compile down to Java bytecode including all of the languages currently supported by \pkg{jsr223}. This may be surprising to some readers because languages like JavaScript are traditionally interpreted only, not compiled. In fact, the \pkg{jsr223}-supported languages blur the line between scripting languages (those that are interpret-only), and traditional compiled languages. Nevertheless, we generally refer to the languages supported by \pkg{jsr223} as scripting languages in this document because source code can be interpreted and executed (i.e., evaluated) in one step. Even so, this implementation benefits from the significant performance gains of compiled code.
+Today, there are several programming languages that compile down to Java bytecode including all of the languages currently supported by \pkg{jsr223}. This may be surprising to some readers because languages like JavaScript are traditionally interpreted only, not compiled. In fact, the \pkg{jsr223} languages blur the line between scripting languages (those that are interpret-only), and traditional compiled languages. Nevertheless, we generally refer to the languages supported by \pkg{jsr223} as scripting languages in this document because source code can be interpreted and executed (i.e., evaluated) in one step. Even so, this implementation benefits from the significant performance gains of compiled code.
 
 A \dfn{scripting engine} (usually shortened to \dfn{script engine}) is software that enables a scripting language to be embedded in an application. Internally, a script engine uses an \dfn{interpreter} to parse and execute source code. The terms \dfn{script engine} and \dfn{interpreter} are often used interchangeably. In this document, \dfn{script engine} refers to the software component, not the interpreter. A \dfn{script engine instance} denotes an instantiated script engine. Finally, a \dfn{script engine environment} refers to the state (i.e., the variables and settings) of a given instance.
 
@@ -123,15 +126,15 @@ A \dfn{scripting engine} (usually shortened to \dfn{script engine}) is software 
 
 There are many programming language integrations that combine the strengths of R with other development environments. These language integrations can generally be classified as either \dfn{R-major} or \dfn{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. The base R distribution features both integration types for C and C++. The functions .C and .Call are R-major integrations that enable C/C++ compiled code to be called from R. The R-minor integration permits C/C++ applications to call R as a shared library when R is built using the \samp{-{}-enable-R-shlib} configuration option.
 
-The \pkg{jsr223} package provides an R-major integration for the Java platform and the \pkg{jsr223}-supported programming languages. In this software review, we provide context for the \pkg{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \CRANpkg{Rserve} ///cite and \CRANpkg{OpenCPU} ///cite are not included in this discussion because their objectives and features do not necessarily align with those of \pkg{jsr223}.
+The \pkg{jsr223} package provides an R-major integration for the Java platform and the \pkg{jsr223} programming languages. In this software review, we provide context for the \pkg{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \CRANpkg{Rserve} ///cite and \CRANpkg{OpenCPU} ///cite are not included in this discussion because their objectives and features do not necessarily align with those of \pkg{jsr223}.%///rscript? does it belong here?.
 
-Before beginning the individual package comparisons, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn or install new packages.
+Before beginning the individual package comparisons, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn or install new packages.
 
 \subsection{\pkg{rJava}}
 
-In the \hyperlink{introduction}{Introduction}, we demonstrated some basic differences between \pkg{jsr223} and \pkg{rJava}. In this section, we continue the discussion to provide further justification for \pkg{jsr223}.
+In the \hyperlink{introduction}{Introduction}, we demonstrated some differences between \pkg{jsr223} and \pkg{rJava}. In this section, we continue the discussion to provide further justification for \pkg{jsr223}.
 
-In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} exposes a high-level interface for calling object methods. The high-level interface uses the Java reflection API to locate the correct method signature automatically. Indeed, this is an impressive feature, but according to the \pkg{rJava} web site, the high-level interface is experimental and does not work correctly for all scenarios. There are no such qualifications for the \pkg{jsr223} scripting languages.
+In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} exposes a high-level interface for calling object methods. The high-level interface uses the Java reflection API to locate the correct method signature automatically. Indeed, this is an impressive feature, but according to the \pkg{rJava} web site, the high-level interface is experimental and does not work correctly for all scenarios. There are no such qualifications for \pkg{jsr223} scripting languages.
 
 In addition to high-level method access, the \pkg{jsr223} languages feature support for advanced object-oriented constructs. For example, interfaces can be implemented and classes can be extended using any of these languages. These features allow developers to quickly implement sophisticated solutions in R without developing, compiling, and distributing Java classes.
 
@@ -139,61 +142,15 @@ The \pkg{rJava} package does not directly support callbacks into R. Instead, cal
 
 In conclusion, \pkg{jsr223} is an alternative solution for Java integrations that is easy to learn and use.
 
+\subsection{JavaScript integrations}
 
+\subsection{Groovy integrations}
 
-The J is very popular, surging again in popularity this year with the release of J8 (TIOBE). Some of the features contributing to Java's success are p-i, free, scalability, security, stability, backwards-compatibility, object-oriented, garbage collection. With adoption, community. A lot of freely developed stuff out there. Other languages. Except, I can't. Oh wait, yes I can because they are Java objects...I think. Wait, can they?
+\subsection{Python integrations}
 
-From its inception in 1991 (///cite http://oracle.com.edgesuite.net/timeline/java/  see reference to the book), the Java computing environment was designed to be platform-independent: a Java program could be compiled once and run on a variety of hardware and operating systems without modification. Certainly, the ``write once, run anywhere'' paradigm is one is one of the most important factors behind Java's success. The popularity of Java has produced a /// developer community that has produced a /// amount of software that is either open source or free to use. This, along with Java's free-to-use ///, it has With its tremendous developer community and 
-
-However, with popularity comes innovation and ///.
-with success, the reasons to use Java has grown significantly beyond just platform-independence. Java development platform is a mature has become a secure, stable language with With success, a /// ecosystem of developers, tools, and libraries This success has  But, with success, a tremendous ecosystem of  the Java platform has  the main reason that Java is that has made Java one of the most popular platforms today. This popularity has produced a lot of libraries and innovation, scalability, etc. and the language is easy to learn.
-
-This means a programmer can develop code on a PC and can expect it to run on Java enabled cell phones, as well as on routers and mainframes equipped with Java, without any adjustments. This is intended to save software developers the effort of writing a different version of their software for each platform or operating system they intend to deploy on.
-
-%///Discuss popularity/significance of Java.
-%///Mention that JSR223 was made part of JRE (use their jargon)
-%///the uses of this package: use features of other languages, use libraries from other languages, use scripting languages as glue for Java libraries and for access to the JVM.
-%///consider big int or big decimal calulations in statistical context
-%///review all syntax. I've changed some things including names of arguments. I've updated some code examples.
-%///http://www.theserverside.com/feature/Top-7-takeaways-about-the-Java-platform-from-JavaOne-2015
-Java continues to be one of the most popular development platforms. Lots of development, great community.
-Free to use.
-Continually developed.
-
-Platform independent - runs on computers, phones, etc.
-It maintains good performance --- as good as native code, sometimes better (reference) due to dynamic code analysis (what is that?)
-It has been around a while (over 20 years), and so it is stable.  Zara states that the code you may have written 15 years ago will run on the latest JVMs and gain the speed advantage of the latest profiling, native code translating, and memory management. https://www.pearsonfrank.com/blog/why-is-java-so-popular-developers
-lots of very good tools and ecosystem
-free to use
-https://www.azul.com/4-reasons-java-still-1/
-Java is an all-round universal programming language. Due to its solidity and scalability, Java can be found on mobiles, desktops and large-scale industry servers and applications.
-
-
-The JCP uses Java Specification Requests to specify any additions or changes to the platform.
-
-In 2006, ///remove name/// Sun Microsystems released the Java Scripting API \citep{jsa} defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec}. The JSR-223 specification includes two crucial elements: an interface for Java applications to execute code written in scripting languages, and a guide for scripting languages to create Java objects in their own syntax. Several scripting language projects have adopted JSR-223. Some of the most successful projects to date include JavaScript \citep{jsnashorn}, Jython \citep{jython}, JRuby \citep{jruby}, and Groovy \citep{groovy}. Jython and JRuby are Java implementations of the Python \citep{python} and Ruby \citep{ruby} languages, respectively. Groovy is a scripting implementation of the Java programming language. The Java platform has benefited a great deal from the addition of these scripting languages. Solutions developed in Python, for example, are now accessible to applications on the Java Virtual Machine (JVM). In essence, JSR-223 has facilitated the creation of a larger development ecosystem on the Java platform.
-
-Just as JSR-223 extends the Java platform, our \CRANpkg{jsr223} package extends the R development environment. \pkg{jsr223} uses the Java Scripting API to enable solutions written in JavaScript, Python, Ruby, and Groovy to be embedded within R. \pkg{jsr223} also provides simplified access to Java classes through any of these languages by merit of the JSR-223 specification, substantially lowering the barrier for programmers that want to use Java classes in R. In all, \pkg{jsr223} makes countless existing solutions immediately available to R developers and promotes the rapid development of new R solutions that can exploit the Java platform.
-
-While there are other R packages that provide integrations for Java, JavaScript, Python, Ruby, and Groovy, \pkg{jsr223} offers a unique combination of features that make it particularly compelling to statistical developers. The primary features of \pkg{jsr223} are listed here.
-
-\begin{enumerate}
-\item Java classes are easy to instantiate, implement, and extend directly in script. As such, \pkg{jsr223} provides high-level access to the cross-platform and performance benefits of the Java platform.
-
-\item \pkg{jsr223} exposes a user-friendly programming interface that is consistent across multiple scripting languages. This enables developers to leverage solutions in several languages with a single R package.
-
-\item \pkg{jsr223} reduces complex data exchange operations between R and Java to a simple variable assignment. Data exchange in \pkg{jsr223} is fast and precise (no rounding). \pkg{jsr223} supports the primary data structures in both R and Java. For R, the supported structures are vectors, factors, n-dimensional arrays, data frames, lists, and environments. For Java, scalars, n-dimensional arrays, maps, and collections are supported. Row-major and column-major ordering schemes are available for data frames and n-dimensional arrays.
-
-\item \pkg{jsr223} includes a 
-\end{enumerate}
-
- First and foremost, \pkg{jsr223} offers high-level access to the cross-platform and performance benefits of the Java platform. Second, Java classes can be instantiated, implemented, and extended in script. Third, \pkg{jsr223} exposes a user-friendly programming interface that is consistent across multiple scripting languages. This enables developers to leverage solutions in several languages with a single R package. Third, \pkg{jsr223} reduces complex data exchange operations between R and Java to a simple variable assignment. Data exchange in \pkg{jsr223} is fast and precise (no rounding). \pkg{jsr223} supports the primary data structures in both R and Java. For R, the supported structures are vectors, factors, n-dimensional arrays, data frames, lists, and environments. For Java, scalars, n-dimensional arrays, maps, and collections are supported. Both row-major and column-major ordering are available for data frames and n-dimensional arrays. While existing R packages provide some of these features, none provide all of these features together. We believe that \pkg{jsr223} can significantly extend the computing capabilities of the R software environment with a relatively low learning curve. A detailed discussion of how \pkg{jsr223} compares to other packages is included in \hyperlink{softwarereview}{Software review}.
-
-
-\pkg{jsr223} supports extensive data interchange between R, Java and the supported scripting environments. \pkg{jsr223} also features direct calls to scripted functions and methods, script compiling, and a callback interface that provides embedded scripts access to the R environment. Finally, \pkg{jsr223} is easy to install and can be used with any standard R installation.
-
-
-\pkg{jsr223} is built on \CRANpkg{rJava} \citep{rjava}, the low-level R to Java interface. The design of \pkg{jsr223} follows cues from \pkg{rJava}, \CRANpkg{rscala} \citep{rscala}, and \CRANpkg{V8} \citep{v8pkg}.
+\subsection{Other integrations}
+Scala. Kotlin. Ruby. ///RScript?
+Currently, \pkg{jsr223} is the only integration for the Ruby and Kotlin languages on CRAN.%///ok here? still true?
 
 \section{Package installation}
 
