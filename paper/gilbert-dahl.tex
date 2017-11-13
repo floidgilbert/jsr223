@@ -58,9 +58,9 @@ Before beginning the individual package comparisons, we point out one unique fea
 
 \subsection{\pkg{rJava}}
 
-As noted in the introduction, \pkg{rJava} is currently the preeminent Java integration for R. It provides a low-level interface to compiled Java classes via the JNI. The \pkg{jsr223} package uses \pkg{rJava} together with the Java Scripting API to create a simpler, yet more extensive, integration between R and the Java platform.
+As noted in the introduction, \pkg{rJava} is the preeminent Java integration for R. It provides a low-level interface to compiled Java classes via the JNI. The \pkg{jsr223} package uses \pkg{rJava} together with the Java Scripting API to create a simple, multi-language integration for the Java platform.
 
-The following code example is taken from \pkg{rJava}'s \href{http://www.rforge.net/rJava/}{web site}. It demonstrates the essential functions of the \pkg{rJava} API by creating a window with a single button, displaying it, and then closing it. The first two lines are required to initialize \pkg{rJava}. The next lines use the \code{.jnew()} function to create two Java objects: a GUI frame and a button. The class names are denoted in JNI syntax. Of particular note is the first invocation of \code{.jcall()}, the function used to call object methods. It simply calls the \code{add()} method of the frame object. However, for JNI to identify the appropriate method, an explicit return type must be specified. The return type is specified in the second parameter to \code{.jcall()} using JNI syntax. The last parameter to \code{.jcall()} specifies the object to be passed to the \code{add()} method. It must be explicitly cast to the correct interface for the call to be successful.
+The following code example is taken from \pkg{rJava}'s \href{http://www.rforge.net/rJava/}{web site}. It demonstrates the essential functions of the \pkg{rJava} API by creating and displaying a window with a single button. The first two lines are required to initialize \pkg{rJava}. The next lines use the \code{.jnew()} function to create two Java objects: a GUI frame and a button. The associated class names are denoted in JNI syntax. Of particular note is the first invocation of \code{.jcall()}, the function used to call object methods. In this case, the \code{add()} method of the frame object is invoked. For JNI to identify the appropriate method, an explicit return type must be specified as the second parameter to \code{.jcall()} (unless the return value is \code{void}). The last parameter to \code{.jcall()} specifies the object to be added to the frame object. It must be explicitly cast to the correct interface for the call to be successful.
 
 \begin{verbatim}
 library("rJava")
@@ -86,13 +86,14 @@ f.setVisible(true);
 // Close the window.
 f.dispose();
 \end{verbatim}
+
 Using \pkg{jsr223}, the preceding code snippet can be embedded in an R script. The first step is to create an instance of a script engine. A JavaScript engine is created thus:
 
 \begin{verbatim}
 library(jsr223)
 engine <- ScriptEngine$new("JavaScript")
 \end{verbatim}
-This engine object is now ready to evaluate script on demand. Script can be passed to the engine using character vectors or file paths. The sample below demonstrates embedding JavaScript code in-line with character vectors. This method is appropriate for small snippets of code. (Note: If you try this example the window may not appear in the foreground. Also, the window must be closed using the last line of code. These are limitations of the simple code example, not \pkg{jsr223}.)
+This engine object is now ready to evaluate script on demand. Source code can be passed to the engine using character vectors or files. The sample below demonstrates embedding JavaScript code in-line with character vectors. This method is appropriate for small snippets of code. (Note: If you try this example the window may appear in the background. Also, the window must be closed using the last line of code. These are limitations of the code example, not \pkg{jsr223}.)
 
 \begin{verbatim}
 # Execute code inline to create and show the window.
@@ -106,11 +107,11 @@ engine %@% "
 # Close the window
 engine %@% "f.dispose();"
 \end{verbatim}
-In addition to in-line code execution, \pkg{jsr223} can execute source code from a file using the script engine object's \code{source} method: \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local file path or a URL. Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward. The ability to embed source code in R facilitates prototyping and promotes rapid application development.
+To execute source code in a file, use the script engine object's \code{source} method: \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local file path or a URL. % Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward. The ability to embed source code in R facilitates prototyping and promotes rapid application development.
 
-In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} exposes a high-level interface for calling object methods. The high-level interface uses the Java reflection API to locate the correct method signature automatically. Indeed, this is an impressive feature, but according to the \pkg{rJava} web site, the high-level interface is experimental and does not work correctly for all scenarios. There are no such qualifications for \pkg{jsr223} scripting languages.
+In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} does include a high-level interface for invoking object methods. It uses the Java reflection API to automatically locate the correct method signature. This is an impressive feature, but according to the \pkg{rJava} web site, its high-level interface is experimental and does not work correctly for all scenarios. There are no such limitations for the \pkg{jsr223} scripting languages.
 
-In addition to high-level method access, the \pkg{jsr223} languages feature support for advanced object-oriented constructs. For example, interfaces can be implemented and classes can be extended using any of these languages. These features allow developers to quickly implement sophisticated solutions in R without developing, compiling, and distributing Java classes.
+The \pkg{jsr223} languages also feature support for advanced object-oriented constructs. For example, classes can be extended and interfaces can be implemented using any language. These features allow developers to quickly implement sophisticated solutions in R without developing, compiling, and distributing custom Java classes.
 
 The \pkg{rJava} package supports exchanging scalars, arrays, and matrices between R and Java. The following R code demonstrates copying an R matrix to a Java object, and converting it back to an R object using \pkg{rJava}.
 
@@ -124,22 +125,23 @@ b <- .jevalArray(o, simplify = TRUE)
 \end{verbatim}
 
 %///this is a repeated prhase.
-Again, the \pkg{jsr223} package builds on \pkg{rJava} functionality by providing extended support for data exchange between R and Java. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\pkg{rJava}'s interface can theoretically support n-dimensional arrays, but as of this writing the feature does not produce correct results for n > 2.} In addition, Java scalars, n-dimensional arrays, maps, and collections are converted to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. Many language integration packages employ JSON serialization for data exchange. Our package uses custom serialization routines to avoid the round-off error and overhead associated with JSON conversion.
+Again, the \pkg{jsr223} package builds on \pkg{rJava} functionality by extending data exchange between R and Java. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\pkg{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n > 2.} In addition, \pkg{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. %Many language integration packages employ JSON serialization to implement a similar feature set. Our package uses custom serialization routines to avoid the round-off error and overhead associated with JSON.
 
-This code snippet demonstrates data exchange using \pkg{jsr223}. The \code{engine} variable is a \pkg{jsr223} ScriptEngine object. Similar to the preceding \pkg{rJava} example, this code copies a matrix to the Java environment and back again. The same syntax is used for all data types and structures.
+This code snippet demonstrates data exchange using \pkg{jsr223}. The variable \code{engine} is a \pkg{jsr223} ScriptEngine object. Similar to the preceding \pkg{rJava} example, this code copies a matrix to the Java environment and back again. The same syntax is used for all supported data types and structures.
 
 \begin{verbatim}
 a <- matrix(rnorm(10), 5, 2)
 
-# Copy matrix to a Java object using jsr223.
+# Copy an R object to Java using jsr223.
 engine$a <- a
-# Retrieve the matrix.
+# Retrieve the object.
 engine$a
 \end{verbatim}
 
-The \pkg{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through a companion package \CRANpkg{JRI}: the Java/R Interface. To use \pkg{JRI}, R must be compiled with the shared library option \samp{-{}-enable-R-shlib}. \pkg{JRI} also requires several paths and environment variables to be set, so it includes a launch script to get started. The \pkg{JRI} interface is technical and extensive. In contrast, \pkg{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \pkg{jsr223} package does not use \pkg{JRI}, so there is no requirement for R to be compiled as a shared library.
+%///not sure this is true about \pkg{JRI} when invoked from \pkg{rJava}. Find out. It could add or remove material here. Could consider showing a \pkg{jsr223} example.
+The \pkg{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \CRANpkg{JRI}: the Java/R Interface. To use \pkg{JRI}, R must be compiled with the shared library option \samp{-{}-enable-R-shlib}. \pkg{JRI} also requires several paths and environment variables to be set, so it includes a launch script to get started. The \pkg{JRI} interface is technical and extensive. In contrast, \pkg{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \pkg{jsr223} package does not use \pkg{JRI}, so there is no requirement for R to be compiled as a shared library.
 
-In conclusion, \pkg{jsr223} is an alternative to \pkg{rJava} that is easy to learn and use.
+In conclusion, \pkg{jsr223} provides an alternative integration for the Java platform that is easy to learn and use.
 
 \subsection{JavaScript integrations}
 
