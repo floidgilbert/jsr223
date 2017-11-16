@@ -1,11 +1,11 @@
 
 \chapter{Software Review}
 
-There are many programming language integrations that combine the strengths of R with other development environments. These language integrations can generally be classified as either \textit{R-major} or \textit{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. The base R distribution features both integration types for C and C++. The functions .C and .Call are R-major integrations that enable C/C++ compiled code to be called from R. The R-minor integration permits C/C++ applications to call R as a shared library when R is built using the \texttt{-{}-enable-R-shlib} configuration option.
+There are many programming language integrations that combine the strengths of R with other development environments. These language integrations can generally be classified as either \textit{R-major} or \textit{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \textbf{rJava} is an R-major integration that allows Java objects to be used within an R session. The Java/R Interface (\textbf{JRI}), in contrast, is an R-minor integration that enables Java applications to embed R.
 
 The \textbf{jsr223} package provides an R-major integration for the Java platform and the \textbf{jsr223} programming languages. In this software review, we provide context for the \textbf{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \textbf{Rserve} \citep{rserve} and \textbf{OpenCPU} \citep{opencpu} are not included in this discussion because their objectives and features do not necessarily align with those of \textbf{jsr223}.
 
-Before beginning the individual package comparisons, we point out one unique feature that contrasts \textbf{jsr223} with all other integrations in this discussion: \textbf{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn or install new packages.
+Before we discuss individual packages, we point out one unique feature that contrasts \textbf{jsr223} with all other integrations in this discussion: \textbf{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn or install new packages.
 
 \subsection{\textbf{rJava}}
 
@@ -42,7 +42,7 @@ f.dispose();
 \end{verbatim}
 \doublespace
 
-Using \textbf{jsr223}, the preceding code snippet can be embedded in an R script. The first step is to create an instance of a script engine. A JavaScript engine is created thus:
+Using \textbf{jsr223}, the preceding code snippet can be embedded in an R script. The first step is to create an instance of a script engine. A JavaScript engine is created as follows:
 
 \singlespace
 \begin{verbatim}
@@ -88,8 +88,7 @@ b <- .jevalArray(o, simplify = TRUE)
 \end{verbatim}
 \doublespace
 
-%///this is a repeated prhase.
-Again, the \textbf{jsr223} package builds on \textbf{rJava} functionality by extending data exchange between R and Java. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\textbf{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n > 2.} In addition, \textbf{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. %Many language integration packages employ JSON serialization to implement a similar feature set. Our package uses custom serialization routines to avoid the round-off error and overhead associated with JSON.
+Again, the \textbf{jsr223} package builds on \textbf{rJava} functionality by extending data exchange. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\textbf{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n $>$ 2. See the related issue at the \textbf{rJava} Github repository: ``.jarray(..., dispatch=T) on multi-dimensional arrays creates Java objects with wrong content.''} In addition, \textbf{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays.
 
 This code snippet demonstrates data exchange using \textbf{jsr223}. The variable \texttt{engine} is a \textbf{jsr223} ScriptEngine object. Similar to the preceding \textbf{rJava} example, this code copies a matrix to the Java environment and back again. The same syntax is used for all supported data types and structures.
 

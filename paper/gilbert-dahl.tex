@@ -52,11 +52,11 @@ A \dfn{scripting engine} (usually shortened to \dfn{script engine}) is software 
 
 \hypertarget{softwarereview}{\section{Software review}}
 
-There are many programming language integrations that combine the strengths of R with other development environments. These language integrations can generally be classified as either \dfn{R-major} or \dfn{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \pkg{rJava} is an R-major integration that allows Java solutions to be used within an R session. Conversely, the Java/R Interface (\CRANpkg{JRI}), is an R-minor integration that enables Java applications to embed R.
+There are many programming language integrations that combine the strengths of R with other development environments. These language integrations can generally be classified as either \dfn{R-major} or \dfn{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \pkg{rJava} is an R-major integration that allows Java objects to be used within an R session. The Java/R Interface (\CRANpkg{JRI}), in contrast, is an R-minor integration that enables Java applications to embed R.
 
 The \pkg{jsr223} package provides an R-major integration for the Java platform and the \pkg{jsr223} programming languages. In this software review, we provide context for the \pkg{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \CRANpkg{Rserve} \citep{rserve} and \CRANpkg{OpenCPU} \citep{opencpu} are not included in this discussion because their objectives and features do not necessarily align with those of \pkg{jsr223}.
 
-Before beginning individual package comparisons, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn or install new packages.
+Before we discuss individual packages, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn or install new packages.
 
 \subsection{\pkg{rJava}}
 
@@ -119,22 +119,19 @@ The \pkg{rJava} package supports exchanging scalars, arrays, and matrices betwee
 
 \begin{verbatim}
 a <- matrix(rnorm(10), 5, 2)
-
 # Copy matrix to a Java object with rJava
 o <- .jarray(a, dispatch = TRUE)
 # Convert it back to an R matrix.
 b <- .jevalArray(o, simplify = TRUE)
 \end{verbatim}
 
-%///this is a repeated prhase.
-Again, the \pkg{jsr223} package builds on \pkg{rJava} functionality by extending data exchange between R and Java. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\pkg{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n $>$ 2. See the related issue at the \pkg{rJava} Github repository: ``.jarray(..., dispatch=T) on multi-dimensional arrays creates Java objects with wrong content.''} In addition, \pkg{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. %Many language integration packages employ JSON serialization to implement a similar feature set. Our package uses custom serialization routines to avoid the round-off error and overhead associated with JSON.
-%///provide better reference/style for the footnote.
+Again, the \pkg{jsr223} package builds on \pkg{rJava} functionality by extending data exchange. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\pkg{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n $>$ 2. See the related issue at the \pkg{rJava} Github repository: ``.jarray(..., dispatch=T) on multi-dimensional arrays creates Java objects with wrong content.''} In addition, \pkg{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. %Many language integration packages employ JSON serialization to implement a similar feature set. Our package uses custom serialization routines to avoid the round-off error and overhead associated with JSON.
+%///consider adding details for data exchange in the full article.
 
 This code snippet demonstrates data exchange using \pkg{jsr223}. The variable \code{engine} is a \pkg{jsr223} ScriptEngine object. Similar to the preceding \pkg{rJava} example, this code copies a matrix to the Java environment and back again. The same syntax is used for all supported data types and structures.
 
 \begin{verbatim}
 a <- matrix(rnorm(10), 5, 2)
-
 # Copy an R object to Java using jsr223.
 engine$a <- a
 # Retrieve the object.
