@@ -13,6 +13,7 @@ As noted in the introduction, \textbf{rJava} is the preeminent Java integration 
 
 The following code example is taken from \textbf{rJava}'s \href{http://www.rforge.net/rJava/}{web site}. It demonstrates the essential functions of the \textbf{rJava} API by creating and displaying a window with a single button. The first two lines are required to initialize \textbf{rJava}. The next lines use the \texttt{.jnew()} function to create two Java objects: a GUI frame and a button. The associated class names are denoted in JNI syntax. Of particular note is the first invocation of \texttt{.jcall()}, the function used to call object methods. In this case, the \texttt{add()} method of the frame object is invoked. For JNI to identify the appropriate method, an explicit return type must be specified as the second parameter to \texttt{.jcall()} (unless the return value is \texttt{void}). The last parameter to \texttt{.jcall()} specifies the object to be added to the frame object. It must be explicitly cast to the correct interface for the call to be successful.
 
+\singlespace
 \begin{verbatim}
 library("rJava")
 .jinit()
@@ -25,9 +26,11 @@ b <- .jnew("java/awt/Button", "OK")
 # Close the window.
 .jcall(f, , "dispose")
 \end{verbatim}
+\doublespace
 
-This JavaScript snippet reproduces the \textbf{rJava} example. In comparison, the JavaScript code is more natural for most programmers to write and maintain. The fine details of method lookups and invocation are handled automatically: no explicit class names or type casts are required. This same example can be reproduced in any of the five other \textbf{jsr223}-supported programming languages.
+The snippet below reproduces the \textbf{rJava} example using JavaScript. In comparison, the JavaScript code is more natural for most programmers to write and maintain. The fine details of method lookups and invocation are handled automatically: no explicit class names or type casts are required. This same example can be reproduced in any of the five other \textbf{jsr223}-supported programming languages.
 
+\singlespace
 \begin{verbatim}
 var f = new java.awt.Frame('Hello');
 f.add(new java.awt.Button('OK'));
@@ -37,15 +40,19 @@ f.setVisible(true);
 // Close the window.
 f.dispose();
 \end{verbatim}
+\doublespace
 
 Using \textbf{jsr223}, the preceding code snippet can be embedded in an R script. The first step is to create an instance of a script engine. A JavaScript engine is created thus:
 
+\singlespace
 \begin{verbatim}
 library(jsr223)
 engine <- ScriptEngine$new("JavaScript")
 \end{verbatim}
+\doublespace
 This engine object is now ready to evaluate script on demand. Source code can be passed to the engine using character vectors or files. The sample below demonstrates embedding JavaScript code in-line with character vectors. This method is appropriate for small snippets of code. (Note: If you try this example the window may appear in the background. Also, the window must be closed using the last line of code. These are limitations of the code example, not \textbf{jsr223}.)
 
+\singlespace
 \begin{verbatim}
 # Execute code inline to create and show the window.
 engine %@% "
@@ -58,9 +65,10 @@ engine %@% "
 # Close the window
 engine %@% "f.dispose();"
 \end{verbatim}
+\doublespace
 To execute source code in a file, use the script engine object's \texttt{source} method:
 \begin{verbatim}
-engine\$source(file.name)
+engine$source(file.name)
 \end{verbatim}
 The variable \texttt{file.name} may specify a local file path or a URL. % Whether evaluating small code snippets or sourcing script files, embedding source code using \textbf{jsr223} is straightforward. The ability to embed source code in R facilitates prototyping and promotes rapid application development.
 
@@ -70,8 +78,7 @@ The \textbf{jsr223} languages also feature support for advanced object-oriented 
 
 The \textbf{rJava} package supports exchanging scalars, arrays, and matrices between R and Java. The following R code demonstrates copying an R matrix to a Java object, and converting it back to an R object using \textbf{rJava}.
 
-\clearpage
-
+\singlespace
 \begin{verbatim}
 a <- matrix(rnorm(10), 5, 2)
 # Copy matrix to a Java object with rJava
@@ -79,12 +86,14 @@ o <- .jarray(a, dispatch = TRUE)
 # Convert it back to an R matrix.
 b <- .jevalArray(o, simplify = TRUE)
 \end{verbatim}
+\doublespace
 
 %///this is a repeated prhase.
 Again, the \textbf{jsr223} package builds on \textbf{rJava} functionality by extending data exchange between R and Java. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\textbf{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n > 2.} In addition, \textbf{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. %Many language integration packages employ JSON serialization to implement a similar feature set. Our package uses custom serialization routines to avoid the round-off error and overhead associated with JSON.
 
 This code snippet demonstrates data exchange using \textbf{jsr223}. The variable \texttt{engine} is a \textbf{jsr223} ScriptEngine object. Similar to the preceding \textbf{rJava} example, this code copies a matrix to the Java environment and back again. The same syntax is used for all supported data types and structures.
 
+\singlespace
 \begin{verbatim}
 a <- matrix(rnorm(10), 5, 2)
 # Copy an R object to Java using jsr223.
@@ -92,6 +101,7 @@ engine$a <- a
 # Retrieve the object.
 engine$a
 \end{verbatim}
+\doublespace
 
 %///not sure this is true about \textbf{JRI} when invoked from \textbf{rJava}. Find out. It could add or remove material here. Could consider showing a \textbf{jsr223} example.
 The \textbf{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \textbf{JRI}: the Java/R Interface. To use \textbf{JRI}, R must be compiled with the shared library option \texttt{-{}-enable-R-shlib}. \textbf{JRI} also requires several paths and environment variables to be set, so it includes a launch script to get started. The \textbf{JRI} interface is technical and extensive. In contrast, \textbf{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \textbf{jsr223} package does not use \textbf{JRI}, so there is no requirement for R to be compiled as a shared library.
