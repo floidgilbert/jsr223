@@ -1,4 +1,4 @@
-\begin{thebibliography}{17}
+\begin{thebibliography}{19}
 \newcommand{\enquote}[1]{``#1''}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 
@@ -22,6 +22,9 @@ Matsumoto, Y. (2016), \textit{{Ruby Programming Language}}.
 
 \bibitem[{{Mozilla Developer Network}(2016)}]{jsrhino}
 {Mozilla Developer Network} (2016), \textit{{Rhino}}.
+
+\bibitem[{O'Connell(1995)}]{javainsidestory}
+O'Connell, M. (1995), \enquote{Java: The inside story,} .
 
 \bibitem[{Ooms(2013)}]{opencpu}
 Ooms, J. (2013), \textit{{OpenCPU}}.
@@ -54,12 +57,16 @@ Strachan, J. (2016), \textit{{Groovy}}.
 {Sun Microsystems, Inc.} (2006), \textit{{JSR-223: Scripting for the Java
   Platform}}.
 
-\bibitem[{Urbanek(2016{\natexlab{a}})}]{rjava}
+\bibitem[{Urbanek(2016{\natexlab{a}})}]{rjavaweb}
 Urbanek, S. (2016{\natexlab{a}}), \textit{{rJava}: Low-Level {R} to {Java}
+  Interface}.
+
+\bibitem[{Urbanek(2016{\natexlab{b}})}]{rjava}
+------ (2016{\natexlab{b}}), \textit{{rJava}: Low-Level {R} to {Java}
   Interface}, {R}~package version~0.9-8.
 
-\bibitem[{Urbanek(2016{\natexlab{b}})}]{rserve}
------- (2016{\natexlab{b}}), \textit{{Rserve}: {B}inary R server}, {R} package
+\bibitem[{Urbanek(2016{\natexlab{c}})}]{rserve}
+------ (2016{\natexlab{c}}), \textit{{Rserve}: {B}inary R server}, {R} package
   version 0.6-8.1.
 
 \end{thebibliography}

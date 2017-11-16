@@ -1,7 +1,7 @@
 
 \chapter{Software Review}
 
-There are many programming language integrations that combine the strengths of R with other development environments. These language integrations can generally be classified as either \textit{R-major} or \textit{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \textbf{rJava} is an R-major integration that allows Java objects to be used within an R session. The Java/R Interface (\textbf{JRI}), in contrast, is an R-minor integration that enables Java applications to embed R.
+There are many programming language integrations that combine the strengths of R with other development environments. These language integrations can often be classified as either \textit{R-major} or \textit{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \textbf{rJava} is an R-major integration that allows Java objects to be used within an R session. The Java/R Interface (\textbf{JRI}), in contrast, is an R-minor integration that enables Java applications to embed R.
 
 The \textbf{jsr223} package provides an R-major integration for the Java platform and the \textbf{jsr223} programming languages. In this software review, we provide context for the \textbf{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \textbf{Rserve} \citep{rserve} and \textbf{OpenCPU} \citep{opencpu} are not included in this discussion because their objectives and features do not necessarily align with those of \textbf{jsr223}.
 
@@ -9,9 +9,9 @@ Before we discuss individual packages, we point out one unique feature that cont
 
 \subsection{\textbf{rJava}}
 
-As noted in the introduction, \textbf{rJava} is the preeminent Java integration for R. It provides a low-level interface to compiled Java classes via the JNI. The \textbf{jsr223} package uses \textbf{rJava} together with the Java Scripting API to create a simple, multi-language integration for the Java platform.
+As noted in the introduction, \textbf{rJava} is the preeminent Java integration for R. It provides a low-level interface to compiled Java classes via the JNI. The \textbf{jsr223} package uses \textbf{rJava} together with the Java Scripting API to create a simple, multi-language integration for R and the Java platform.
 
-The following code example is taken from \textbf{rJava}'s \href{http://www.rforge.net/rJava/}{web site}. It demonstrates the essential functions of the \textbf{rJava} API by creating and displaying a window with a single button. The first two lines are required to initialize \textbf{rJava}. The next lines use the \texttt{.jnew()} function to create two Java objects: a GUI frame and a button. The associated class names are denoted in JNI syntax. Of particular note is the first invocation of \texttt{.jcall()}, the function used to call object methods. In this case, the \texttt{add()} method of the frame object is invoked. For JNI to identify the appropriate method, an explicit return type must be specified as the second parameter to \texttt{.jcall()} (unless the return value is \texttt{void}). The last parameter to \texttt{.jcall()} specifies the object to be added to the frame object. It must be explicitly cast to the correct interface for the call to be successful.
+The following code example is taken from \textbf{rJava}'s web site \citep{rjavaweb}. It demonstrates the essential functions of the \textbf{rJava} API with code to create and display a window with a single button. The first two lines are required to initialize \textbf{rJava}. The next lines use the \texttt{.jnew()} function to create two Java objects: a GUI frame and a button. The associated class names are denoted in JNI syntax. Of particular note is the first invocation of \texttt{.jcall()}, the function used to call object methods. In this case, the \texttt{add()} method of the frame object is invoked. For \textbf{rJava} to identify the appropriate method, an explicit return type must be specified in JNI notation as the second parameter to \texttt{.jcall()} (unless the return value is \texttt{void}). The last parameter to \texttt{.jcall()} specifies the object to be added to the frame object. It must be explicitly cast to the correct interface for the call to be successful.
 
 \singlespace
 \begin{verbatim}
@@ -29,7 +29,7 @@ b <- .jnew("java/awt/Button", "OK")
 \doublespace
 
 The snippet below reproduces the \textbf{rJava} example using JavaScript. In comparison, the JavaScript code is more natural for most programmers to write and maintain. The fine details of method lookups and invocation are handled automatically: no explicit class names or type casts are required. This same example can be reproduced in any of the five other \textbf{jsr223}-supported programming languages.
-
+\clearpage
 \singlespace
 \begin{verbatim}
 var f = new java.awt.Frame('Hello');
@@ -72,11 +72,11 @@ engine$source(file.name)
 \end{verbatim}
 The variable \texttt{file.name} may specify a local file path or a URL. % Whether evaluating small code snippets or sourcing script files, embedding source code using \textbf{jsr223} is straightforward. The ability to embed source code in R facilitates prototyping and promotes rapid application development.
 
-In comparison to \textbf{rJava}'s low-level interface, \textbf{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \textbf{rJava} does include a high-level interface for invoking object methods. It uses the Java reflection API to automatically locate the correct method signature. This is an impressive feature, but according to the \textbf{rJava} web site, its high-level interface is experimental and does not work correctly for all scenarios. There are no such limitations for the \textbf{jsr223} scripting languages.
+In comparison to \textbf{rJava}'s low-level interface, \textbf{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \textbf{rJava} does include a high-level interface for invoking object methods. It uses the Java reflection API to automatically locate the correct method signature. This is an impressive feature, but according to the \textbf{rJava} web site, its high-level interface is experimental and does not work correctly for all scenarios \citep{rjavaweb}. There are no such limitations for the \textbf{jsr223} scripting languages.
 
 The \textbf{jsr223} languages also feature support for advanced object-oriented constructs. For example, classes can be extended and interfaces can be implemented using any language. These features allow developers to quickly implement sophisticated solutions in R without developing, compiling, and distributing custom Java classes.
 
-The \textbf{rJava} package supports exchanging scalars, arrays, and matrices between R and Java. The following R code demonstrates copying an R matrix to a Java object, and converting it back to an R object using \textbf{rJava}.
+The \textbf{rJava} package supports exchanging scalars, arrays, and matrices between R and Java. The following R code demonstrates converting an R matrix to a Java object, and vice versa, using \textbf{rJava}.
 
 \singlespace
 \begin{verbatim}
@@ -103,6 +103,6 @@ engine$a
 \doublespace
 
 %///not sure this is true about \textbf{JRI} when invoked from \textbf{rJava}. Find out. It could add or remove material here. Could consider showing a \textbf{jsr223} example.
-The \textbf{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \textbf{JRI}: the Java/R Interface. To use \textbf{JRI}, R must be compiled with the shared library option \texttt{-{}-enable-R-shlib}. \textbf{JRI} also requires several paths and environment variables to be set, so it includes a launch script to get started. The \textbf{JRI} interface is technical and extensive. In contrast, \textbf{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \textbf{jsr223} package does not use \textbf{JRI}, so there is no requirement for R to be compiled as a shared library.
+The \textbf{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \textbf{JRI}: the Java/R Interface. To use \textbf{JRI}, R must be compiled with the shared library option \texttt{-{}-enable-R-shlib}. \textbf{JRI} also requires several paths and environment variables to be set, so it includes a launch script to get started. The \textbf{JRI} interface is technical and extensive. In contrast, \textbf{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \textbf{jsr223} package does not use \textbf{JRI}, so there is no requirement for R to be compiled as a shared library. As such, solutions can be deployed in a variety of environments without requiring a special installation of R.
 
 In conclusion, \textbf{jsr223} provides an alternative integration for the Java platform that is easy to learn and use.
