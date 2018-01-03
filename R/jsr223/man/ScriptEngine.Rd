@@ -56,7 +56,7 @@ Returns a length-one character vector containing the current array order scheme.
 }
 
 \item{\code{setArrayOrder(value)}}{
-Sets the current array ordering scheme used for all n-dimensional arrays (such as matrices) converted to and from the script engine. Valid values are \code{'row-major'} (the default), \code{'column-major'}, and \code{'row-major-java'}. These indexing schemes are described in the ///vig.
+Sets the current array ordering scheme used for all n-dimensional arrays (such as matrices) converted to and from the script engine. Valid values are \code{'row-major'} (the default), \code{'column-major'}, and \code{'column-minor'}. These indexing schemes are described in the ///vig.
 }
 
 \item{\code{getCoerceFactors()}}{

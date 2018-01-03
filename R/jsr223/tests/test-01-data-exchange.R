@@ -504,7 +504,7 @@ assertMessage(
 
 assertMessage(
   {
-    js$setArrayOrder("row-major-java")
+    js$setArrayOrder("column-minor")
     js %~% "TestDataClass.getBoxedBooleanArray2dNulls1()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
@@ -513,7 +513,7 @@ assertMessage(
 
 assertMessage(
   {
-    js$setArrayOrder("row-major-java")
+    js$setArrayOrder("column-minor")
     js %~% "TestDataClass.getBoxedBooleanArray2dNulls2()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
@@ -522,7 +522,7 @@ assertMessage(
 
 assertMessage(
   {
-    js$setArrayOrder("row-major-java")
+    js$setArrayOrder("column-minor")
     js %~% "[[TestDataClass.getBoxedBooleanArray2dNulls2(), TestDataClass.getBoxedBooleanArray2dNulls2()], [TestDataClass.getBoxedBooleanArray2dNulls2(), TestDataClass.getBoxedBooleanArray2dNulls2()]]"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
@@ -531,7 +531,7 @@ assertMessage(
 
 assertMessage(
   {
-    js$setArrayOrder("row-major-java")
+    js$setArrayOrder("column-minor")
     js %~% "org.fgilbert.jdx.TestData.getBoxedBooleanArray3dNulls()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_LOGICAL_VALUES
@@ -655,7 +655,7 @@ assertMessage(
 
 assertMessage(
   {
-    js$setArrayOrder("row-major-java")
+    js$setArrayOrder("column-minor")
     js %~% "TestDataClass.getBoxedByteArray2dNulls1()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
@@ -664,7 +664,7 @@ assertMessage(
 
 assertMessage(
   {
-    js$setArrayOrder("row-major-java")
+    js$setArrayOrder("column-minor")
     js %~% "TestDataClass.getBoxedByteArray2dNulls2()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
@@ -673,7 +673,7 @@ assertMessage(
 
 assertMessage(
   {
-    js$setArrayOrder("row-major-java")
+    js$setArrayOrder("column-minor")
     js %~% "[[TestDataClass.getBoxedByteArray2dNulls2(), TestDataClass.getBoxedByteArray2dNulls2()], [TestDataClass.getBoxedByteArray2dNulls2(), TestDataClass.getBoxedByteArray2dNulls2()]]"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
@@ -682,7 +682,7 @@ assertMessage(
 
 assertMessage(
   {
-    js$setArrayOrder("row-major-java")
+    js$setArrayOrder("column-minor")
     js %~% "org.fgilbert.jdx.TestData.getBoxedByteArray3dNulls()"
   }
   , jdx::jdxConstants()$MSG_WARNING_MISSING_RAW_VALUES
@@ -1227,7 +1227,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(l1)
 js$setArrayOrder("row-major")
 testSetAndGet(l1)
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(l1)
 
 # By default, rJava converts matrices as row-major. The default behavior for
@@ -1301,7 +1301,7 @@ assertIdentical(matrix(raw(), 0, 0), js$value)
 js$value <- matrix(raw(), 1, 0)
 assertIdentical(matrix(raw(), 1, 0), js$value)
 
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 js$value <- matrix(character())
 assertIdentical(matrix(character(), 0, 0), js$value)
 js$value <- matrix(character(), 1, 0)
@@ -1359,7 +1359,7 @@ l2 <- l1
 l2[[12]] <- matrix(FALSE)
 js$setArrayOrder("row-major")
 suppressWarnings(testSetAndGet(l1, l2))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 suppressWarnings(testSetAndGet(l1, l2))
 js$setArrayOrder("column-major")
 suppressWarnings(testSetAndGet(l1, l2))
@@ -1402,7 +1402,7 @@ l2[[17]] <- matrix(rep(FALSE, times = 6), 1, 6)
 l2[[18]] <- matrix(rep(FALSE, times = 6), 6, 1)
 js$setArrayOrder("row-major")
 suppressWarnings(testSetAndGet(l1, l2))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 suppressWarnings(testSetAndGet(l1, l2))
 js$setArrayOrder("column-major")
 suppressWarnings(testSetAndGet(l1, l2))
@@ -1432,7 +1432,7 @@ l2 <- l1
 l2[[7]] <- matrix(c(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE), 2, 3)
 js$setArrayOrder("row-major")
 suppressWarnings(testSetAndGet(l1, l2))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 suppressWarnings(testSetAndGet(l1, l2))
 js$setArrayOrder("column-major")
 suppressWarnings(testSetAndGet(l1, l2))
@@ -1456,7 +1456,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 l1 <- list(v[, 1], v[, 2], v[, 3])
 l1[[4]] <- c(1.1, 2.2, 3.3, 4.4) # No longer a matrix-shaped collection because vectors are of differing length
@@ -1464,7 +1464,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1))
 
 v <- matrix(1:9, 3, 3)
@@ -1473,7 +1473,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 v <- matrix(as.raw(247:255), 3, 3)
@@ -1482,7 +1482,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 v <- matrix(letters[1:9], 3, 3)
@@ -1491,7 +1491,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 v <- matrix(c(TRUE, FALSE, TRUE), 3, 3)
@@ -1500,7 +1500,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 # A mix of numeric, integer, and raw columns will be converted to a numeric matrix.
@@ -1510,7 +1510,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(as.raw(253:255), 1.1:3.1, 1:3)
@@ -1519,7 +1519,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(1.1:3.1, as.raw(253:255), 1:3)
@@ -1528,7 +1528,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(1.1:3.1, 1:3, as.raw(253:255))
@@ -1537,7 +1537,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(1:3, 1.1:3.1, as.raw(253:255))
@@ -1546,7 +1546,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(1:3, as.raw(253:255), 1.1:3.1)
@@ -1555,7 +1555,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 # A mix of integer and raw columns will be converted to an integer matrix.
@@ -1565,7 +1565,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(as.raw(253:255), 1:3)
@@ -1574,7 +1574,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 # A mix of Java null and String/Character values will be converted to a character matrix.
@@ -1585,7 +1585,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 # Mixed types within columns will also be converted to the most general type.
@@ -1607,7 +1607,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 l1 <- list(
@@ -1626,7 +1626,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(v))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(t(v)))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(t(v)))
 
 # If mixed types are not compatible, a list is returned instead of a matrix.
@@ -1638,7 +1638,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1))
 
 l1 <- list(
@@ -1649,7 +1649,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1))
 
 l1 <- list(
@@ -1660,7 +1660,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1))
 
 l1 <- list(
@@ -1671,7 +1671,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1))
 
 l1 <- list(
@@ -1682,7 +1682,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1))
 
 l1 <- list(
@@ -1693,7 +1693,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1))
 
 l1 <- list(
@@ -1704,7 +1704,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1))
 
 
@@ -1753,7 +1753,7 @@ js$setArrayOrder("column-major")
 assertIdentical(matrix(c(1L, 2L, NA_integer_, 4L), 4, 2), js$value)
 js$setArrayOrder("row-major")
 assertIdentical(matrix(c(1L, 2L, NA_integer_, 4L), 2, 4, byrow = TRUE), js$value)
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 assertIdentical(matrix(c(1L, 2L, NA_integer_, 4L), 2, 4, byrow = TRUE), js$value)
 
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
@@ -1911,11 +1911,11 @@ for (i in 0:5) {
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
 
-# N-Dimensional Arrays - Row Major Java -----------------------------------
+# N-Dimensional Arrays - Column Minor -----------------------------------
 
-cat("N-Dimensional Arrays - Row Major Java\n")
+cat("N-Dimensional Arrays - Column Minor\n")
 
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 
 # Two-dimensional
 l2 <- list(
@@ -1996,62 +1996,62 @@ logical.matrix <- array(rep(c(TRUE, FALSE), times = 128), c(256, 1))
 character.matrix <- array(as.numeric(range), c(256, 1))
 raw.matrix <- array(as.raw(range), c(256, 1))
 
-# Mixed types using column-major and row-major-java
+# Mixed types using column-major and column-minor
 
 l1 <- list(numeric.matrix, integer.matrix, raw.matrix)
 a <- array(as.numeric(c(range, range, 0:127, -128:-1)), c(256, 1, 3))
 js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(a))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(a))
 
 l1 <- list(numeric.matrix, raw.matrix, integer.matrix)
 a <- array(as.numeric(c(range, 0:127, -128:-1, range)), c(256, 1, 3))
 js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(a))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(a))
 
 l1 <- list(integer.matrix, raw.matrix, numeric.matrix)
 a <- array(as.numeric(c(range, 0:127, -128:-1, range)), c(256, 1, 3))
 js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(a))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(a))
 
 l1 <- list(integer.matrix, numeric.matrix, raw.matrix)
 a <- array(as.numeric(c(range, range, 0:127, -128:-1)), c(256, 1, 3))
 js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(a))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(a))
 
 l1 <- list(raw.matrix, numeric.matrix, integer.matrix)
 a <- array(as.numeric(c(0:127, -128:-1, range, range)), c(256, 1, 3))
 js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(a))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(a))
 
 l1 <- list(raw.matrix, integer.matrix, numeric.matrix)
 a <- array(as.numeric(c(0:127, -128:-1, range, range)), c(256, 1, 3))
 js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(a))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(a))
 
 l1 <- list(integer.matrix, raw.matrix)
 a <- array(as.integer(c(range, 0:127, -128:-1)), c(256, 1, 2))
 js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(a))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(a))
 
 l1 <- list(raw.matrix, integer.matrix)
 a <- array(as.integer(c(0:127, -128:-1, range)), c(256, 1, 2))
 js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(a))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(a))
 
 # Mixed types using row-major
@@ -2899,7 +2899,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(l2))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(l2))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(l2))
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 # Convert to named list and test again.
@@ -2916,7 +2916,7 @@ js$setArrayOrder("column-major")
 testSetAndGet(list(l1), list(l2))
 js$setArrayOrder("row-major")
 testSetAndGet(list(l1), list(l2))
-js$setArrayOrder("row-major-java")
+js$setArrayOrder("column-minor")
 testSetAndGet(list(l1), list(l2))
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
@@ -3418,8 +3418,8 @@ testJavaToR("getStringArray2dRagged1", list(character(), "", character(), c("a",
 testJavaToR("getStringArray2dRagged2", list("", character(), c("a", "Z")))
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
-cat("Java Types - Primitive 2D Arrays - Row Major Java\n")
-js$setArrayOrder("row-major-java")
+cat("Java Types - Primitive 2D Arrays - Column Minor\n")
+js$setArrayOrder("column-minor")
 testJavaToR("getBooleanArray2d0x0", matrix(TRUE, 0, 0))
 testJavaToR("getBooleanArray2d2x0", matrix(TRUE, 2, 0))
 testJavaToR("getBooleanArray2d2x1", matrix(c(FALSE, TRUE)))
@@ -3470,8 +3470,8 @@ testJavaToR("getShortArray2dRagged1", list(integer(), SHORT_MIN, integer(), c(0L
 testJavaToR("getShortArray2dRagged2", list(SHORT_MIN, integer(), c(0L, SHORT_MAX)))
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
-cat("Java Types - Boxed 2D Arrays - Row Major Java\n")
-js$setArrayOrder("row-major-java")
+cat("Java Types - Boxed 2D Arrays - Column Minor\n")
+js$setArrayOrder("column-minor")
 testJavaToR("getBigDecimalArray2d0x0", matrix(numeric(), 0, 0))
 testJavaToR("getBigDecimalArray2d2x0", matrix(numeric(), 2, 0))
 testJavaToR("getBigDecimalArray2d2x1", matrix(c(DOUBLE_MIN, DOUBLE_MAX)))
@@ -3585,8 +3585,8 @@ suppressWarnings(
 testJavaToR("getBoxedByteArray3dRagged", list(list(BYTE_MIN, raw(0), c(as.raw(0), BYTE_MAX)), list(BYTE_MIN, as.raw(1), c(as.raw(0), BYTE_MAX))))
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)
 
-cat("Java Types - Boxed 3D Arrays - Row Major Java\n")
-js$setArrayOrder("row-major-java")
+cat("Java Types - Boxed 3D Arrays - Column Minor\n")
+js$setArrayOrder("column-minor")
 suppressWarnings(
   testJavaToR("getBoxedBooleanArray3dNulls", array(c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE), c(3, 2, 2)))
 )

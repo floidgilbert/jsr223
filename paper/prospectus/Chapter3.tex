@@ -1,4 +1,4 @@
-
+% !TeX root = master.tex
 \chapter{Proposal}
 
 To complete the project requirement for a Masters degree in Statistics from BYU, I propose to do the following:
@@ -8,3 +8,78 @@ To complete the project requirement for a Masters degree in Statistics from BYU,
 
 \item Complete and submit the associated paper to the \href{http://journal.r-project.org}{R Journal} \\ (\href{http://journal.r-project.org}{http://journal.r-project.org}). The paper will include: i.) an extended software review with other relevant software packages; ii.) a vignette to demonstrate the package's functionality; and iii.) code examples for each of the supported languages.
 \end{enumerate}
+
+\noindent A list of items corresponding to each task is included on the following pages.
+
+\clearpage
+\section{Complete and submit R software packages}
+
+\subsection{Required}
+
+\begin{enumerate}
+\item Finish integration and testing with Kotlin programming language.
+
+\item Address error due to a Kotlin dependency when package loads.
+
+\item Finish vignette (content taken almost verbatim from R Journal paper) and insert vignette links into documentation.
+
+\item Create public GitHub repositories for both packages. Enable issue tracker.
+
+\item Build and check \textbf{jdx} and \textbf{jsr223} using latest development version of R software.
+
+\item Submit \textbf{jsr223} packages to CRAN for review.
+\end{enumerate}
+
+\subsection{Optional}
+
+\begin{enumerate}
+\item Create build scripts for both packages.
+\end{enumerate}
+
+\subsection{Speculative}
+
+\begin{enumerate}
+\item Provide functionality to download and install script engines on demand.
+\end{enumerate}
+
+\clearpage
+\section{Complete and submit paper to R Journal}
+
+\subsection{Required}
+
+\begin{enumerate}
+\item Update content to reflect latest version of \textbf{jsr223}.
+
+\item Complete extended software review including R packages relating to JavaScript, Groovy, and Python.
+
+\item Determine if claim about \textbf{JRI} in software review is correct.
+
+\item Address Kotlin and Scala integrations. Both have bugs and usage issues that must be listed. Those seeking a complete Scala integration will be pointed towards \textbf{rscala}. Also, existing generic code samples may require compatibility qualifications relating to Kotlin and Scala.
+
+\item Update explanations regarding array ordering for n-dimensional arrays.
+
+\item Finish all citations.
+
+\item Post sample code in Github repositories. Put link in paper.
+
+\item Write conclusion.
+\end{enumerate}
+
+\subsection{Optional}
+
+\begin{enumerate}
+\item Write instructions to include \textbf{jsr223} in other packages.
+
+\item Include sample code to download script engines via SBT, Maven, and Gradle build and management utilities.
+
+\item Complete a Groovy use case code sample.
+\end{enumerate}
+
+\subsection{Speculative}
+
+\begin{enumerate}
+\item Include use case for Kotlin language integration.
+
+\item Complete known issues and limitations section. This would probably be better suited to Github or a living version of the vignette.
+\end{enumerate}
+

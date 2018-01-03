@@ -765,15 +765,15 @@ a <- array(1:4, c(2, 2))
 js$value <- a
 assertIdentical(c(1L, 3L), js %~% "value[0]")
 
-previous.value <- js$setArrayOrder("row-major-java")
+previous.value <- js$setArrayOrder("column-minor")
 assertIdentical("row-major", previous.value)
-assertIdentical("row-major-java", js$getArrayOrder())
+assertIdentical("column-minor", js$getArrayOrder())
 
 js$value <- a
 assertIdentical(c(1L, 3L), js %~% "value[0]")
 
 previous.value <- js$setArrayOrder("column-major")
-assertIdentical("row-major-java", previous.value)
+assertIdentical("column-minor", previous.value)
 assertIdentical("column-major", js$getArrayOrder())
 
 js$value <- a
@@ -783,7 +783,7 @@ assertMessage(
   {
     js$setArrayOrder("invalid")
   }
-  , "Valid array order values are 'column-major', 'row-major', and 'row-major-java'."
+  , "Valid array order values are 'row-major', 'column-major', and 'column-minor'."
 )
 
 js$setArrayOrder(jsr223:::DEFAULT_ARRAY_ORDER)

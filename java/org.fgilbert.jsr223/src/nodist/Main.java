@@ -14,12 +14,12 @@ class Main {
 //		int[][][] array = {{{1,2,3},{4,5,6},{7,8,9}},{{10,11,12},{13,14,15},{16,17,18}},{{19,20,21},{22,23,24},{25,26,27}}};
 //		int[][][] array = {{{1,10,19},{4,13,22},{7,16,25}},{{2,11,20},{5,14,23},{8,17,26}},{{3,12,21},{6,15,24},{9,18,27}}};
 //		int[][][] array = {{{1, 4, 7}, {2, 5, 8}, {3, 6, 9}}, {{10, 13, 16}, {11, 14, 17}, {12, 15, 18}}, {{19, 22, 25}, {20, 23, 26}, {21, 24, 27}}};
-//		JavaToR j2r = new JavaToR(array, ArrayOrder.ROW_MAJOR_JAVA);
+//		JavaToR j2r = new JavaToR(array, ArrayOrder.COLUMN_MINOR);
 //		Object[] r = j2r.getValueObjectArray1d();
 //		System.out.println(r.length);
 //		j2r = new JavaToR(new String[][] {{}}, ArrayOrder.COLUMN_MAJOR);
 //		j2r = new JavaToR(new String[][] {}, ArrayOrder.ROW_MAJOR);
-//		j2r = new JavaToR(new String[][] {}, ArrayOrder.ROW_MAJOR_JAVA);
+//		j2r = new JavaToR(new String[][] {}, ArrayOrder.COLUMN_MINOR);
 //		JavaToR j2r = new JavaToR(new int[][] {{}}, ArrayOrder.ROW_MAJOR);
 //		Object[] r = j2r.getValueObjectArray1d();
 //		System.out.println(r.length);
@@ -29,20 +29,20 @@ class Main {
 //		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
 //		dimensions = new int[] {3, 2, 3};
 //		Object[] arrayExpected = new int[][][] {{{1, 2, 3}, {4, 5, 6}}, {{7, 8, 9}, {10, 11, 12}}, {{13, 14, 15}, {16, 17, 18}}};
-//		Object[] arrayActual = (int[][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions); 
+//		Object[] arrayActual = (int[][][]) Utility.createNdimensionalArrayColumnMinor(data, dimensions); 
 //		assertArrayEquals(arrayExpected, arrayActual);
 //
 //		data = new int[] {1, 3, 5, 2, 4, 6, 7, 9, 11, 8, 10, 12, 13, 15, 17, 14, 16, 18};
 //		dimensions = new int[] {3, 3, 2};
 //		arrayExpected = new int[][][] {{{1, 2}, {3, 4}, {5, 6}}, {{7, 8}, {9, 10}, {11, 12}}, {{13, 14}, {15, 16}, {17, 18}}};
-//		arrayActual = (Object[]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions); 
+//		arrayActual = (Object[]) Utility.createNdimensionalArrayColumnMinor(data, dimensions); 
 //		assertArrayEquals(arrayExpected, arrayActual);
 		
 //		int[] data;
 //		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
 //		int[] dimensions;
 //		dimensions = new int[] {3, 2, 3};
-//		int[][][] nnn = (int[][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+//		int[][][] nnn = (int[][][]) Utility.createNdimensionalArrayColumnMinor(data, dimensions);
 //		System.out.println(nnn.length);
 //		Object o;
 //		o = java.util.Arrays.asList(nnn);
@@ -52,13 +52,13 @@ class Main {
 //		data = new int[] {1, 4, 7, 2, 5, 8, 3, 6, 9};
 //		int[] dimensions;
 //		dimensions = new int[] {3, 3};
-//		int[][] nn = (int[][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+//		int[][] nn = (int[][]) Utility.createNdimensionalArrayColumnMinor(data, dimensions);
 //		Object o = java.util.Arrays.asList(nn);
 //		JavaToR j2r = new JavaToR(o); 
 //		System.out.println(j2r.getRdataCompositeCode());
 //		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
 //		dimensions = new int[] {3, 2, 3};
-//		int[][][] nnn = (int[][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+//		int[][][] nnn = (int[][][]) Utility.createNdimensionalArrayColumnMinor(data, dimensions);
 //		o = java.util.Arrays.asList(nnn);
 //		j2r = new JavaToR(o);
 //		System.out.println(j2r.getRdataCompositeCode());
@@ -67,7 +67,7 @@ class Main {
 //		data = new int[] {1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18, 1, 4, 2, 5, 3, 6, 7, 10, 8, 11, 9, 12, 13, 16, 14, 17, 15, 18};
 //		int[] dimensions;
 //		dimensions = new int[] {2, 3, 2, 3};
-//		int[][][][] n = (int[][][][]) Utility.createNdimensionalArrayRowMajorJava(data, dimensions);
+//		int[][][][] n = (int[][][][]) Utility.createNdimensionalArrayColumnMinor(data, dimensions);
 //		ArrayList<Object> al1 = new ArrayList();
 //		for (int i = 0; i < dimensions[0]; i++) {
 //			ArrayList<Object> al2 = new ArrayList();

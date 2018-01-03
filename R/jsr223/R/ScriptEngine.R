@@ -185,7 +185,7 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
     , setArrayOrder = function(value) {
       order <- private$JDX_ARRAY_ORDER[[value]]
       if (is.null(order))
-        stop(sprintf("Valid array order values are 'column-major', 'row-major', and 'row-major-java'."))
+        stop(sprintf("Valid array order values are 'row-major', 'column-major', and 'column-minor'."))
       r <- private$array.order
       private$array.order <- value # Save local copy to use quickly with jdx::convertToJava() and self$getArrayOrder()
       rJava::.jcall(private$controller, "V", "setArrayOrder", order)

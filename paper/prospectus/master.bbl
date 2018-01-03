@@ -4,69 +4,56 @@
 
 \bibitem[{Dahl(2016)}]{rscala}
 Dahl, D.~B. (2016), \textit{{rscala}: Bi-Directional Interface Between {R} and
-  {Scala} with Callbacks}, {R} package version 1.0.6.
-
-\bibitem[{{Google developers}(2016)}]{v8javascript}
-{Google developers} (2016), \textit{{Chrome V8}}.
+  {Scala} with Callbacks}, {R} package version 1.0.6. URL http://CRAN.R-project.org/package=rscala.
 
 \bibitem[{{JRuby team}(2016)}]{jruby}
 {JRuby team} (2016), \textit{{JRuby}: The {Ruby} Programming Language on the
-  JVM}.
+  JVM}.\\URL http://jruby.org/.
 
 \bibitem[{{Jython developers}(2016)}]{jython}
 {Jython developers} (2016), \textit{{Jython}: {Python} for the {Java}
-  Platform}.
+  Platform}.\\URL http://www.jython.org/.
 
 \bibitem[{Matsumoto(2016)}]{ruby}
-Matsumoto, Y. (2016), \textit{{Ruby Programming Language}}.
-
-\bibitem[{{Mozilla Developer Network}(2016)}]{jsrhino}
-{Mozilla Developer Network} (2016), \textit{{Rhino}}.
+Matsumoto, Y. (2016), \textit{{Ruby Programming Language}}. URL http://www.ruby-lang.org.
 
 \bibitem[{O'Connell(1995)}]{javainsidestory}
-O'Connell, M. (1995), \enquote{Java: The inside story,} .
+O'Connell, M. (1995), \enquote{Java: The inside story,} \textit{SunWorld
+  Online}. URL http://tech-insider.org/java/research/1995/07.html.
 
 \bibitem[{Ooms(2013)}]{opencpu}
-Ooms, J. (2013), \textit{{OpenCPU}}.
-
-\bibitem[{Ooms(2014)}]{jsonlite}
------- (2014), \enquote{The jsonlite Package: A Practical and Consistent
-  Mapping Between JSON Data and R Objects,} \textit{arXiv:1403.2805 [stat.CO]}.
-
-\bibitem[{Ooms(2016)}]{v8pkg}
------- (2016), \textit{V8: Embedded JavaScript Engine for R}, r package version
-  1.2.
+Ooms, J. (2013), \textit{{OpenCPU}}. URL https://www.opencpu.org/.
 
 \bibitem[{Oracle(2016{\natexlab{a}})}]{jsnashorn}
 Oracle (2016{\natexlab{a}}), \textit{{Java Platform, Standard Edition Nashorn
-  User's Guide, Release 8}}.
+  User's Guide, Release 8}}. URL https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/.
 
 \bibitem[{Oracle(2016{\natexlab{b}})}]{jsa}
------- (2016{\natexlab{b}}), \textit{{Java Scripting API}}.
+------ (2016{\natexlab{b}}), \textit{{Java Scripting API}}.\\URL https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/prog\_guide/toc.html.
 
 \bibitem[{{Python developers}(2016)}]{python}
-{Python developers} (2016), \textit{{Python}}.
+{Python developers} (2016), \textit{{Python}}. URL https://www.python.org/.
 
 \bibitem[{{Scala developers}(2016)}]{scala}
-{Scala developers} (2016), \textit{{The Scala Programming Language}}.
+{Scala developers} (2016), \textit{{The Scala Programming Language}}. URL https://www.scala-lang.org/.
 
 \bibitem[{Strachan(2016)}]{groovy}
-Strachan, J. (2016), \textit{{Groovy}}.
+Strachan, J. (2016), \textit{{Groovy}}. URL http://www.groovy-lang.org.
 
 \bibitem[{{Sun Microsystems, Inc.}(2006)}]{jsr223spec}
 {Sun Microsystems, Inc.} (2006), \textit{{JSR-223: Scripting for the Java
-  Platform}}.
+  Platform}}. URL https://jcp.org/en/jsr/detail?id=223.
 
 \bibitem[{Urbanek(2016{\natexlab{a}})}]{rjavaweb}
 Urbanek, S. (2016{\natexlab{a}}), \textit{{rJava}: Low-Level {R} to {Java}
-  Interface}.
+  Interface}. URL http://www.rforge.net/rJava/.
 
 \bibitem[{Urbanek(2016{\natexlab{b}})}]{rjava}
 ------ (2016{\natexlab{b}}), \textit{{rJava}: Low-Level {R} to {Java}
-  Interface}, {R}~package version~0.9-8.
+  Interface}, {R}~package version~0.9-8. URL http://CRAN.R-project.org/package=rJava.
 
 \bibitem[{Urbanek(2016{\natexlab{c}})}]{rserve}
 ------ (2016{\natexlab{c}}), \textit{{Rserve}: {B}inary R server}, {R} package
-  version 0.6-8.1.
+  version 0.6-8.1. URL http://CRAN.R-project.org/package=Rserve.
 
 \end{thebibliography}
