@@ -1,5 +1,7 @@
 package nodist;
 
+import java.util.Arrays;
+
 //import java.util.Arrays;
 //import java.util.ArrayList;
 //import java.util.List;
@@ -8,6 +10,23 @@ import org.fgilbert.jsr223.Controller;
 
 class Main {
 
+	public static void main(String[] args) {
+		Controller controller = null;
+		System.out.println(Arrays.toString("kotlin".codePoints().toArray()));
+		try {
+			controller = new Controller("kotlin");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (controller != null)
+				try {
+					controller.terminate();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+	
 	public static void mainXSF(String[] args) {
 //		Integer[][][][][] array = {{{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}, {{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}};
 //		Integer[][][] array = {{{0, 1, 2}, {0, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}};
@@ -88,7 +107,7 @@ class Main {
 //		System.out.println(j2r.getRdataCompositeCode());
 	}
 	
-	public static void main(String[] args) {
+	public static void mainRSR(String[] args) {
 		Controller controller = null;
 		try {
 			controller = new Controller("js");

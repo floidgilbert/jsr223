@@ -1,9 +1,0 @@
-#!/bin/bash
-
-cd $(dirname $(readlink -f "$0"))
-
-cd ../R
-R CMD build jsr223
-R CMD INSTALL --preclean --no-multiarch --with-keep.source jsr223
-cd ../bin
-

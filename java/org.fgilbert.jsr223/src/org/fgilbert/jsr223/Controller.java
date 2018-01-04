@@ -8,7 +8,6 @@ package org.fgilbert.jsr223;
 
 import java.io.StringWriter;
 import java.io.Writer;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +48,27 @@ public class Controller {
 	private StandardOutputMode standardOutputMode = StandardOutputMode.CONSOLE;
 
 	public Controller(String engineShortName) throws Exception {
-		engine = manager.getEngineByName(engineShortName);
-		if (engine == null)
-			throw new Exception(String.format(
-					"Failed to instantiate engine '%s'. Make sure the engine dependencies are in the class path.",
-					engineShortName));
-		ScriptEngineFactory factory = engine.getFactory();
+		ScriptEngineFactory factory = null;
+		/*
+		 * For some reason engineShortName == "kotlin" does not work. Using compareTo() instead. 
+		 */
+		if (engineShortName.compareTo("kotlin") != 0) {
+			engine = manager.getEngineByName(engineShortName);
+			if (engine == null)
+				throw new Exception(String.format(
+						"Failed to instantiate engine '%s'. Make sure the engine dependencies are in the class path.",
+						engineShortName));
+			factory = engine.getFactory();
+		} else {
+			/*
+			 * Workaround for Kotlin strangeness. See the following.
+			 * https://stackoverflow.com/questions/44781462/kotlin-jsr-223-scriptenginefactory-within-the-fat-jar-cannot-find-kotlin-compi
+			 * https://discuss.kotlinlang.org/t/embedding-kotlin-as-scripting-language-in-java-apps/2211/9
+			 */
+			Class<?> cls = Class.forName("org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory");
+			factory = (ScriptEngineFactory) cls.newInstance();
+			engine = factory.getScriptEngine();
+		}
 		engineInformation = new String[][] {
 				{
 					"name"
