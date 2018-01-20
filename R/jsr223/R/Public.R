@@ -1,7 +1,7 @@
 
 # Public ------------------------------------------------------------------
 
-getKotlinEngineJars <- function(directory) {
+getKotlinEngineJars <- function(directory, minimum = TRUE) {
   if (length(directory) != 1)
     stop("Specify a single directory.")
   directory <- formatPath(directory, TRUE)
@@ -10,14 +10,20 @@ getKotlinEngineJars <- function(directory) {
   if (!dir.exists(directory))
     stop(sprintf("The directory %s does not exist.", shQuote(directory, type = "sh")))
 
-  # The kotlin-script-util jar has a version number in the name. Find it.
-  kotlin.jars <- list.files(directory, "^kotlin-script-util.*")
-  kotlin.jars <- c(
-    "kotlin-compiler.jar",
-    "kotlin-script-runtime.jar",
-    "kotlin-stdlib.jar",
-    kotlin.jars
-  )
+  if (minimum) {
+    # The kotlin-script-util jar has a version number in the name. Find it.
+    kotlin.jars <- list.files(directory, "^kotlin-script-util.*")
+    if (length(kotlin.jars) == 0)
+      stop(sprintf("The file %s is required but cannot be found."), shQuote("kotlin-script-util-*.jar", type = "sh"))
+    kotlin.jars <- c(
+      "kotlin-compiler.jar",
+      "kotlin-script-runtime.jar",
+      "kotlin-stdlib.jar",
+      kotlin.jars
+    )
+  } else {
+    kotlin.jars <- list.files(directory, ".*\\.jar$")
+  }
   paste0(directory, kotlin.jars)
 }
 
@@ -26,5 +32,6 @@ getKotlinEngineJars <- function(directory) {
 # getKotlinEngineJars("c:\\kotlinc\\")
 # getKotlinEngineJars("c:\\kotlinc\\lib")
 # getKotlinEngineJars("c:\\kotlinc\\lib\\")
+# getKotlinEngineJars("c:\\kotlinc\\lib\\", FALSE)
 # formatPath("c:\\kotlinc\\", TRUE)
-
+#

@@ -12,7 +12,6 @@ class Main {
 
 	public static void main(String[] args) {
 		Controller controller = null;
-		System.out.println(Arrays.toString("kotlin".codePoints().toArray()));
 		try {
 			controller = new Controller("kotlin");
 		} catch (Exception e) {

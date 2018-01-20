@@ -93,6 +93,12 @@ public class Controller {
 		evaluationThread.start();
 		rClient = new RClient(this, evaluationThread);
 		engine.put("R", rClient);
+		/*
+		 * Bindings in Kotlin are not very user-friendly; they are not created as global variables. So, we 
+		 * create an R value to simplify callbacks.
+		 */
+		if (engineShortName.compareTo("kotlin") == 0)
+			engine.eval("val R = bindings[\"R\"] as org.fgilbert.jsr223.RClient");
 		initialized = true;
 	}
 	
