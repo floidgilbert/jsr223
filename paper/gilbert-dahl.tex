@@ -1,5 +1,5 @@
 % !TeX root = RJwrapper.tex
-\title{\pkg{jsr223}: A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby, Jython, Kotlin, and Scala}
+\title{\pkg{jsr223}: A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby, Jython, and Kotlin}
 \author{by Floid R. Gilbert and David B. Dahl}
 
 %///review bib
@@ -34,7 +34,7 @@ About the same time Ross Ihaka and Robert Gentleman began developing R at the Un
 
 In 2003, Simon Urbanek released \pkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C()} and \code{.Call()}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that the user has granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding dynamic source code directly within R script.
 
-Our \pkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \pkg{jsr223} supports six languages: Groovy, JavaScript, JRuby, Jython, Kotlin, and Scala. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
+Our \pkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \pkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
 
 There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223} languages can be used to quickly embed Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223} languages. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the supported languages. This feature does not require linking to R as a shared library. %///explain further if necessary.
 
@@ -173,6 +173,8 @@ The JRE can be obtained from  \href{http://www.oracle.com/technetwork/java/javas
 install.packages("jsr223")
 \end{verbatim}
 
+This command will also download and install \pkg{rJava} if necessary. However, the \pkg{rJava} installation will fail if R is not yet configured to use Java. To configure R for Java, execute \samp{sudo R CMD javareconf} in a Linux/OSX terminal. For Windows, open a command prompt “As Administrator” and execute \samp{R CMD javareconf}. If there are errors after executing the Java configuration command, address the errors, then execute the command again. One common error can be resolved by determining whether the GNU Compiler Collection (GCC) is accessible. To check for GCC, execute `gcc --help` from a terminal. This command will fail if GCC is not installed or if the license agreement has not been accepted.
+
 \hypertarget{scriptengineinstallation}{\section{Script engine installation}}
 
 To create an instance of a language's script engine, \pkg{jsr223} requires access to the associated script engine libraries. These instructions will help you obtain these libraries in the form of a standalone Java Archive (JAR) file. Though it is possible to use a full language installation with \pkg{jsr223} instead of a standalone file, those instructions are not included here for the sake of simplicity and portability. %///no longer the case. give general instructions that jive with scala and kotlin to load all jar files in the
@@ -198,6 +200,10 @@ To obtain the standalone Groovy engine, go to \url{http://groovy-lang.org} and c
 \hypertarget{quickstartguide}{\section{Quick start guide}}
 
 The primary features of \pkg{jsr223} are designed to be accessible to R programmers of all experience levels. This quick start guide illustrates these features with simple code examples. Unless otherwise stated, code samples in this section should work for all of the supported scripting languages with one exception: global objects in Ruby script must be prefixed with a dollar sign.%///no longer the case. we have Kotlin and Scala now that mess around.
+
+\subsection{Kotlin}
+
+%///
 
 \subsection{Hello world}
 
@@ -1254,6 +1260,109 @@ runServer <- function() {
 }
 
 runServer()
+\end{verbatim}
+
+\section{R with Kotlin}
+
+Kotlin is a programming language JetBrains/// designed for the JVM, interopable with Java, but more /// than Java. It can be compiled to bytecode or JavaScript source code. Less code. \href{https://www.javascripting.com/}{JavaScripting}. What is the draw of Kotlin? It's a modern programming language, similar to Scala///ref.
+
+
+///note the problem, like Ruby, where when an error occurs, it can't recover.
+///use embedded double quotes for strings.
+
+%///Do note that leads into bindings section below..
+
+\subsection{Kotlin bindings}
+
+%///what's different and provide some sample code.
+
+\subsection{Kotlin and Java classes}
+
+%/// insert code from the file here.
+JavaScript Nashorn provides wide support for Java classes, including the ability to extend classes and implement interfaces. Nashorn provides several methods to reference JavaScript classes. The two most common methods are demonstrated below. This code uses a static class method to sort a vector of integers.
+
+\begin{verbatim}
+# The method recommended by Nashorn: create a reference to a Java class using
+# the built-in Java.type() method. Conceptually, this is similar to importing
+# the class.
+
+engine %~% "
+var Arrays = Java.type('java.util.Arrays');
+var random = R.eval('sample(5)');
+Arrays.sort(random);
+random;
+"
+
+## [1] 1 2 3 4 5
+
+# An alternative method uses the a fully qualified class name, but it
+# requires more overhead per call.
+
+engine %~% "
+var random = R.eval('sample(5)');
+java.util.Arrays.sort(random);
+random;
+"
+
+## [1] 1 2 3 4 5
+\end{verbatim}
+
+The \code{Java.type()} method is required to create Java primitives as demonstrated in this example:
+
+\begin{verbatim}
+# Create a Java integer array with five elements.
+var IntegerArrayType = Java.type('int[]');
+var myArray = new IntegerArrayType(5);
+\end{verbatim}
+
+We reproduce the bivariate normal example in JavaScript to demonstrate importing an external library and to point out an important limitation in Nashorn regarding \code{invokeMethod}.
+
+\begin{verbatim}
+library("jsr223")
+
+# Include the Apache Commons Mathematics library in class.path.
+engine <- ScriptEngine$new(
+  engine.name = "js",
+  class.path = "../commons-math3-3.6.1.jar"
+)
+
+# Define the means and covariance matrix that will be used to create the
+# bivariate normal distribution.
+engine$means <- c(0, 2)
+engine$covariances <- diag(1, nrow = 2)
+
+# Import the package member and instantiate a new class.
+engine %@% "
+var MultivariateNormalDistributionClass = Java.type(
+  'org.apache.commons.math3.distribution.MultivariateNormalDistribution'
+);
+var mvn = new MultivariateNormalDistributionClass(means, covariances);
+"
+
+# This line would throw an error. Nashorn JavaScript supports 'invokeMethod' for
+# native JavaScript objects, but not for Java objects.
+#
+## engine$invokeMethod("mvn", "sample")
+
+# Instead, use script...
+engine %~% "mvn.sample();"
+
+## [1] 0.3279374 0.8652296
+
+# ...or wrap the method in a JavaScript function.
+engine %@% "function sample() {return mvn.sample();}"
+engine$invokeFunction("sample")
+
+## [1] 0.2527757 1.1942332
+
+# Take three samples.
+replicate(3, engine$invokeFunction("sample"))
+
+##           [,1]      [,2]      [,3]
+## [1,] 0.9924368 -1.295875 0.2025815
+## [2,] 2.5145855  2.128243 1.1666272
+
+engine$terminate()
 \end{verbatim}
 
 \section{R with Ruby}

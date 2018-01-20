@@ -34,9 +34,14 @@ strintrplt <- function (snippet, envir = parent.frame()) {
 }
 
 tempFile <- function(file.name) {
-  directory <- gsub("\\\\", .Platform$file.sep, tempdir())
-  if (substr(directory, nchar(directory), nchar(directory)) == .Platform$file.sep)
-    return(paste0(directory, file.name))
-  paste0(directory, .Platform$file.sep, file.name)
+  paste0(formatPath(tempdir(), TRUE), file.name)
 }
 
+formatPath <- function(path, terminate.with.separator = FALSE) {
+  path <- gsub("\\", .Platform$file.sep, path, fixed = TRUE)
+  if (!terminate.with.separator)
+    return(path)
+  if (substring(path, nchar(path)) == .Platform$file.sep)
+    return(path)
+  paste0(path, .Platform$file.sep)
+}
