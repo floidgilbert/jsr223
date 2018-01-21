@@ -6,19 +6,15 @@
 %///forgot to re-cite the programming languages. Look at old versions of papers.
 %///change pkg to cranpkg where nec.
 %///will instructions to use this package in packages be necessary?
-%///consider big int or big decimal calulations in statistical context
+%///consider big int or big decimal calulations in statistical context for Groovy example...probably not.
 %///review all syntax. I've changed some things including names of arguments. I've updated some code examples.
 %///http://www.theserverside.com/feature/Top-7-takeaways-about-the-Java-platform-from-JavaOne-2015
-%///change title in project but include Ruby and Python to make it searchable.
 %///update code sample original files. Made a lot of changes in-line.
 %///use the language for state found here instead of using ``environment'': http://openjdk.java.net/jeps/222
 %///update links to Oracle to openJDK instead.
-%///https://discuss.kotlinlang.org/t/how-can-i-use-scripts-in-kotlin-1-1-m02-eap/2064/3
 %///can use other languages in the future, if they decide to do \pkg{jsr223} support. Scala has support...but it's not ready yet and David has a better package.
-%///In addition to creating and using Java objects in script, classes can be extended and interfaces can be implemented.
-%///probably rename quick start guide
-%///the best way to distribute engines...create a local R package to do just that that depends on jdx. or vice versa? anyway, outline such a package. then, load the package in scripts before jsr223. see how dahl did it. or did he? does it need to be in that order?
 %///because of Ruby and Kotlin, every general example must be qualified accordingly when global variables are used. or, create a section that can be referred to in every case.
+%///standardize functions with () or not.
 \maketitle
 
 \abstract{
@@ -37,7 +33,7 @@ In 2003, Simon Urbanek released \pkg{rJava}, an integration package designed to 
 
 Our \pkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \pkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
 
-There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223} languages can be used to quickly embed Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223} languages. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the supported languages. This feature does not require linking to R as a shared library. %///explain further if necessary.
+There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223} languages can be used to quickly embed Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223} languages. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the \pkg{jsr223}-supported languages.
 
 \subsection{Document organization}
 
@@ -173,42 +169,89 @@ The JRE can be obtained from  \href{http://www.oracle.com/technetwork/java/javas
 \begin{verbatim}
 install.packages("jsr223")
 \end{verbatim}
+This command will also download and install the \pkg{rJava} dependency necessary. However, the \pkg{rJava} installation will fail if R is not yet configured to use Java. To configure R for Java in Linux or OSX, execute \samp{sudo R CMD javareconf} in a terminal. For Windows, open a command prompt “As Administrator” and execute \samp{R CMD javareconf}. If the Java reconfiguration command generates errors, address the errors and execute the command again. One common error can be resolved by determining whether the GNU Compiler Collection (GCC) is accessible. To check for GCC, execute `gcc --help` from a terminal. This command will fail if GCC is not installed or if the license agreement has not been accepted.
 
-This command will also download and install \pkg{rJava} if necessary. However, the \pkg{rJava} installation will fail if R is not yet configured to use Java. To configure R for Java, execute \samp{sudo R CMD javareconf} in a Linux/OSX terminal. For Windows, open a command prompt “As Administrator” and execute \samp{R CMD javareconf}. If there are errors after executing the Java configuration command, address the errors, then execute the command again. One common error can be resolved by determining whether the GNU Compiler Collection (GCC) is accessible. To check for GCC, execute `gcc --help` from a terminal. This command will fail if GCC is not installed or if the license agreement has not been accepted.
+\hypertarget{scriptengineinstallation}{\section{Script engine installation and instantiation}}
 
-\hypertarget{scriptengineinstallation}{\section{Script engine installation}}
-
-To create an instance of a language's script engine, \pkg{jsr223} requires access to the associated script engine libraries. These instructions will help you obtain these libraries in the form of a standalone Java Archive (JAR) file for the sake of simplicity and portability. However, a full language installation can be used instead of a standalone file.
+To create an instance of a language's script engine, \pkg{jsr223} requires access to the associated Java Archive (JAR) files. These instructions will help you obtain the required files and create a script engine instance.
 
 \subsection{Groovy}
 
-\href{http://groovy-lang.org}{Groovy} is a Java-like language enhanced with modern dynamic programming features. Java code can often be executed by the Groovy engine with little modification. Hence, this Groovy integration essentially brings the Java language to R.
+\href{http://groovy-lang.org}{Groovy} is a Java-like scripting language. Java code can often be executed by the Groovy engine with little modification. Hence, this Groovy integration essentially brings the Java language to R.
 
-To obtain the standalone Groovy engine, go to \url{http://groovy-lang.org} and click the \samp{Download} link. Locate the current binary distribution. Download and extract the archive to a temporary folder. Locate the \samp{embeddable} subfolder. Copy the file named \samp{groovy-all-x.x.x.jar} to a convenient location and make note of the path. This path will be used by \pkg{jsr223} to load the script engine.
+To obtain the standalone Groovy engine, go to \url{http://groovy-lang.org} and click the \samp{Download} link. Locate the current binary distribution. Download and extract the archive to a temporary folder. Locate the \samp{embeddable} subfolder. Copy the file named \samp{groovy-all-x.x.x.jar} to a convenient location and make note of the path. Specify this path in the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor to create a Groovy script engine instance:
+
+\begin{verbatim}
+library("jsr223")
+engine <- ScriptEngine$new("groovy", class.path = "~/your-path/groovy-all.jar")
+\end{verbatim}
 
 \subsection{JavaScript (Nashorn)}
 
-\href{https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/}{Nashorn} is the JavaScript dialect included in Java 8. Nashorn implements ECMAScript 5.1. No download is required to use JavaScript with \pkg{jsr223}. Technical documentation and examples for Nashorn are available at \href{https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/}{Oracle's web site}.
+\href{https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/}{Nashorn} is the JavaScript dialect included in Java 8. Nashorn implements ECMAScript 5.1. Because Nashorn is included in the JRE, no downloads are necessary to use JavaScript with \pkg{jsr223}. Technical documentation and examples for Nashorn are available at \href{https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/}{Oracle's web site}. Create a JavaScript instance using
+
+\begin{verbatim}
+library("jsr223")
+engine <- ScriptEngine$new("javascript")
+\end{verbatim}
 
 \subsection{JRuby}
 
-\href{http://jruby.org}{JRuby} is a Java-based implementation of the Ruby programming language. Obtain the standalone JRuby engine by clicking the \samp{Downloads} link at at \url{http://jruby.org}. Find \samp{JRuby x.x.x.x Complete.jar} and save it to a convenient location. Make note of the path; it will be used by \pkg{jsr223} to load the script engine.
+\href{http://jruby.org}{JRuby} is a Java-based implementation of the Ruby programming language. Obtain the standalone JRuby engine by clicking the \samp{Downloads} link at at \url{http://jruby.org}. Find \samp{JRuby x.x.x.x Complete.jar} and save it to a convenient location. Specify the path to the JAR file in the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor to create a JRuby script engine instance.
+
+\begin{verbatim}
+library("jsr223")
+engine <- ScriptEngine$new("ruby", class.path = "~/your-path/jruby-complete.jar")
+\end{verbatim}
 
 \subsection{Jython}
 
-\href{http://www.jython.org}{Jython} is a Java-based implementation of the Python programming language. The standalone Jython engine is available at \url{http://www.jython.org}. Follow the \samp{Download} link. Click \samp{Download Jython x.x.x - Standalone Jar} to start the download. Save the JAR file to a convenient location and remember the path. This path will be used by \pkg{jsr223} to load the script engine.
+\href{http://www.jython.org}{Jython} is a Java-based implementation of the Python programming language. The standalone Jython engine is available at \url{http://www.jython.org}. Follow the \samp{Download} link. Click \samp{Download Jython x.x.x - Standalone Jar} to start the download. Save the JAR file to a convenient location and remember the path. This path will be used by \pkg{jsr223} to load the script engine as in the following code.
 
-\subsection{Kotlin}
+\begin{verbatim}
+library("jsr223")
+engine <- ScriptEngine$new("python", class.path = "~/your-path/jython-standalone.jar")
+\end{verbatim}
 
-\href{https://kotlinlang.org/}{Kotlin} is a relatively new programming language that is interoperable with Java. As of this writing, a standalone JAR file is not available for the script engine. Kotlin can be installed as part of an IDE or as a standalone compiler. These instructions will use the latter. Visit the Kotlin web site at \url{https://kotlinlang.org/} and follow the link to download the standalone compiler. Extract the compiler into a directory and make note of the path; it will be used to create a script engine instance. The compiler distribution does not include the required script engine file \file{kotlin-script-util-*.jar}. Perhaps the simplest way to obtain the JAR is to download it from the Maven repository. Follow \href{https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-script-util}{this link}, or search for \samp{kotlin-script-util} at \url{https://mvnrepository.com}. Click the link corresponding your version of the Kotlin compiler. Click the link labeled \samp{jar} under the listed files. Save the JAR file to the \file{lib} subfolder of the Kotlin compiler directory.
+\hypertarget{kotlinscriptengineinstallation}{\subsection{Kotlin}}
+
+\href{https://kotlinlang.org/}{Kotlin} is a relatively new programming language that is interoperable with Java. As of this writing, a standalone JAR file is not available for the script engine. The most straight-forward way to obtain the files is to use selected files from the Community Edition of the \href{https://www.jetbrains.com/idea/}{JetBrains IntelliJ Idea} integrated development environment (IDE). The IDE doesn't need to be installed. Download the IDE's archive file (e.g., a zip file, not the executable installer package). Create an empty target folder on your system for the Kotlin files. Extract the \file{bin} and \file{plugins/Kotlin} folders to the target folder preserving the original folder structures. \strong{Note:} The \file{bin} folder isn't strictly required, but it will eliminate warnings on some systems. Make note of the fully-qualified path to the \file{plugins/Kotlin} folder; it will be used by \pkg{jsr223} to load the script engine.
+
+If you are already using a current version of IntelliJ Idea, or if you decide to install the IDE, locate the path to the \file{plugins/Kotlin} subfolder of the IDE's installation path. This folder will be used to load the script engine.
+
+Because Kotlin does not provide a standalone script engine JAR file, \pkg{jsr223} includes a convenience function \code{getKotlinScriptEngineJars()} to simplify adding JAR files to the class path. The following code demonstrates creating a Kotlin script engine instance using only the minimum required JAR files. The \code{kotlin.path} variable contains the path to the \file{plugins/Kotlin} folder on your system.
+
+\begin{verbatim}
+library("jsr223")
+engine <- ScriptEngine$new(
+  "kotlin",
+  class.path = getKotlinScriptEngineJars(kotlin.path)
+)
+\end{verbatim}
+To include all Kotlin system JAR files in the class path, use this example instead.
+
+\begin{verbatim}
+library("jsr223")
+engine <- ScriptEngine$new(
+  "kotlin",
+  class.path = getKotlinScriptEngineJars(kotlin.path, minimum = FALSE)
+)
+\end{verbatim}
+
+%Visit the Kotlin web site at \url{https://kotlinlang.org/} and follow the link to download the standalone compiler. Extract the compiler into a directory and make note of the path; it will be used to create a script engine instance. The compiler distribution does not include the required script engine file \file{kotlin-script-util-*.jar}. Perhaps the simplest way to obtain it is to use the Maven repository. Follow \href{https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-script-util}{this link}, or search for \samp{kotlin-script-util} at \url{https://mvnrepository.com}. Click the link corresponding your version of the Kotlin compiler. Click the link labeled \samp{jar} under the listed files. Save the JAR file to the \file{lib} subfolder of the Kotlin compiler installation directory.
 
 \hypertarget{quickstartguide}{\section{Quick start guide}}
 
-The primary features of \pkg{jsr223} are designed to be accessible to R programmers of all experience levels. This quick start guide illustrates these features with simple code examples.
+The primary features of \pkg{jsr223} are designed to be accessible to R programmers of all experience levels. This quick start guide illustrates these features with simple code examples. In general, the code samples work with all supported script engines with two exceptions.
+
+\begin{enumerate}
+\item Global variables in Ruby script must be prefixed with a dollar sign.
+\item Kotlin handles script engine bindings differently than the other language implementations. See \hyperlink{kotlinbindings}{Kotlin bindings} for details.
+\end{enumerate}
 
 \subsection{Hello world}
 
-This R code snippet demonstrates the basic elements required to embed a scripting language: start a script engine, optionally pass data to the script engine environment, execute a script, and terminate the script engine when it is no longer needed.
+The R code snippet below demonstrates the basic elements required to embed a scripting language: start a script engine, optionally pass data to the script engine environment, execute a script, and terminate the script engine when it is no longer needed.
 
 %///replace all verbatim with example or whatever it is that R Journal uses.
 \begin{verbatim}
@@ -224,7 +267,7 @@ engine$terminate()
 
 The \code{ScriptEngine\$new} constructor method creates a script engine instance. In the preceding example, we assign the new script engine object to the variable \code{engine}. The first argument of \code{ScriptEngine\$new} specifies the type of script engine to create. In this case, we create a JavaScript engine. The third line assigns the value \code{"Hello world"} to a global variable named \code{message} in the script engine environment. The next line executes a JavaScript code snippet using the \code{\%$\sim$\%} operator. The snippet uses the JavaScript \code{print} method to write the message to the console. The last line in the example terminates the script engine and releases the associated resources.
 
-To create a script engine other than JavaScript, specify a different script engine name and a path to the required script engine JAR files. (See \hyperlink{scriptengineinstallation}{Script engine installation} for instructions to obtain script engines.) The supported script engine names are listed in Table \ref{tab:script-engine-type-names}. These names are defined by the script engine provider. \strong{Note:} Script engine names are case sensitive.
+To create a script engine other than JavaScript, specify a different script engine name and a character vector containing the required script engine JAR files. (See \hyperlink{scriptengineinstallation}{Script engine installation} for instructions to obtain script engines.) The supported script engine names are listed in Table \ref{tab:script-engine-type-names}. These names are defined by the script engine provider. \strong{Note:} Script engine names are case sensitive.
 
 The next example reproduces the “Hello world” example in Ruby script.
 
@@ -232,7 +275,7 @@ The next example reproduces the “Hello world” example in Ruby script.
 library("jsr223")
 engine <- ScriptEngine$new(
   engine.name = "ruby",
-  class.path = "../engines/jruby-complete.jar"
+  class.path = "~/your-path/jruby-complete.jar"
 )
 engine$message <- "Hello world"
 engine %~% "puts $message"
@@ -241,7 +284,6 @@ engine %~% "puts $message"
 
 engine$terminate()
 \end{verbatim}
-
 In this case, two parameters are passed to the \code{ScriptEngine\$new} method: the script engine name \code{"ruby"}, and the path to the JRuby script engine JAR file. As before, we assign the value \code{"Hello world"} to a global variable named \code{message} and print it to the console. Notice that we prefix the global variable with a dollar sign: \code{\$message}. This syntax is peculiar to global variables in the Ruby language.
 
 \begin{table}[h]
@@ -260,7 +302,7 @@ In this case, two parameters are passed to the \code{ScriptEngine\$new} method: 
         \noalign{\vspace{1ex}}
         \bottomrule
     \end{tabular}
-    \caption{The \code{ScriptEngine\$new} constructor method creates a new script engine instance for a given language using the names in this table. The names are case sensitive.}
+    \caption{The \code{ScriptEngine\$new} constructor method creates a new script engine instance for a given language using the associated names in this table. Script engine names are case sensitive.}
     \label{tab:script-engine-type-names}
 \end{table}
 
@@ -283,7 +325,7 @@ The following lines also execute script, but there are no return values. This no
 engine %@% script
 engine$eval(script, discard.return.value = TRUE)
 \end{verbatim}
-To execute a script file, use either of the following lines where \code{file.name} is the path (or URL) to the script file.
+To execute a script file, use either of the following lines where \code{file.name} is the path or URL to the script file.
 
 \begin{verbatim}
 engine$source(file.name)
@@ -303,13 +345,14 @@ lst1 <- list(a = 6, b = 7)
 engine$eval("a + b", bindings = lst1)
 
 ## 13
-
+\end{verbatim}
+This script would throw an error because 'b' is not defined in the list.
+\begin{verbatim}
 lst2 <- list(a = 6)
-# This line would throw an error because 'b' is no longer defined.
-## engine$eval("a + b", bindings = lst2)
-
-# When 'bindings' is not specified, the script engine reverts to the default
-# global bindings.
+engine$eval("a + b", bindings = lst2)
+\end{verbatim}
+When the \code{bindings} parameter is not specified, the script engine reverts to the default global bindings.
+\begin{verbatim}
 engine$eval("a + b")
 
 ## 5
@@ -317,7 +360,7 @@ engine$eval("a + b")
 
 \subsection{Sharing data between language environments}
 
-The following two lines of R code are equivalent: they convert an R object to a Java object and assign the new object to a global variable named \code{"myValue"} in the script engine's environment. This syntax is the same for all supported R data structures.
+The following two lines of R code are equivalent: they convert an R object to a Java object and assign the new object to a global variable \code{myValue} in the script engine's environment. This syntax is the same for all supported R data structures.
 
 \begin{verbatim}
 engine$myValue <- iris
@@ -337,11 +380,11 @@ All data structures in Java-based scripting languages are backed by Java objects
 
 Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but it was broken out into a separate package to simplify maintenance and to make its features available to other developers.
 
-The \pkg{jdx} package (and hence \pkg{jsr223}) supports converting R vectors, factors, n-dimensional arrays (such as matrices), data frames, named lists, unnamed lists, nested lists (i.e., lists containing lists), and environments to generic Java objects. Row-major and column-major ordering options are available for both arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported: convert them to character vectors beforehand.
+The \pkg{jdx} package (and hence \pkg{jsr223}) supports converting R vectors, factors, n-dimensional arrays, data frames, named lists, unnamed lists, nested lists (i.e., lists containing lists), and environments to generic Java objects. Row-major and column-major ordering options are available for arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported.
 
-Java scalars, n-dimensional arrays, collections, and maps can be converted to standard objects in the R environment. The supported Java structures cover all of the primary types used in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform.
+Java scalars, n-dimensional arrays, collections, and maps can be converted to standard objects in the R environment. These structures cover all of the primary data types in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform.
 
-All of the \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}. The most pertinent details are discussed in the following sections. For a more thorough, low-level discussion, see the vignette included with the \pkg{jdx} package.
+All \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}. The most pertinent details are discussed in the following sections. For a more thorough discussion, see the vignette included with the \pkg{jdx} package.
 
 \subsection{Setting and getting script engine options}
 
@@ -349,26 +392,19 @@ The \pkg{jsr223} \code{ScriptEngine} class exposes several methods that control 
 
 \hypertarget{handlingrvectors}{\subsection{Handling R vectors}}
 
-By default, length-one R vectors are converted to Java scalars when passed to the script engine environment. If a Java length-one array is desired, wrap the value in the R ``as-is'' function (e.g., \code{I(myValue)}), or set the \textit{length one vector as array} setting to \code{TRUE} using the \code{setLengthOneVectorAsArray} method. The following example demonstrates converting length-one vectors.
+By default, length-one R vectors are converted to Java scalars when passed to the script engine environment. If a Java length-one array is desired, wrap the value in the R ``as-is'' function (e.g., \code{I(myValue)}), or set the \textit{length one vector as array} setting to \code{TRUE} using the \code{setLengthOneVectorAsArray} method. By default, length-one vectors are converted to Java scalars as demonstrated here.
 
 \begin{verbatim}
-# By default, length-one vectors are converted to Java scalars.
 engine$setLengthOneVectorAsArray(FALSE)
 engine$myScalar <- 1
 engine$getJavaClassName("myScalar")
 
 ## [1] "java.lang.Double"
+\end{verbatim}
+Wrap a length-one vector with \code{I()} to indicate that an array should be created instead. In this case, the resulting Java class name is \code{"[D"} which denotes a primitive, double one-dimensional array.
 
-# Wrap the vector in I() to indicate that an array should be created instead.
-# The resulting Java class name is "[D" which denotes a primitive, double
-# one-dimensional array.
-engine$myArray <- I(1)
-engine$getJavaClassName("myArray")
-
-## [1] "[D"
-
-# To change the conversion behavior for all length-one vectors, set the
-# 'length one vector as array' setting to TRUE.
+To change the conversion behavior for all length-one vectors, set the \textit{length one vector as array} setting to \code{TRUE}.
+\begin{verbatim}
 engine$setLengthOneVectorAsArray(TRUE)
 engine$myArray <- 1
 engine$getJavaClassName("myArray")
@@ -376,7 +412,7 @@ engine$getJavaClassName("myArray")
 ## [1] "[D"
 \end{verbatim}
 
-Vectors of any length other than one are always converted to primitive Java arrays. The following code passes a vector of ten random normal deviates to the script engine environment. The first element of the resulting array is returned. This syntax is common to all of the supported scripting languages. \strong{Note:} Java arrays use zero-based indexes.
+Vectors of any length other than one are always converted to primitive Java arrays. The following code passes a vector of ten random normal deviates to the script engine environment. The first element of the resulting array is returned. \strong{Note:} Java arrays use zero-based indexes.
 
 \begin{verbatim}
 set.seed(10)
@@ -406,22 +442,24 @@ engine %~% "m[0][1]"
 
 %///update this based on what is changed in jdx.
 %///furthermore, I might have the names all wrong. the data structures are correct, but the names might be wrong.
-The \code{setArrayOrder} script engine method controls index ordering for arrays converted from R to Java, and vice versa. Three array index ordering schemes are available: \code{'row-major'}, \code{'column-major'}, and \code{'column-minor'}. Before describing these schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of a matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. Java n-dimensional arrays are literally constructed in this fashion. R n-dimensional arrays, on the other hand, are stored in memory as a vector and the data is retrieved in the appropriate order using indexing arithmetic.
+The \code{setArrayOrder} script engine method controls ordering for arrays converted from R to Java, and vice versa. Three array index ordering schemes are available: \code{'row-major'}, \code{'column-major'}, and \code{'column-minor'}. These settings control how the destination Java array is constructed.
 
-Now we describe the each of the array indexing options.
+Before describing the ordering schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. 
+
+Now we describe the each of the \textit{array order} settings.
 
 \begin{itemize}
-\item \strong{row-major} -- The indexes of an n-dimensional array are ordered \newline\code{[row][column][matrix]...[n]}. The \pkg{jsr223} package defaults to 'row-major' because R uses this scheme. However, this scheme is not intuitive for Java programmers when n > 2 because Java n-dimensional arrays are constructed as higher-order objects containing lower-order objects.
+\item \code{'row-major'} -- The data of the resulting Java n-dimensional array are ordered \newline \code{[row][column][matrix]...[n]}. The \pkg{jsr223} package defaults to \code{'row-major'} because R syntax uses this indexing scheme (though R stores the array in memory using column-major order). This row-major scheme is not intuitive for Java programmers when n > 2 because Java n-dimensional arrays are constructed as high-order objects containing low-order objects.
 
-\item \strong{column-major} -- The indexes of an n-dimensional array are ordered \newline\code{[n]...[matrix][column][row]}. This ordering scheme is natural for Java programmers because this is the order that Java arrays are literally constructed. The data contained at the one-dimensional level represent columns of the parent matrix.
+\item \code{'column-major'} -- The data of the resulting Java n-dimensional array are ordered \newline \code{[n]...[matrix][column][row]}. This ordering scheme is natural for Java programmers: the data contained in the one-dimensional arrays represent columns of the parent matrix.
 
-\item \strong{column-minor} -- The indexes of an n-dimensional array are ordered \newline\code{[n]...[matrix][row][column]}. This is similar to the \code{'column-major'} ordering scheme except that the arrays at the one-dimensional level represent rows of the parent matrix. For matrices, 'column-minor' and 'row-major' are equivalent.
+\item \code{'column-minor'} -- The data of the resulting Java n-dimensional array are ordered \newline \code{[n]...[matrix][row][column]}. This provides Java programmers with a natural ordering scheme where the arrays at the one-dimensional level represent rows of the parent matrix. For matrices, \code{'column-minor'} and \code{'row-major'} are equivalent.
 
 \end{itemize}
 
-\strong{Note:} Always use the same array ordering scheme when transferring the same array data back and forth between R and Java. For example, if an R array is converted to Java using column-major ordering, and then converted back from Java to R using row-major ordering, the R array will be in the wrong order.
+\strong{Note:} If an R array is converted to Java using a particular array order, use the same array order when converting it back from Java to R. Otherwise, the data will be in the wrong order.
 
-In the following JavaScript example, a three-dimensional array is copied to the script engine using each of the three indexing options. In each case, the Java static method \code{deepToString} creates a string representation of the array to show the resulting order of the data in the script engine.
+In the following JavaScript example, a three-dimensional array is copied to the script engine using each of the three indexing options. We use the Java static method \code{deepToString} to create a string representation of the array that shows the resulting order of the data in the script engine.
 
 \begin{verbatim}
 a <- array(1:8, c(2, 2, 2))
@@ -462,7 +500,7 @@ engine %~% "java.util.Arrays.deepToString(a);"
 
 R data frames can be converted to the script engine using either row-major or column-major order. Row-major order (the default) creates a list of records. This representation is perhaps the most common in programming for tabular data. Column-major order, on the other hand, creates a list of columns. Column-major structures are faster to create and are generally preferred for aggregate column calculations. Change the \textit{data frame order} setting with the \code{setDataFrameRowMajor} method.
 
-When the row-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(TRUE)}), an R data frame is converted to a \href{https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html}{\code{java.util.ArrayList}} object. The list contains  \href{https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html}{\code{java.util.LinkedHashMap}} objects that represent the rows of the data frame. Each member of the hash map is a name/value pair of a single field in the data frame. The name of the field is the corresponding column's name. The following example uses R's built-in \code{iris} data set to illustrate using row-major data frames in the script environment. This syntax is the same for all scripting languages. (Remember to prefix the global variables with \code{\$} in Ruby).
+When the row-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(TRUE)}), an R data frame is converted to a \href{https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html}{\code{java.util.ArrayList}} object. The list contains  \href{https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html}{\code{java.util.LinkedHashMap}} objects that represent the rows of the data frame. Each member of the hash map is a name/value pair of a single field in the data frame. The name of the field is the corresponding column's name. The following example uses R's built-in \code{iris} data set to illustrate using row-major data frames in the script environment.
 
 \begin{verbatim}
 engine$setDataFrameRowMajor(TRUE)
@@ -497,7 +535,11 @@ engine %~% "iris[1]"
 ## [1] "setosa"
 \end{verbatim}
 
-When the column-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(FALSE)}), an R data frame is converted to a \href{https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html}{\code{java.util.LinkedHashMap}} object. The map members are arrays representing the columns in the data frame. The following commented example uses R's built-in \code{mtcars} data set to illustrate basic functionality. This syntax is supported for all scripting languages.
+When the column-major setting is selected (i.e., \code{engine\$setDataFrameRowMajor(FALSE)}), an R data frame is converted to a \href{https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html}{\code{java.util.LinkedHashMap}} object. The map members are arrays representing the columns in the data frame.
+
+Row names for data frames are not preserved during conversion. To include row names in the conversion, simply add them as a column in your data frame. We do not automatically include row names in conversion because it would require us to create an additional element in the Java map with a reserved key value such as \code{\_row}. Instead, we leave the decision of how to handle row names to the developer.
+
+The following commented example uses R's built-in \code{mtcars} data set to illustrate basic functionality.
 
 \begin{verbatim}
 engine$setDataFrameRowMajor(FALSE)
@@ -588,7 +630,7 @@ engine %~% "list.size()"
 
 \subsection{Data exchange details}
 
-So far, we have discussed all of the basic functionality and settings related to data exchange. This section includes a few additional notes for data exchange. For a comprehensive guide, including potentially unexpected conversion behaviors, see the \pkg{jdx} package vignette.
+So far, we have discussed all of the basic functionality and settings related to data exchange. This section includes a few additional notes for data exchange. A comprehensive guide, including details for unexpected conversion behaviors, is included in the \pkg{jdx} package vignette.
 
 R reserves special \code{NA} values to indicate missing types. Table \ref{tab:r-na-behavior} outlines how \code{NA} values are handled for different R data types. Table \ref{tab:java-null-behavior}, in turn, describes how Java null values are interpreted when converting Java objects to R.
 
@@ -606,6 +648,28 @@ R Structure      & NA Behavior                                         \\ \midru
 \label{tab:r-na-behavior}
 \end{table}
 
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+Java Structure                             & Java null Conversion   \\ \midrule
+\code{Boolean[]..[]} & \code{null} maps to \code{FALSE} with a warning.  \\[.25cm]
+\code{Byte[]..[]}       & \code{null} maps to \code{raw} \code{0x00} with a warning. \\[.25cm]
+\code{Character[]..[]}  & \code{null} maps to \code{NA\_character\_}.   \\[.25cm]
+\code{Double[]..[]}   & \code{null} maps to \code{NA\_real\_}.          \\[.25cm]
+\code{Float[]..[]}     & \code{null} maps to \code{NA\_real\_}.        \\[.25cm]
+\code{Integer[]..[]}     & \code{null} maps to \code{NA\_integer\_}.                  \\[.25cm]
+\code{java.math.BigDecimal[]..[]}          & \code{null} maps to \code{NA\_real\_}.                     \\[.25cm]
+\code{java.math.BigInteger[]..[]}          & \code{null} maps to \code{NA\_real\_}.                     \\[.25cm]
+\code{Long[]..[]}       & \code{null} maps to \code{NA\_real\_}.                     \\[.25cm]
+\code{Object[]..[]}                        & \code{null} maps to \code{NULL}.                           \\[.25cm]
+\code{Short[]..[]}     & \code{null} maps to \code{NA\_integer\_}.                  \\[.25cm]
+\code{java.lang.String[]..[]}              & \code{null} maps to \code{NA\_character\_}.                \\ \bottomrule
+\end{tabular}
+\caption{Java \code{null} indicates missing or uninitialized values. This table outlines how \code{null} is interpreted when converting Java objects to R. The syntax \code{[]..[]} is used to indicate an array of one or more dimensions.}
+\label{tab:java-null-behavior}
+\end{table}
+
 Because \pkg{jsr223} converts data to generic Java data structures, R attributes such as names cannot always be included in conversion. For example, R vectors are converted to native Java arrays, therefore names associated with vector elements must be discarded. Likewise, dimension names are not preserved for n-dimensional structures. Column names for data frames are preserved, but row names are not. To preserve data frame row names, simply copy the names to a new column before converting the data frame.
 
 The \pkg{jsr223} package always converts R vectors and arrays to Java arrays. Java arrays are intuitive to use in all of the supported scripting environments. However, the supported scripting languages can also create array structures that are not native Java arrays. \pkg{jsr223} also supports converting these language-specific array and collection structures to R vectors and arrays.
@@ -616,33 +680,11 @@ As described earlier, R unnamed lists are converted to \href{https://docs.oracle
 
 The jdx package converts R raw values to Java byte values and vice versa. R raw values and Java byte values are both 8 bits, but they are interpreted differently. R raw values range from 0 to 255 (i.e., unsigned bytes). Java byte values range from -128 to 127 (i.e., signed bytes). The 8-bit value 0xff represents 255 in R, but is -1 in Java. Usually this discrepancy is not an issue because raw and byte values are used to store and transfer binary data such as images. If human-readable values are important, use integer vectors instead.
 
-\begin{table}[t]
-\centering
-\begin{tabular}{@{}ll@{}}
-\toprule
-Java Structure                             & Java null Behavior                                             \\ \midrule
-\code{Boolean[]..[]} & \code{null} maps to \code{FALSE} with a warning.           \\[.25cm]
-\code{Byte[]..[]}       & \code{null} maps to \code{raw} \code{0x00} with a warning. \\[.25cm]
-\code{Character[]..[]}  & \code{null} maps to \code{NA\_character\_}.                \\[.25cm]
-\code{Double[]..[]}   & \code{null} maps to \code{NA\_real\_}.                     \\[.25cm]
-\code{Float[]..[]}     & \code{null} maps to \code{NA\_real\_}.                     \\[.25cm]
-\code{Integer[]..[]}     & \code{null} maps to \code{NA\_integer\_}.                  \\[.25cm]
-\code{java.math.BigDecimal[]..[]}          & \code{null} maps to \code{NA\_real\_}.                     \\[.25cm]
-\code{java.math.BigInteger[]..[]}          & \code{null} maps to \code{NA\_real\_}.                     \\[.25cm]
-\code{Long[]..[]}       & \code{null} maps to \code{NA\_real\_}.                     \\[.25cm]
-\code{Object[]..[]}                        & \code{null} maps to \code{NULL}.                           \\[.25cm]
-\code{Short[]..[]}     & \code{null} maps to \code{NA\_integer\_}.                  \\[.25cm]
-\code{java.lang.String[]..[]}              & \code{null} maps to \code{NA\_character\_}.                \\ \bottomrule
-\end{tabular}
-\caption{Java \code{null} indicates missing or uninitialized values. This table outlines how \code{null} is interpreted when converting Java objects to R.}
-\label{tab:java-null-behavior}
-\end{table}
-
 \subsection{Calling script functions and methods}
 
 Functions and methods defined in script can be called directly from R via the \code{invokeFunction} and \code{invokeMethod} script engine methods. Any number of supported R structures can be passed as parameter values.
 
-\strong{Note:} The Groovy and Python engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript, Kotlin, and Ruby engines only support calling methods of native scripting objects. %///verify the claim on Kotlin. Not sure about this.
+\strong{Note:} The Groovy, Python, and Kotlin engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript and Ruby engines only support calling methods of native scripting objects.
 
 As described in \hyperlink{handlingrvectors}{Handling R vectors}, length-one vectors are converted to Java scalars by default. One way to ensure that a vector is always converted to a Java array is by wrapping it in the ``as-is'' function \code{I()}. This feature is particularly useful when passing multiple parameters to a script function. In the same function, some parameters may require scalars while others require arrays. Simply use \code{I()} to indicate which vectors should be converted to arrays.
 
@@ -769,11 +811,11 @@ engine %~% "R.eval('recursiveCountdown(3)')"
 
 \subsection{Embedding R in another scripting language}
 
-It is often desirable to use R as an embedded language. Though \pkg{jsr223} does not provide a standalone interface to call into R, the same functionality can be achieved with the \code{RScript} command line executable, a simple launch script, and the \pkg{jsr223} callback interface. The following R script is an example of a launch script for Groovy. It executes any Groovy script file provided as a command line parameter.
+It is often desirable to use R as an embedded language. The \pkg{jsr223} interface does not provide a standalone interface to call into R. However, the same functionality can be achieved with the \code{RScript} command line executable, a simple launch script, and the \pkg{jsr223} callback interface. The following R script is an example of a launch script for Groovy. It executes any Groovy script file provided as a command line parameter.
 
 \begin{verbatim}
 library("jsr223")
-engine <- ScriptEngine$new("groovy", "../engines/groovy-all.jar")
+engine <- ScriptEngine$new("groovy", "~/my-path/groovy-all.jar")
 tryCatch (
   engine$source(commandArgs(TRUE)[1], discard.return.value = TRUE),
   error = function(e) { cat(e$message, "\n", sep = "") },
@@ -801,9 +843,9 @@ draws = R.eval('sample(4, 2, prob = probabilities)');
 
 ///mention that functions/methods are already compiled to bytecode.
 
-The Java Scripting API supports compiling script to Java bytecode before evaluation. If unstructured code (i.e., code not encapsulated in methods or functions) is to be executed repeatedly, compiling it will improve performance.
+The Java Scripting API supports compiling script to Java bytecode before evaluation. If unstructured code (i.e., code not encapsulated in methods or functions) is to be executed repeatedly, compiling it will improve performance. This feature does not apply to methods and functions as they are compiled on demand.
 
-\pkg{jsr223} supports compiling code snippets and source files. For the latter, local disk files or URLs can be specified. Both of these lines return a compiled script object:
+The following two lines show how to compile code snippets and source files, respectively. For the latter, local disk files or URLs can be specified. In both cases, a compiled script object is returned.
 
 \begin{verbatim}
 cs <- engine$compile(script)
@@ -824,8 +866,10 @@ engine$d <- 3
 cs$eval()
 
 ## 5
+\end{verbatim}
 
-# Supply new bindings...
+The \code{eval} method takes an argument named \code{bindings} that accepts an R named list. The name/value pairs in the list replace the script engine's global bindings during script execution as shown in this code sample.
+\begin{verbatim}
 lst <- list(c = 6, d = 7)
 cs$eval(bindings = lst)
 
@@ -836,8 +880,10 @@ cs$eval(bindings = lst)
 cs$eval()
 
 ## 5
+\end{verbatim}
 
-# The following line executes the code but discards the return value.
+The \code{discard.return.value} argument of the \code{eval} method determines whether the return value of a script is discarded. The default is \code{FALSE}. The following line executes code but does not return a value.
+\begin{verbatim}
 cs$eval(discard.return.value = TRUE)
 \end{verbatim}
 
@@ -845,39 +891,24 @@ cs$eval(discard.return.value = TRUE)
 
 When script is evaluated, any text printed to standard output appears in the R console by default. Console output can be disabled entirely with \code{engine\$setStandardOutputMode('quiet')}. To resume printing output to the console, use \code{engine\$setStandardOutputMode('console')}.
 
-Text printed to the console by a script engine cannot be captured using R's \code{sink} or \code{capture.output} methods. The following JavaScript example demonstrates how to capture output using the \textit{standard output mode} \code{'buffer'} option.
+Text printed to the console by a script engine cannot be captured using R's \code{sink} or \code{capture.output} methods. To capture output, set the \textit{standard output mode} setting to \code{'buffer'}. In this JavaScript example, the \code{print} method output will not appear in the R console; it will be stored in an internal buffer. The contents of the buffer can be retrieved and cleared using the \code{getStandardOutput} method.
 
 \begin{verbatim}
-# Set output mode to 'buffer' to capture text written to standard output.
 engine$setStandardOutputMode("buffer")
-
-# The JavaScript print method writes text to standard output followed by a new
-# line. This output will not appear in the R console; it will be stored in an
-# internal buffer.
 engine %@% ("print('abc');")
-
-# 'getStandardOutput' retrieves the buffer as a character vector and clears the
-# buffer.
 engine$getStandardOutput()
 
 ## [1] "abc\n"
-
-# Alternatively, the buffer can be discarded using 'clearStandardOutput'.
+\end{verbatim}
+Alternatively, the buffer can be discarded using the \code{clearStandardOutput} method.
+\begin{verbatim}
 engine %@% ("print('abc');")
 engine$clearStandardOutput()
-
-# Restore console printing.
-engine$setStandardOutputMode("console")
-
-# The current output mode is retrieved using 'getStandardOutputMode'.
-engine$getStandardOutputMode()
-
-## [1] "console"
 \end{verbatim}
 
 \subsection{Console mode: a simple REPL}
 
-\pkg{jsr223} provides a simple read-evaluate-print-loop (REPL) for interactive code execution. This feature is inspired by Jeroen Ooms's \pkg{V8} package. The REPL is useful for quickly setting and inspecting variables in the script engine. Returned values are printed to the console using \code{base::dput}. The \code{base::cat} function is not used because it cannot handle complex data structures.
+\pkg{jsr223} provides a simple read-evaluate-print-loop (REPL) for interactive code execution. This feature is inspired by Jeroen Ooms's \pkg{V8} package. The REPL is useful for quickly setting and inspecting variables in the script engine. Returned values are printed to the console using \code{base::dput}. The \code{base::cat} function is not used because it does not handle complex data structures.
 
 Use \code{engine\$console()} to enter the REPL. Enter \samp{exit} to return to the R prompt. The REPL supports only single line entry: no line continuations or carriage returns are allowed. This limitation arises from the fact that the Java Scripting API does not support code validation.
 
@@ -917,7 +948,7 @@ library("jsr223")
 # vector.
 engine <- ScriptEngine$new(
   engine.name = "groovy",
-  class.path = c("../engines/groovy-all.jar", "../commons-math3-3.6.1.jar")
+  class.path = c("~/my-path/groovy-all.jar", "../commons-math3-3.6.1.jar")
 )
 
 # The getClassPath method displays the current class path.
@@ -949,30 +980,6 @@ replicate(3, engine$invokeMethod("mvn", "sample"))
 
 engine$terminate()
 \end{verbatim}
-
-\subsection{A Groovy web UI for editing R data frames}
-
-///
-%Example demonstrates harnessing Java in script. Java is great at simplifying multithreading, and here we have cross-platform GUI and HTML stuffs. Make it clear that this is an involved Java solution.
-
-%doesn't handle empty data frames
-
-%recommend running via command line so it shows up in foreground?
-
-%warn that window comes up in background. see if we can do something about it or recommend it is execued from command line.
-
-%///this example also shows how to use another web-based resource with R through a browser. you don't even have to show the browser. you can use the engine alone.
-%
-%Good example of implementing a somewhat involved Java solution with the quick-development cycle of a ///. We were able to take Java code examples and implement it in Groovy. It is possible to reproduce this example in any of the other \pkg{jsr223}-supported language.
-%Java stuff
-%
-%The Java platform includes a browser component called \code{WebView} that is based upon the widely-used open source engine \href{https://webkit.org/}{WebKit}///cite?. \code{WebView} is fully programmable, allowing developers to automate interactions with web content and user input.
-%
-%The following Groovy example example launches
-%
-%///handsontable and dependencies may take a while to load the first time.
-%
-%\href{http://docs.oracle.com/javafx/2/webview/jfxpub-webview.htm}{Adding HTML Content to JavaFX Applications}
 
 \section{R with JavaScript}
 
@@ -1231,7 +1238,7 @@ getHtmlTable <- function() {
 # Start the python engine.
 engine <- ScriptEngine$new(
   engine.name = "python",
-  class.path = "../engines/jython-standalone.jar"
+  class.path = "~/my-path/jython-standalone.jar"
 )
 
 # Source the Python script.
@@ -1264,110 +1271,6 @@ runServer <- function() {
 runServer()
 \end{verbatim}
 
-\section{R with Kotlin}
-
-\href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language that targets the JVM and is interopable with Java classes. It is also the newest language in our list; version 1.0 was released in just 2016 /cite{kotlin-release}. Kotlin developers describe their language as concise and pragmatic requiring less code than Java to accomplish the same task. Finally, Kotlin supports both functional and object-oriented programming paradigms.
-
-\subsection{Kotlin bindings}
-
-The Kotlin script engine handles bindings a little differently than other 
-Global R object to behave like others.
-See how it handles a map coming from R. Probably need to cast it explicitly to get access to it.
-
-\subsection{Kotlin and Java classes}
-
-If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e., made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor. \strong{Tip:} Supply class paths as separate elements of a vector instead of concatenating the paths with the usual path delimiters (“;” for Windows, and “:” for all others). This will help make your code platform-independent and easier to read.
-
-This example uses the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library} ///cite? to sample from a bivariate normal distribution.
-
-
-%/// insert code from the file here.
-JavaScript Nashorn provides wide support for Java classes, including the ability to extend classes and implement interfaces. Nashorn provides several methods to reference JavaScript classes. The two most common methods are demonstrated below. This code uses a static class method to sort a vector of integers.
-
-\begin{verbatim}
-# The method recommended by Nashorn: create a reference to a Java class using
-# the built-in Java.type() method. Conceptually, this is similar to importing
-# the class.
-
-engine %~% "
-var Arrays = Java.type('java.util.Arrays');
-var random = R.eval('sample(5)');
-Arrays.sort(random);
-random;
-"
-
-## [1] 1 2 3 4 5
-
-# An alternative method uses the a fully qualified class name, but it
-# requires more overhead per call.
-
-engine %~% "
-var random = R.eval('sample(5)');
-java.util.Arrays.sort(random);
-random;
-"
-
-## [1] 1 2 3 4 5
-\end{verbatim}
-
-The \code{Java.type()} method is required to create Java primitives as demonstrated in this example:
-
-\begin{verbatim}
-# Create a Java integer array with five elements.
-var IntegerArrayType = Java.type('int[]');
-var myArray = new IntegerArrayType(5);
-\end{verbatim}
-
-We reproduce the bivariate normal example in JavaScript to demonstrate importing an external library and to point out an important limitation in Nashorn regarding \code{invokeMethod}.
-
-\begin{verbatim}
-library("jsr223")
-
-# Include the Apache Commons Mathematics library in class.path.
-engine <- ScriptEngine$new(
-  engine.name = "js",
-  class.path = "../commons-math3-3.6.1.jar"
-)
-
-# Define the means and covariance matrix that will be used to create the
-# bivariate normal distribution.
-engine$means <- c(0, 2)
-engine$covariances <- diag(1, nrow = 2)
-
-# Import the package member and instantiate a new class.
-engine %@% "
-var MultivariateNormalDistributionClass = Java.type(
-  'org.apache.commons.math3.distribution.MultivariateNormalDistribution'
-);
-var mvn = new MultivariateNormalDistributionClass(means, covariances);
-"
-
-# This line would throw an error. Nashorn JavaScript supports 'invokeMethod' for
-# native JavaScript objects, but not for Java objects.
-#
-## engine$invokeMethod("mvn", "sample")
-
-# Instead, use script...
-engine %~% "mvn.sample();"
-
-## [1] 0.3279374 0.8652296
-
-# ...or wrap the method in a JavaScript function.
-engine %@% "function sample() {return mvn.sample();}"
-engine$invokeFunction("sample")
-
-## [1] 0.2527757 1.1942332
-
-# Take three samples.
-replicate(3, engine$invokeFunction("sample"))
-
-##           [,1]      [,2]      [,3]
-## [1,] 0.9924368 -1.295875 0.2025815
-## [2,] 2.5145855  2.128243 1.1666272
-
-engine$terminate()
-\end{verbatim}
-
 \section{R with Ruby}
 
 The \href{https://www.ruby-lang.org}{Ruby} programming language is a general-purpose, object-oriented programming language invented by Yukihiro Matsumoto. According to Matsumoto, he designed the language to “help every programmer in the world to be productive, and to enjoy programming, and to be happy” ///cite. \href{http://jruby.org/}{JRuby} is a Java implementation of the Ruby language. JRuby is compatible with the popular web application framework \href{http://rubyonrails.org/}{Ruby on Rails}.
@@ -1391,7 +1294,7 @@ library("jsr223")
 engine <- ScriptEngine$new(
   engine.name = "ruby",
   class.path = c(
-    "../engines/jruby-complete.jar",
+    "~/my-path/jruby-complete.jar",
     "../commons-math3-3.6.1.jar"
   )
 )
@@ -1556,6 +1459,120 @@ ggplot() +
   ggtitle("Closing Stock Prices: AEPGX, AGTHX") +
   theme(legend.position = c(0.1, 0.9), legend.title = element_blank()) +
   labs(x = "Date", y = "Closing Price")
+
+engine$terminate()
+\end{verbatim}
+
+\section{R with Kotlin}
+
+\href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language targeting the JVM that supports both functional and object-oriented programming paradigms. It is the newest of our supported languages; Kotlin version 1.0 was released in just 2016 /cite{kotlin-release}. Kotlin is described by its authors as concise and pragmatic, requiring less code than Java to accomplish the same task.
+
+%///note, use double quotes for strings, not single quotes.
+
+%///note that invokemethod only works if object is in bindings. this is a reported bug.
+
+\hypertarget{kotlinbindings}{\subsection{Kotlin bindings}}
+
+The Kotlin script engine handles bindings a little differently than other 
+Global R object to behave like others.
+See how it handles a map coming from R. Probably need to cast it explicitly to get access to it.
+invokeMethod works, but only if in bindings. That's not right.
+Mention R
+Mention using jsr223Bindings
+
+invokeMethod
+
+\subsection{Kotlin and Java classes}
+
+and is interopable with Java classes
+If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e., made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor. \strong{Tip:} Supply class paths as separate elements of a vector instead of concatenating the paths with the usual path delimiters (“;” for Windows, and “:” for all others). This will help make your code platform-independent and easier to read.
+
+This example uses the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library} ///cite? to sample from a bivariate normal distribution.
+
+
+%/// insert code from the file here.
+JavaScript Nashorn provides wide support for Java classes, including the ability to extend classes and implement interfaces. Nashorn provides several methods to reference JavaScript classes. The two most common methods are demonstrated below. This code uses a static class method to sort a vector of integers.
+
+\begin{verbatim}
+# The method recommended by Nashorn: create a reference to a Java class using
+# the built-in Java.type() method. Conceptually, this is similar to importing
+# the class.
+
+engine %~% "
+var Arrays = Java.type('java.util.Arrays');
+var random = R.eval('sample(5)');
+Arrays.sort(random);
+random;
+"
+
+## [1] 1 2 3 4 5
+
+# An alternative method uses the a fully qualified class name, but it
+# requires more overhead per call.
+
+engine %~% "
+var random = R.eval('sample(5)');
+java.util.Arrays.sort(random);
+random;
+"
+
+## [1] 1 2 3 4 5
+\end{verbatim}
+
+The \code{Java.type()} method is required to create Java primitives as demonstrated in this example:
+
+\begin{verbatim}
+# Create a Java integer array with five elements.
+var IntegerArrayType = Java.type('int[]');
+var myArray = new IntegerArrayType(5);
+\end{verbatim}
+
+We reproduce the bivariate normal example in JavaScript to demonstrate importing an external library and to point out an important limitation in Nashorn regarding \code{invokeMethod}.
+
+\begin{verbatim}
+library("jsr223")
+
+# Include the Apache Commons Mathematics library in class.path.
+engine <- ScriptEngine$new(
+  engine.name = "js",
+  class.path = "../commons-math3-3.6.1.jar"
+)
+
+# Define the means and covariance matrix that will be used to create the
+# bivariate normal distribution.
+engine$means <- c(0, 2)
+engine$covariances <- diag(1, nrow = 2)
+
+# Import the package member and instantiate a new class.
+engine %@% "
+var MultivariateNormalDistributionClass = Java.type(
+  'org.apache.commons.math3.distribution.MultivariateNormalDistribution'
+);
+var mvn = new MultivariateNormalDistributionClass(means, covariances);
+"
+
+# This line would throw an error. Nashorn JavaScript supports 'invokeMethod' for
+# native JavaScript objects, but not for Java objects.
+#
+## engine$invokeMethod("mvn", "sample")
+
+# Instead, use script...
+engine %~% "mvn.sample();"
+
+## [1] 0.3279374 0.8652296
+
+# ...or wrap the method in a JavaScript function.
+engine %@% "function sample() {return mvn.sample();}"
+engine$invokeFunction("sample")
+
+## [1] 0.2527757 1.1942332
+
+# Take three samples.
+replicate(3, engine$invokeFunction("sample"))
+
+##           [,1]      [,2]      [,3]
+## [1,] 0.9924368 -1.295875 0.2025815
+## [2,] 2.5145855  2.128243 1.1666272
 
 engine$terminate()
 \end{verbatim}

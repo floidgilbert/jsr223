@@ -1,32 +1,90 @@
 package nodist;
 
-import java.util.Arrays;
+//import java.util.Arrays;
 
 //import java.util.Arrays;
 //import java.util.ArrayList;
 //import java.util.List;
 //import org.fgilbert.jdx.*;
-import org.fgilbert.jsr223.Controller;
+//import org.fgilbert.jsr223.Controller;
+import javax.script.*;
 
 class Main {
 
-	public static void main(String[] args) {
-		Controller controller = null;
+	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, ScriptException {
+		Class<?> cls = Class.forName("org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory");
+		ScriptEngineFactory factory = (ScriptEngineFactory) cls.newInstance();
+		ScriptEngine engine = factory.getScriptEngine();
+		Invocable iengine = (Invocable) engine;
+
+		// This block fails to invoke the method `f` on `a`.
 		try {
-			controller = new Controller("kotlin");
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (controller != null)
-				try {
-					controller.terminate();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+			engine.eval("class A {fun f(): Int {return 8}}");
+			engine.eval("fun ff(): Int {return 18}");
+			engine.eval("val a = A()");
+			System.out.println(engine.eval("a.f()"));
+			engine.eval("jsr223Bindings[\"a\"] = a");
+			System.out.println(iengine.invokeMethod("a", "f"));
+			System.out.println(iengine.invokeFunction("ff"));
+		} catch (Throwable t) {
+			
 		}
+		
+		// This block succeeds.
+		try {
+			engine.eval("jsr223Bindings[\"a\"] = a");
+			System.out.println(iengine.invokeMethod("a", "f"));
+		} catch (Throwable t) {
+			
+		}
+		
 	}
 	
-	public static void mainXSF(String[] args) {
+	
+//	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, ScriptException {
+//		Class<?> cls = Class.forName("org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory");
+//		ScriptEngineFactory factory = (ScriptEngineFactory) cls.newInstance();
+//		ScriptEngine engine = factory.getScriptEngine();
+//		engine.put("a", 1);
+//
+//		// This block fails to update `a`
+//		try {
+//			System.out.println(engine.eval("bindings::class.qualifiedName"));
+//			engine.eval("bindings[\"a\"] = 100"); // This line fails
+//		} catch (Throwable t) {
+//			
+//		}
+//		System.out.println(engine.get("a")); // Prints 1
+//		
+//		// This block works
+//		try {
+//			engine.eval("val b = bindings as javax.script.SimpleBindings");
+//			engine.eval("b[\"a\"] = 100");
+//		} catch (Throwable t) {
+//			
+//		}
+//		System.out.println(engine.get("a")); // Prints 100
+//		
+//	}
+	
+	
+//	public static void main(String[] args) {
+//		Controller controller = null;
+//		try {
+//			controller = new Controller("kotlin");
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			if (controller != null)
+//				try {
+//					controller.terminate();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//		}
+//	}
+	
+//	public static void mainXSF(String[] args) {
 //		Integer[][][][][] array = {{{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}, {{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}};
 //		Integer[][][] array = {{{0, 1, 2}, {0, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}};
 //		int[][][] array = {{{1,2,3},{4,5,6},{7,8,9}},{{10,11,12},{13,14,15},{16,17,18}},{{19,20,21},{22,23,24},{25,26,27}}};
@@ -104,12 +162,12 @@ class Main {
 //		}
 //		JavaToR j2r = new JavaToR(al1);
 //		System.out.println(j2r.getRdataCompositeCode());
-	}
+//	}
 	
-	public static void mainRSR(String[] args) {
-		Controller controller = null;
-		try {
-			controller = new Controller("js");
+//	public static void mainRSR(String[] args) {
+//		Controller controller = null;
+//		try {
+//			controller = new Controller("js");
 //			controller.putEvaluationRequest("var a = [[1,null],[2,'b']];", true);
 //			controller.putEvaluationRequest("var ArrayListClass = Java.type('java.util.ArrayList');var a = new ArrayListClass();var LinkedHashMapClass = Java.type('java.util.LinkedHashMap');var m = new LinkedHashMapClass();m.put('a', 'a');m.put('b', 2);a.add(m);", true);
 //			controller.putEvaluationRequest("var ArrayListClass = Java.type('java.util.ArrayList');", true);
@@ -127,21 +185,21 @@ class Main {
 //			controller.putEvaluationRequest("m.put('a', null); m.put('b', 2); a.add(m);", true);
 //			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
 //			controller.setArrayOrder(org.fgilbert.jdx.JavaToR.ArrayOrder.ROW_MAJOR);
-			controller.setArrayOrder(org.fgilbert.jdx.JavaToR.ArrayOrder.COLUMN_MAJOR);
+//			controller.setArrayOrder(org.fgilbert.jdx.JavaToR.ArrayOrder.COLUMN_MAJOR);
 //			int iterations = 50000;
 //			final long startTime = System.currentTimeMillis();
 //			for (int i = 0; i < iterations; i++) {
 //			controller.putEvaluationRequest("var value = [[[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]], [[13, 14, 15, 16], [17, 18, 19, 20], [21, 22, 23, 24]]]", true);
 //			controller.putEvaluationRequest("eval('[[1., 5, 9], [2, 6, 10], [3, 7, 11], [4, 8, 12]]')", false);
 //			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
-			controller.putEvaluationRequest("var a = new java.lang.Byte(1);", false);
-			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
-			controller.putEvaluationRequest("var b = [a, a, a];", false);
-			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
-			controller.putEvaluationRequest("var c = [1, 2, 3];", false);
-			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
-			controller.putEvaluationRequest("[[b], [c]];", false);
-			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+//			controller.putEvaluationRequest("var a = new java.lang.Byte(1);", false);
+//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+//			controller.putEvaluationRequest("var b = [a, a, a];", false);
+//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+//			controller.putEvaluationRequest("var c = [1, 2, 3];", false);
+//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
+//			controller.putEvaluationRequest("[[b], [c]];", false);
+//			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
 //			controller.putEvaluationRequest("", false);
 //			controller.waitForEvaluation(); // IMPORTANT: If you forget to execute this after putEvaluationRequest, the thread won't terminate.
 //			int typeCode = controller.getScriptEngineValue("value");
@@ -166,15 +224,15 @@ class Main {
 //			typeCode = controller.waitForEvaluation();
 //			System.out.println(typeCode);
 //			System.out.println(controller.getResponseBoolean());
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (controller != null)
-				try {
-					controller.terminate();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-		}
-	}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		} finally {
+//			if (controller != null)
+//				try {
+//					controller.terminate();
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//		}
+//	}
 }
