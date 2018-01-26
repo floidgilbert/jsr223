@@ -31,7 +31,7 @@ val mvn = MultivariateNormalDistribution(
 )
 '
 
-# This line is a workaround for a Kotlin bug.
+# This line is a workaround for a Kotlin bug involving `invokeMethod`.
 # https://github.com/floidgilbert/jsr223/issues/1
 engine %@% 'jsr223Bindings["mvn"] = mvn'
 

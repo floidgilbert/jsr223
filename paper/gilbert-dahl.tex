@@ -5,7 +5,6 @@
 %///review bib
 %///forgot to re-cite the programming languages. Look at old versions of papers.
 %///change pkg to cranpkg where nec.
-%///will instructions to use this package in packages be necessary?
 %///consider big int or big decimal calulations in statistical context for Groovy example...probably not.
 %///review all syntax. I've changed some things including names of arguments. I've updated some code examples.
 %///http://www.theserverside.com/feature/Top-7-takeaways-about-the-Java-platform-from-JavaOne-2015
@@ -15,10 +14,11 @@
 %///can use other languages in the future, if they decide to do \pkg{jsr223} support. Scala has support...but it's not ready yet and David has a better package.
 %///because of Ruby and Kotlin, every general example must be qualified accordingly when global variables are used. or, create a section that can be referred to in every case.
 %///standardize functions with () or not.
+%///do a direct link to code examples? include readme.md file to explain.
 \maketitle
 
 \abstract{
-The R package \pkg{jsr223} is a high-level integration for the Java platform. It makes Java objects easy to use from within R; it provides a unified interface to integrate R with several programming languages; and it features extensive data exchange between R and Java. This integration leverages the performance benefits and cross-platform capabilities of the Java platform.
+The R package \CRANpkg{jsr223} is a high-level integration for the Java platform. It makes Java objects easy to use from within R; it provides a unified interface to integrate R with several programming languages; and it features extensive data exchange between R and Java. This integration leverages the performance benefits and cross-platform capabilities of the Java platform.
 
 %The R package \pkg{jsr223} is a high-level integration for Java that makes Java objects easy to use from within R and simplifies bi-directional data exchange for a variety of data structures. Furthermore, \pkg{jsr223} employs the Java Scripting API to bring four scripting languages and, by extension, countless libraries to the R software environment. \pkg{jsr223} uses intuitive syntax to blend JavaScript, Ruby, Python, and Groovy (a Java-like scripting language) with R script. In all, this integration leverages the performance benefits and cross-platform capabilities of the Java Virtual Machine and extends the computing capabilities of the R software environment.
 }
@@ -31,7 +31,7 @@ About the same time Ross Ihaka and Robert Gentleman began developing R at the Un
 
 In 2003, Simon Urbanek released \pkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C()} and \code{.Call()}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that the user has granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding dynamic source code directly within R script.
 
-Our \pkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \pkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
+Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \pkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
 
 There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223} languages can be used to quickly embed Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223} languages. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the \pkg{jsr223}-supported languages.
 
@@ -1558,40 +1558,6 @@ replicate(3, engine$invokeMethod("mvn", "sample"))
 # Terminate the script engine.
 engine$terminate()
 \end{verbatim}
-
-\section{\pkg{jsr223} package design}
-
-///
-%Mention a little bit about supporting generic interfaces for data instead of custom R classes.
-
-\section{\pkg{jsr223} API}
-
-///
-
-\section{Data interchange}
-%///review these notes, but remove this section
-
-///
-%Mention a little bit about supporting generic interfaces for data instead of custom R classes.
-%Generic Collections and Maps are supported, giving us almost everything. There are some specific conversions for ///Ruby, for example///. Speicifics for collections.
-
-%Talk about the problems of converting collections, and where collections are used. For example, JavaScript's arrays are actually collections. These must be detected. Integers must be separated from arrays.
-
-%///
-%Collection interface covers many typical data structures in serveral different languages including ArrayList, etc.
-
-\section{Limitations and known issues}
-
-///
-
-% \strong{Note:} The Groovy and Python engines support using \code{engine\$invokeMethod()} to call methods of Java objects. JavaScript and Ruby do not.
-
-%///\pkg{jsr223} is not strictly threadsafe.
-
-%///callbacks must be on the original thread. is this true? it might not be. if there is a limitation, note it here and in callbacks.
-
-%///classpaths remain loaded after closing an engine. This is \pkg{rJava}. Restart R.
-%///if something complains “Failed to instantiate engine 'python'. Make sure the engine dependencies are in the class path.”, restart R. It is a class path issue.
 
 %///\section{Package version history}
 
