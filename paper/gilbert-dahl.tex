@@ -13,7 +13,7 @@
 %///update links to Oracle to openJDK instead.
 %///can use other languages in the future, if they decide to do \pkg{jsr223} support. Scala has support...but it's not ready yet and David has a better package.
 %///because of Ruby and Kotlin, every general example must be qualified accordingly when global variables are used. or, create a section that can be referred to in every case.
-%///standardize functions with () or not.
+%///standardize functions with () or not. not. remove all ()
 %///do a direct link to code examples? include readme.md file to explain.
 \maketitle
 
@@ -930,9 +930,11 @@ Most developers are familiar with the command history in the R REPL.  Unfortunat
 
 \section{R with Groovy}
 
-\href{http://www.groovy-lang.org/}{Groovy} is a dynamic programming language that closely follows Java syntax. The \pkg{jsr223} integration for Groovy enables developers to write solutions for R in natural Java syntax. Differences between Java and Groovy syntax are described in the Groovy guide “\href{http://groovy-lang.org/differences.html}{Differences with Java}” ///cite?.
+\href{http://www.groovy-lang.org/}{Groovy} is a dynamically typed programming language that closely follows Java syntax. The \pkg{jsr223} integration for Groovy enables developers to write solutions for R in natural Java syntax. Differences between Java and Groovy syntax are described in the Groovy guide \href{http://groovy-lang.org/differences.html}{Differences with Java}. %///cite?.
 
-\strong{Note:} In Groovy script, top-level variables will not persist in the script engine environment unless they are explicitly declared as global variables. Global variables are defined by omitting the type definition and Groovy's \code{def} keyword. For example \code{myValue = 42} will create a global variable. The \code{@myValue} notation cannot be used. To specify a data type for a global variable, use a constructor (\code{myVar = new Integer(42)}) or a type suffix (\code{myVar = 42L}).
+\subsection{Groovy language details}
+
+In Groovy script, top-level variables will not persist in the script engine environment unless they are explicitly declared as global variables. Global variables are defined by omitting the type definition and Groovy's \code{def} keyword. For example \code{myValue = 42} will create a global variable. The \code{@myValue} notation cannot be used. To specify a data type for a global variable, use a constructor (\code{myVar = new Integer(42)}) or a type suffix (\code{myVar = 42L}).
 
 \subsection{Groovy and Java Classes}
 
@@ -1132,7 +1134,9 @@ v.wordWrap(
 
 Like R, the \href{https://www.python.org/}{Python} programming language is used widely in science and analytics. Python has a remarkably broad set of features, yet it is also known for being concise and easy to read. The \href{http://www.jython.org/}{Jython} project has migrated Python to the Java platform. Support for popular native libraries such as NumPy and SciPy are underway in a related project \href{http://www.jyni.org/}{JyNI} (the Jython Native Interface).
 
-\strong{Note:} Leading white space is significant in Python; it is used to delimit code blocks. Avoid syntax errors by left-aligning code in multi-line string snippets as shown in the examples that follow.
+\subsection{Python and language details}
+
+Leading white space is significant in Python; it is used to delimit code blocks. Avoid syntax errors by left-aligning code in multi-line string snippets as shown in the examples that follow.
 
 \subsection{Python and Java classes}
 
@@ -1273,13 +1277,13 @@ runServer()
 
 \section{R with Ruby}
 
-The \href{https://www.ruby-lang.org}{Ruby} programming language is a general-purpose, object-oriented programming language invented by Yukihiro Matsumoto. According to Matsumoto, he designed the language to “help every programmer in the world to be productive, and to enjoy programming, and to be happy” ///cite. \href{http://jruby.org/}{JRuby} is a Java implementation of the Ruby language. JRuby is compatible with the popular web application framework \href{http://rubyonrails.org/}{Ruby on Rails}.
+The \href{https://www.ruby-lang.org}{Ruby} programming language is a general-purpose, object-oriented programming language invented by Yukihiro Matsumoto. According to Matsumoto, he designed the language to “help every programmer in the world to be productive, and to enjoy programming, and to be happy” ///cite. \href{http://jruby.org/}{JRuby} is a Java implementation of the Ruby language. JRuby is compatible with the popular web application framework \href{http://rubyonrails.org/}{Ruby on Rails}. %///cite https://www.youtube.com/watch?v=oEkJvvGEtB4
 
-%///https://www.youtube.com/watch?v=oEkJvvGEtB4
+\subsection{Ruby language details}
 
-\strong{Note:} Global variables in Ruby script must be prefixed with a dollar sign. Hence, if we create a variable \code{myValue} using a \pkg{jsr223} assignment (e.g., \code{engine\$myValue <-\, 10}), it is accessed in Ruby script as \code{\$myValue}. Do not use the dollar sign prefix when accessing global variables via \pkg{jsr223} methods (e.g., \code{engine\$get("myValue")}).
+Global variables in Ruby script must be prefixed with a dollar sign. Hence, if we create a variable \code{myValue} using a \pkg{jsr223} assignment (e.g., \code{engine\$myValue <-\, 10}), it is accessed in Ruby script as \code{\$myValue}. Do not use the dollar sign prefix when accessing global variables via \pkg{jsr223} methods (e.g., \code{engine\$get("myValue")}).
 
-\strong{Note:} We have observed a bug in JRuby's exception handling: when JRuby encounters an error, the engine may continue to throw errors erroneously in subsequent evaluation requests. If this happens, restart the script engine.
+We have observed a bug in JRuby's exception handling: when JRuby encounters an error, the engine may continue to throw errors erroneously in subsequent evaluation requests. If this happens, restart the script engine.
 
 \subsection{Ruby and Java classes}
 
@@ -1469,7 +1473,7 @@ engine$terminate()
 
 Kotlin's implementation of the Java Scripting API is progressing quickly though not complete. We will not list the deficiencies here as they will probably be resolved soon. If you experience a problem, refer to the \href{https://github.com/floidgilbert/jsr223/issues}{\pkg{jsr223} issue tracker} to review problems and workarounds. Select the ``Kotlin issues'' label and include both open and closed issues in your search.
 
-\hypertarget{kotlinbindings}{\subsection{Kotlin bindings}}
+\subsection{Kotlin language details}
 
 The Kotlin script engine handles bindings through a global map object instead of global variables. The best way to illustrate this behavior is by example. The following code creates and retrieves a binding \code{myValue} as usual.
 
@@ -1491,9 +1495,7 @@ engine %~% 'jsr223Bindings["myValue"]'
 
 The currently available Kotlin code examples use \code{bindings} instead of \code{jsr223Bindings}. However, \code{bindings} is read-only. This issue has been reported to Kotlin. Their suggested workaround is to use \code{jsr223Bindings}.
 
-\hypertarget{kotlincallbacks}{\subsection{Kotlin callbacks to R}}
-
-As noted in the section above, script engine bindings in Kotlin are managed through a map object named \code{jsr223Bindings} as opposed to global variables as in other script engines like JavaScript. This includes the \code{R} object that \pkg{jsr223} automatically adds to facilitate callbacks into the R environment (see \hyperlink{callbacks}{Callbacks}). However, accessing the \code{R} object via bindings is awkward because it requires an explicit cast operation to access methods. For this reason, we automatically create a statically typed reference to the \code{R} object in the global environment when the script engine is instantiated. The following code demonstrates callbacks. In short, we ensure that callbacks operate the same way in Kotlin as in other script engines despite this difference in bindings behavior.
+In \hyperlink{callbacks}{Callbacks}, we explain how a global \code{R} object is added to the script engine environment to enable callbacks into the R environment. This \code{R} object is necessarily present in \code{jsr223Bindings}, but we do not recommend accessing it from that structure. Instead, use the global \code{R} as demonstrated in the code here.
 
 \begin{verbatim}
 # jsr223 automatically creates a variable R in the global scope of the Kotlin
