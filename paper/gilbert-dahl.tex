@@ -37,7 +37,7 @@ There are three primary use cases for \pkg{jsr223}. Most importantly, any of the
 
 \subsection{Document organization}
 
-We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223} languages. All code samples related to this document are available at \href{http://notavalidaddresss////}{GitHub}.
+We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223} languages. All code samples related to this document are available at \href{https://github.com/floidgilbert/jsr223}{GitHub}.
 
 \section{Helpful terminology and concepts}
 
@@ -1465,77 +1465,64 @@ engine$terminate()
 
 \section{R with Kotlin}
 
-\href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language targeting the JVM that supports both functional and object-oriented programming paradigms. It is the newest of our supported languages; Kotlin version 1.0 was released in just 2016 /cite{kotlin-release}. Kotlin is described by its authors as concise and pragmatic, requiring less code than Java to accomplish the same task.
+\href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language that supports both functional and object-oriented programming paradigms. Kotlin is concise and pragmatic; in many cases, it requires less code than Java to accomplish the same task. For example, class definitions are particularly succinct. Kotlin version 1.0 was released in 2016 \citep{kotlin-release} making it the newest of the \pkg{jsr223}-supported languages. 
 
-%///note, use double quotes for strings, not single quotes.
-
-%///note that invokemethod only works if object is in bindings. this is a reported bug.
+Kotlin's implementation of the Java Scripting API is progressing quickly though not complete. We will not list the deficiencies here as they will probably be resolved soon. If you experience a problem, refer to the \href{https://github.com/floidgilbert/jsr223/issues}{\pkg{jsr223} issue tracker} to review problems and workarounds. Select the ``Kotlin issues'' label and include both open and closed issues in your search.
 
 \hypertarget{kotlinbindings}{\subsection{Kotlin bindings}}
 
-The Kotlin script engine handles bindings a little differently than other 
-Global R object to behave like others.
-See how it handles a map coming from R. Probably need to cast it explicitly to get access to it.
-invokeMethod works, but only if in bindings. That's not right.
-Mention R
-Mention using jsr223Bindings
+The Kotlin script engine handles bindings through a global map object instead of global variables. The best way to illustrate this behavior is by example. The following code creates and retrieves a binding \code{myValue} as usual.
 
-invokeMethod
+\begin{verbatim}
+engine$myValue <- 4
+engine$myValue
+
+## [1] 4
+\end{verbatim}
+
+However, \code{myValue} will not be available as a global variable in Kotlin script environment. Instead, it must be accessed and updated via the \code{jsr223Bindings} object as follows.
+
+\begin{verbatim}
+engine %@% 'jsr223Bindings["myValue"] = 3.1'
+engine %~% 'jsr223Bindings["myValue"]'
+
+## [1] 3.1
+\end{verbatim}
+
+The currently available Kotlin code examples use \code{bindings} instead of \code{jsr223Bindings}. However, \code{bindings} is read-only. This issue has been reported to Kotlin. Their suggested workaround is to use \code{jsr223Bindings}.
+
+\hypertarget{kotlincallbacks}{\subsection{Kotlin callbacks to R}}
+
+As noted in the section above, script engine bindings in Kotlin are managed through a map object named \code{jsr223Bindings} as opposed to global variables as in other script engines like JavaScript. This includes the \code{R} object that \pkg{jsr223} automatically adds to facilitate callbacks into the R environment (see \hyperlink{callbacks}{Callbacks}). However, accessing the \code{R} object via bindings is awkward because it requires an explicit cast operation to access methods. For this reason, we automatically create a statically typed reference to the \code{R} object in the global environment when the script engine is instantiated. The following code demonstrates callbacks. In short, we ensure that callbacks operate the same way in Kotlin as in other script engines despite this difference in bindings behavior.
+
+\begin{verbatim}
+# jsr223 automatically creates a variable R in the global scope of the Kotlin
+# environment to facilitate callbacks.
+engine %@% 'R.set("c", 4)'
+
+# The R object in `jsr223Bindings` is inconvenient to use because it must be
+# cast to an explicit type.
+engine %@% '(jsr223Bindings["R"] as org.fgilbert.jsr223.RClient).set("c", 3)'
+\end{verbatim}
 
 \subsection{Kotlin and Java classes}
 
-and is interopable with Java classes
-If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e., made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor. \strong{Tip:} Supply class paths as separate elements of a vector instead of concatenating the paths with the usual path delimiters (“;” for Windows, and “:” for all others). This will help make your code platform-independent and easier to read.
-
-This example uses the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library} ///cite? to sample from a bivariate normal distribution.
-
-
-%/// insert code from the file here.
-JavaScript Nashorn provides wide support for Java classes, including the ability to extend classes and implement interfaces. Nashorn provides several methods to reference JavaScript classes. The two most common methods are demonstrated below. This code uses a static class method to sort a vector of integers.
-
-\begin{verbatim}
-# The method recommended by Nashorn: create a reference to a Java class using
-# the built-in Java.type() method. Conceptually, this is similar to importing
-# the class.
-
-engine %~% "
-var Arrays = Java.type('java.util.Arrays');
-var random = R.eval('sample(5)');
-Arrays.sort(random);
-random;
-"
-
-## [1] 1 2 3 4 5
-
-# An alternative method uses the a fully qualified class name, but it
-# requires more overhead per call.
-
-engine %~% "
-var random = R.eval('sample(5)');
-java.util.Arrays.sort(random);
-random;
-"
-
-## [1] 1 2 3 4 5
-\end{verbatim}
-
-The \code{Java.type()} method is required to create Java primitives as demonstrated in this example:
-
-\begin{verbatim}
-# Create a Java integer array with five elements.
-var IntegerArrayType = Java.type('int[]');
-var myArray = new IntegerArrayType(5);
-\end{verbatim}
-
-We reproduce the bivariate normal example in JavaScript to demonstrate importing an external library and to point out an important limitation in Nashorn regarding \code{invokeMethod}.
+Kotlin is designed to be interoperable with Java. This simple example uses the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library} to sample from a bivariate normal distribution.
 
 \begin{verbatim}
 library("jsr223")
 
-# Include the Apache Commons Mathematics library in class.path.
+# Change this path to the installation directory of the Kotlin compiler.
+kotlin.directory <- Sys.getenv("KOTLIN_HOME")
+
+# Include both the Kotlin script engine jars and the Apache Commons Mathematics
+# libraries in the class path.
 engine <- ScriptEngine$new(
-  engine.name = "js",
-  class.path = "../commons-math3-3.6.1.jar"
+  engine.name = "kotlin"
+  , class.path = c(
+    getKotlinScriptEngineJars(kotlin.directory),
+    "../commons-math3-3.6.1.jar"
+  )
 )
 
 # Define the means and covariance matrix that will be used to create the
@@ -1544,36 +1531,31 @@ engine$means <- c(0, 2)
 engine$covariances <- diag(1, nrow = 2)
 
 # Import the package member and instantiate a new class.
-engine %@% "
-var MultivariateNormalDistributionClass = Java.type(
-  'org.apache.commons.math3.distribution.MultivariateNormalDistribution'
-);
-var mvn = new MultivariateNormalDistributionClass(means, covariances);
-"
+engine %@% '
+import org.apache.commons.math3.distribution.MultivariateNormalDistribution
+val mvn = MultivariateNormalDistribution(
+  jsr223Bindings["means"] as DoubleArray,
+  jsr223Bindings["covariances"] as Array<DoubleArray>
+)
+'
 
-# This line would throw an error. Nashorn JavaScript supports 'invokeMethod' for
-# native JavaScript objects, but not for Java objects.
-#
-## engine$invokeMethod("mvn", "sample")
+# This line is a workaround for a Kotlin bug involving `invokeMethod`.
+# https://github.com/floidgilbert/jsr223/issues/1
+engine %@% 'jsr223Bindings["mvn"] = mvn'
 
-# Instead, use script...
-engine %~% "mvn.sample();"
+# Take a multivariate sample.
+engine$invokeMethod("mvn", "sample")
 
-## [1] 0.3279374 0.8652296
-
-# ...or wrap the method in a JavaScript function.
-engine %@% "function sample() {return mvn.sample();}"
-engine$invokeFunction("sample")
-
-## [1] 0.2527757 1.1942332
+## [1] -2.286145  2.016230
 
 # Take three samples.
-replicate(3, engine$invokeFunction("sample"))
+replicate(3, engine$invokeMethod("mvn", "sample"))
 
 ##           [,1]      [,2]      [,3]
 ## [1,] 0.9924368 -1.295875 0.2025815
 ## [2,] 2.5145855  2.128243 1.1666272
 
+# Terminate the script engine.
 engine$terminate()
 \end{verbatim}
 

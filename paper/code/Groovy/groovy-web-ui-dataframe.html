@@ -1,0 +1,44 @@
+<html lang="en">
+<head>
+  <title>R Data Frame Editor with Handsontable</title>
+  <script data-jsfiddle="common" src="handsontable/handsontable.full.min.js"></script>
+  <link data-jsfiddle="common" rel="stylesheet" media="screen" href="handsontable/handsontable.full.min.css">
+  <link rel="stylesheet" type="text/css" href="sample.css">
+  
+  <script>
+    var hot = null;
+    
+    function loadTable() {
+      try {
+        var parms = JSON.parse(callback.getHandsOnTableParameters());
+        document.getElementById('table-title').innerHTML = parms.title;
+        hot = new Handsontable(
+          document.getElementById('df'),
+          {
+            data: parms.data,
+            colHeaders: Object.keys(parms.data[0]),
+            columns: parms.constraints,
+            columnSorting: true
+          }
+        );
+      } catch(e) {
+        alert(e.message);
+      }
+    }
+  </script>
+  
+</head>
+<body>
+  
+  <div id="menu">
+    <h1><a href="" onclick="callback.ok()">Save</a></h1>
+    <h1><a href="" onclick="callback.cancel()">Cancel</a></h1>
+  </div>
+
+  <div id="container">
+    <h1 id="table-title"></h1>  
+    <div id="df"></div>  
+  </div>
+
+</body>
+</html>

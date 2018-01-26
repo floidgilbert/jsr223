@@ -1,0 +1,111 @@
+<html lang="en">
+<head>
+  <title>R Data Frame Editor with Handsontable</title>
+  <script data-jsfiddle="common" src="handsontable/handsontable.full.js"></script>
+  <link data-jsfiddle="common" rel="stylesheet" media="screen" href="handsontable/handsontable.full.css">
+</head>
+<body>
+
+  <div id="df"></div>
+
+  <script>
+
+  function getCarData() {
+    return [
+      ["Nissan", 2013, "black", "black"],
+      ["Nissan", 2014, "blue", "blue"],
+      ["Chrysler", 2015, "yellow", "black"],
+      ["Volvo", 2016, "white", "gray"]
+    ];
+  }
+  
+  var
+    carData = getCarData(),
+    container = document.getElementById('df'),
+    manufacturerData,
+    colors,
+    color,
+    colorData = [],
+    hot;
+  
+  manufacturerData = [
+    {name: 'BMW', country: 'Germany', owner: 'Bayerische Motoren Werke AG'},
+    {name: 'Chrysler', country: 'USA', owner: 'Chrysler Group LLC'},
+    {name: 'Nissan', country: 'Japan', owner: 'Nissan Motor Company Ltd'},
+    {name: 'Suzuki', country: 'Japan', owner: 'Suzuki Motor Corporation'},
+    {name: 'Toyota', country: 'Japan', owner: 'Toyota Motor Corporation'},
+    {name: 'Volvo', country: 'Sweden', owner: 'Zhejiang Geely Holding Group'}
+  ];
+  colors = ['yellow', 'red', 'orange', 'green', 'blue', 'gray', 'black', 'white'];
+  
+  while (color = colors.shift()) {
+    colorData.push([
+      [color]
+    ]);
+  }
+  
+  hot = new Handsontable(container, {
+    data: carData,
+    colHeaders: ['Car', 'Year', 'Chassis color', 'Bumper color'],
+    columns: [
+      {
+        type: 'handsontable',
+        handsontable: {
+          colHeaders: ['Marque', 'Country', 'Parent company'],
+          autoColumnSize: true,
+          data: manufacturerData,
+          getValue: function() {
+          	var selection = this.getSelected();
+  
+            // Get always manufacture name of clicked row
+            return this.getSourceDataAtRow(selection[0]).name;
+          },
+        }
+      },
+      {type: 'numeric'},
+      {
+        type: 'handsontable',
+        handsontable: {
+          colHeaders: false,
+          data: colorData
+        }
+      },
+      {
+        type: 'handsontable',
+        handsontable: {
+          colHeaders: false,
+          data: colorData
+        }
+      }
+    ]
+  });
+  
+  function bindDumpButton() {
+      if (typeof Handsontable === "undefined") {
+        return;
+      }
+  
+      Handsontable.Dom.addEvent(document.body, 'click', function (e) {
+  
+        var element = e.target || e.srcElement;
+  
+        if (element.nodeName == "BUTTON" && element.name == 'dump') {
+          var name = element.getAttribute('data-dump');
+          var instance = element.getAttribute('data-instance');
+          var hot = window[instance];
+          console.log('data of ' + name, hot.getData());
+        }
+      });
+    }
+  bindDumpButton();
+
+function loadTable() {}
+
+</script>
+
+  <button type="submit" onclick="callback.ok();">OK</button>
+  &nbsp;
+  <button type="button" onclick="callback.cancel();">Cancel</button>
+
+</body>
+</html>
