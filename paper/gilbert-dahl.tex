@@ -246,7 +246,7 @@ The primary features of \pkg{jsr223} are designed to be accessible to R programm
 
 \begin{enumerate}
 \item Global variables in Ruby script must be prefixed with a dollar sign.
-\item Kotlin handles script engine bindings differently than the other language implementations. See \hyperlink{kotlinbindings}{Kotlin bindings} for details.
+\item Kotlin script engine bindings are not created as global variables. See \hyperlink{kotlinlanguagedetails}{Kotlin language details}.
 \end{enumerate}
 
 \subsection{Hello world}
@@ -360,7 +360,7 @@ engine$eval("a + b")
 
 \subsection{Sharing data between language environments}
 
-The following two lines of R code are equivalent: they convert an R object to a Java object and assign the new object to a global variable \code{myValue} in the script engine's environment. This syntax is the same for all supported R data structures.
+The following two lines of R code are equivalent: they convert an R object to a Java object and assign the new object to a variable \code{myValue} in the script engine's environment. This syntax is the same for all supported R data structures.
 
 \begin{verbatim}
 engine$myValue <- iris
@@ -374,7 +374,24 @@ engine$myValue
 engine$get("myValue")
 \end{verbatim}
 
-Remove the \code{myValue} variable with \code{engine\$remove("myValue")}. List all global variables in the script engine's environment with \code{engine\$getBindings()}.
+Remove the \code{myValue} variable with \code{engine\$remove("myValue")}. List all bindings in the script engine's environment with \code{engine\$getBindings()}.
+
+Bindings are synonymous with global variables in most script engine environments. For example, the following sample creates the binding \code{myValue} and retrieves it through JavaScript. This demonstrates that \code{myValue} is a global variable.
+
+\begin{verbatim}
+engine$myValue <- 5
+engine %~% "myValue;"
+
+## [1] 5
+\end{verbatim}
+The Kotlin language is an exception to this rule. It manages bindings through the global object \code{jsr223Bindings} as follows. See \hyperlink{kotlinlanguagedetails}{Kotlin language details} for more information.
+
+\begin{verbatim}
+engine$myValue <- 5
+engine %~% 'jsr223Bindings["myValue"]'
+
+## [1] 5
+\end{verbatim}
 
 All data structures in Java-based scripting languages are backed by Java objects. Discover the Java class for any global variable using  \code{engine\$getJavaClassName("identifier")} where \code{identifier} is the variable's name.
 
@@ -930,15 +947,15 @@ Most developers are familiar with the command history in the R REPL.  Unfortunat
 
 \section{R with Groovy}
 
-\href{http://www.groovy-lang.org/}{Groovy} is a dynamically typed programming language that closely follows Java syntax. The \pkg{jsr223} integration for Groovy enables developers to write solutions for R in natural Java syntax. Differences between Java and Groovy syntax are described in the Groovy guide \href{http://groovy-lang.org/differences.html}{Differences with Java}. %///cite?.
+\href{http://www.groovy-lang.org/}{Groovy} is a dynamically typed programming language that closely follows Java syntax. Hence, the \pkg{jsr223} integration for Groovy enables developers to essentially embed Java language solutions in R. There are some minor language differences; they are described in the online guide  \href{http://groovy-lang.org/differences.html}{Differences with Java}. %///cite?.
 
 \subsection{Groovy language details}
 
-In Groovy script, top-level variables will not persist in the script engine environment unless they are explicitly declared as global variables. Global variables are defined by omitting the type definition and Groovy's \code{def} keyword. For example \code{myValue = 42} will create a global variable. The \code{@myValue} notation cannot be used. To specify a data type for a global variable, use a constructor (\code{myVar = new Integer(42)}) or a type suffix (\code{myVar = 42L}).
+One syntactical detail relevant to \pkg{jsr223} users applies to global (top-level) variables. Top-level variables created in script will not persist in the script engine environment unless they are explicitly declared as global variables. Global variables are defined by omitting the type definition and Groovy's \code{def} keyword. For example \code{myValue = 42} will create a global variable. The \code{@myValue} notation cannot be used. To specify a data type for a global variable, use a constructor (\code{myVar = new Integer(42)}) or a type suffix (\code{myVar = 42L}).
 
 \subsection{Groovy and Java Classes}
 
-If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e., made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor. \strong{Tip:} Supply class paths as separate elements of a vector instead of concatenating the paths with the usual path delimiters (“;” for Windows, and “:” for all others). This will help make your code platform-independent and easier to read.
+If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e., made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor. \strong{Tip:} Supply class paths as separate elements of a vector instead of concatenating the paths with the usual path delimiters (“;” for Windows, and “:” for all others). This will make your code platform-independent and easier to read.
 
 This example uses the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library} ///cite? to sample from a bivariate normal distribution.
 
@@ -1473,9 +1490,9 @@ engine$terminate()
 
 Kotlin's implementation of the Java Scripting API is progressing quickly though not complete. We will not list the deficiencies here as they will probably be resolved soon. If you experience a problem, refer to the \href{https://github.com/floidgilbert/jsr223/issues}{\pkg{jsr223} issue tracker} to review problems and workarounds. Select the ``Kotlin issues'' label and include both open and closed issues in your search.
 
-\subsection{Kotlin language details}
+\hypertarget{kotlinlanguagedetails}{\subsection{Kotlin language details}}
 
-The Kotlin script engine handles bindings through a global map object instead of global variables. The best way to illustrate this behavior is by example. The following code creates and retrieves a binding \code{myValue} as usual.
+The Kotlin script engine handles bindings using a global map object instead of global variables. The best way to illustrate this behavior is by example. The following code creates and retrieves a binding \code{myValue} as you would expect.
 
 \begin{verbatim}
 engine$myValue <- 4
@@ -1483,7 +1500,6 @@ engine$myValue
 
 ## [1] 4
 \end{verbatim}
-
 However, \code{myValue} will not be available as a global variable in Kotlin script environment. Instead, it must be accessed and updated via the \code{jsr223Bindings} object as follows.
 
 \begin{verbatim}
@@ -1493,9 +1509,9 @@ engine %~% 'jsr223Bindings["myValue"]'
 ## [1] 3.1
 \end{verbatim}
 
-The currently available Kotlin code examples use \code{bindings} instead of \code{jsr223Bindings}. However, \code{bindings} is read-only. This issue has been reported to Kotlin. Their suggested workaround is to use \code{jsr223Bindings}.
+Kotlin documentation demonstrates managing bindings through an object named \code{bindings}. However, the \code{bindings} object is read-only. This is a reported bug which may be fixed soon. Until then, the accepted workaround is to use \code{jsr223Bindings}.
 
-In \hyperlink{callbacks}{Callbacks}, we explain how a global \code{R} object is added to the script engine environment to enable callbacks into the R environment. This \code{R} object is necessarily present in \code{jsr223Bindings}, but we do not recommend accessing it from that structure. Instead, use the global \code{R} as demonstrated in the code here.
+In \hyperlink{callbacks}{Callbacks}, we explain how a global \code{R} object is added to the script engine environment to enable callbacks into the R environment. This \code{R} object is necessarily present in \code{jsr223Bindings}, but we do not recommend accessing it from that structure. Instead, use the global \code{R} variable as demonstrated in the code here.
 
 \begin{verbatim}
 # jsr223 automatically creates a variable R in the global scope of the Kotlin
