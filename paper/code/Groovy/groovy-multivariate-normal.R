@@ -6,11 +6,11 @@ library("jsr223")
 # Include both the Groovy script engine and the Apache Commons Mathematics
 # libraries in the class path. Specify the paths seperately in a character
 # vector.
-engine <- startEngine(
+engine <- ScriptEngine$new(
   engine.name = "groovy"
   , class.path = c(
-    "../../../engines/groovy-all.jar",
-    "../commons-math3-3.6.1.jar"
+    "~/my-path/groovy-all.jar",
+    "~/my-path/commons-math3-3.6.1.jar"
   )
 )
 
@@ -22,8 +22,8 @@ engine$covariances <- diag(1, nrow = 2)
 # Import the package member and instantiate a new class. Declare 'mvn'
 # a global variable by excluding the type specifier.
 engine %@% "
-import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
-mvn = new MultivariateNormalDistribution(means, covariances);
+  import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
+  mvn = new MultivariateNormalDistribution(means, covariances);
 "
 
 # Take a sample.

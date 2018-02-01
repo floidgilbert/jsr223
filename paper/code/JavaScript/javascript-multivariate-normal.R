@@ -4,9 +4,9 @@
 library("jsr223")
 
 # Include the Apache Commons Mathematics library in class.path.
-engine <- startEngine(
+engine <- ScriptEngine$new(
   engine.name = "js",
-  class.path = "../commons-math3-3.6.1.jar"
+  class.path = "~/my-path/commons-math3-3.6.1.jar"
 )
 
 # Define the means and covariance matrix that will be used to create the
@@ -16,10 +16,10 @@ engine$covariances <- diag(1, nrow = 2)
 
 # Import the package member and instantiate a new class.
 engine %@% "
-var MultivariateNormalDistributionClass = Java.type(
-  'org.apache.commons.math3.distribution.MultivariateNormalDistribution'
-);
-mvn = new MultivariateNormalDistributionClass(means, covariances);
+  var MultivariateNormalDistributionClass = Java.type(
+    'org.apache.commons.math3.distribution.MultivariateNormalDistribution'
+  );
+  mvn = new MultivariateNormalDistributionClass(means, covariances);
 "
 
 # This line would throw an error. Nashorn JavaScript supports 'invokeMethod' for

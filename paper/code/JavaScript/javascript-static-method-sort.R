@@ -2,7 +2,7 @@
 # vector/array.
 
 library("jsr223")
-engine <- startEngine("js")
+engine <- ScriptEngine$new("js")
 
 # The method recommended by Nashorn: create a reference to a Java class using
 # the built-in Java.type() method. Conceptually, this is similar to importing

@@ -7,8 +7,10 @@ library("jsr223")
 engine <- ScriptEngine$new("js")
 
 # Source the Voca library. This creates a utility object named 'v'.
-# engine$source("./voca.min.js", discard.return.value = TRUE)
-engine$source("https://raw.githubusercontent.com/panzerdp/voca/1.3.0/dist/voca.min.js", discard.return.value = TRUE)
+engine$source(
+  "https://raw.githubusercontent.com/panzerdp/voca/master/dist/voca.min.js",
+  discard.return.value = TRUE
+)
 
 # 'prune' truncates string, without break words, ensuring the given length, including
 # a trailing "..."
