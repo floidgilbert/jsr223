@@ -1022,7 +1022,7 @@ The popularity of JavaScript has overflowed the arena of web development into st
 
 \subsection{JavaScript and Java classes}
 
-Nashorn provides several methods to reference JavaScript classes. We demonstrate the two most common methods. The first approach is the one recommended in the Nashorn documentation; it uses the built-in \code{Java.type} method to create a JavaScript reference to the class. This reference can be used to access static members or to create object instances. In this example, we use a static method of the \code{java.util.Arrays} class to sort a vector of integers.
+Nashorn provides several methods to reference JavaScript classes. We demonstrate the two most common methods. The first approach is the one recommended in the Nashorn documentation; it uses the built-in \code{Java.type} method to create a JavaScript reference to the class. This reference can be used to access static members or to create instances. In this example, we use a static method of the \code{java.util.Arrays} class to sort a vector of integers.
 
 \begin{verbatim}
 engine %~% "
@@ -1035,7 +1035,7 @@ engine %~% "
 ## [1] 1 2 3 4 5
 \end{verbatim}
 
-A second approach involves referencing the target class by its fully-qualified name. This approach requires more overhead per call, but it is more convenient than using \code{Java.type}. The following code is functionally equivalent to the previous example.
+A second approach involves accessing the target class using its fully-qualified name. This approach requires more overhead per call, but it is more convenient than using \code{Java.type}. The following code is functionally equivalent to the previous example.
 
 \begin{verbatim}
 engine %~% "
@@ -1167,15 +1167,15 @@ v.wordWrap(
 
 \section{R with Python}
 
-Like R, the \href{https://www.python.org/}{Python} programming language is used widely in science and analytics. Python has a remarkably broad set of features, yet it is also known for being concise and easy to read. The \href{http://www.jython.org/}{Jython} project has migrated Python to the Java platform. Support for popular native libraries such as NumPy and SciPy are underway in a related project \href{http://www.jyni.org/}{JyNI} (the Jython Native Interface).
+Like R, the \href{https://www.python.org/}{Python} programming language is used widely in science and analytics. Python has many powerful language features, yet it is known for being concise and easy to read. The \href{http://www.jython.org/}{Jython} project has migrated Python to the Java platform. Popular libraries associated with Python, such as NumPy and SciPy, are not included in the Jython distribution. However, JVM implementations of these popular native libraries are being developed in a related project, \href{http://www.jyni.org/}{JyNI} (the Jython Native Interface).
 
 \subsection{Python idiosyncrasies}
 
-Leading white space is significant in Python; it is used to delimit code blocks. Avoid syntax errors by left-aligning code in multi-line string snippets as shown in the examples that follow.
+Leading white space is significant in Python; it is used to delimit code blocks. Avoid syntax errors by left-aligning code in multi-line string snippets as shown in the examples.
 
 \subsection{Python and Java classes}
 
-To create a Java object in Python, simply import the associated package and call the class constructor. The \href{https://wiki.python.org/jython/NewUsersGuide}{Jython User Guide} provides further details for using Java classes. This example generates a random number using the \code{java.util.Random} class.
+To create a Java object in Python, simply import the associated package and call the class constructor. The \href{https://wiki.python.org/jython/NewUsersGuide}{Jython User Guide} provides further details for using Java classes. This example generates a random number using the \code{java.util.Random} class. Notice that the Python code is not indented; leading white space is significant.
 
 \begin{verbatim}
 # Create an object from the java.util.Random class.
@@ -1190,7 +1190,7 @@ engine$invokeMethod("r", "nextDouble")
 ## [1] 0.7304303
 \end{verbatim}
 
-Jython's \code{jarray} module is required to create native Java arrays. It has two methods: \code{array(sequence, type)} and \code{zeros(length, type)}. The \code{array} method copies a Python sequence to a Java array of the given type. The \code{zeros} method initializes a Java array of the requested type with zero or \code{null}.
+Jython's \code{jarray} module is required to create native Java arrays. The \code{array} method copies a Python sequence to a Java array of the given type. The \code{zeros} method initializes a Java array of the requested type with zero or \code{null}. This code snippet demonstrates both methods.
 
 \begin{verbatim}
 # Use 'jarray.array' to copy a sequence to a Java array of the requested type.

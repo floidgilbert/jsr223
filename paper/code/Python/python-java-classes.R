@@ -3,9 +3,9 @@
 #   https://wiki.python.org/jython/NewUsersGuide
 
 library("jsr223")
-engine <- startEngine(
-  engine.name = "python"
-  , class.path = "../../../engines/jython-standalone.jar"
+engine <- ScriptEngine$new(
+  engine.name = "python",
+  class.path = "~/my-path/engines/jython-standalone.jar"
 )
 
 # Create an object from the java.util.Random class.
