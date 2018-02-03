@@ -145,19 +145,48 @@ In conclusion, \pkg{jsr223} provides an alternative integration for the Java pla
 
 \subsection{Groovy integrations}
 
+The only other Groovy language integration on CRAN is \CRANpkg{rGroovy}. It is a simple integration that uses \pkg{rJava} to instantiate \code{groovy.lang.GroovyShell} and call its \code{evaluate} method to execute code snippets.
+
+class path must be set before library loads.
+
+Must use \pkg{rJava} to create bindings object. 
+
+Evaluate calls global object. NO way to update environment except to use \pkg{rJava}. Requires \pkg{rJava} knowledge to create binding object.
+
+Execute is \pkg{rJava}-less, but it does not have a persistent environment.
+
+Does not obfuscate \pkg{rJava} very much.
+
+uses bindings or a list contiaing valriables that are used to load a binding object.
+
+Data exchange is handled by \pkg{rJava}, and is therefore limited to vectors, matrices, and Java object references created by \pkg{rJava}. 
+
+examples
+
+error when providing a scalar?
+
+create your own groovyshell with \pkg{rJava}
+
+
 \subsection{JavaScript integrations}
 
-Currently, the most prominent JavaScript integration for R is Jeroen Ooms' \CRANpkg{V8} package. It uses the open source \href{https://developers.google.com/v8/}{V8 JavaScript engine} used in Google's \href{https://www.google.com/chrome/browser/features.html}{Chrome browser}.
+Currently, the most prominent JavaScript integration for R is Jeroen Ooms' \CRANpkg{V8} package. It uses the open source \href{https://developers.google.com/v8/}{V8 JavaScript engine} used in Google's \href{https://www.google.com/chrome/browser/features.html}{Chrome browser}. There are three primary differences between \pkg{V8} and \pkg{jsr223}.
 
-There are three primary differences between \pkg{V8} and \pkg{jsr223}. First, the JavaScript engine included with \pkg{V8} provides only essential ECMAscript functionality. This does not include file and network operations. In contrast, \pkg{jsr223} provides access to the entire JVM which includes, of course, file and network libraries as well as many others.
+First, the JavaScript engine included with \pkg{V8} provides only essential ECMAscript functionality. This does not include file and network operations. In contrast, \pkg{jsr223} provides access to the entire JVM which includes, of course, file and network libraries as well as many others.
 
-All data exchanged between \pkg{V8} and R is serialized using JSON (JavaScript Object Notation). JSON is very flexible and is able to represent virtually any data structure. However, JSON converts all values to/from string representations which adds overhead and imposes round-off error for floating point values. ///example.
+Second, all data exchanged between \pkg{V8} and R is serialized using JSON (JavaScript Object Notation). JSON is very flexible and is able to represent virtually any data structure. However, JSON converts all values to/from string representations which adds overhead and imposes round-off error for floating point values. ///example.
 
 \begin{verbatim}
+identical(pi, fromJSON(toJSON(pi, digits = NA)))
+
+## [1] FALSE
+
 identical(engine$eval("Math.PI;"), pi)
 
-identical(pi, fromJSON(toJSON(pi, digits = NA)))
+## [1] TRUE
 \end{verbatim}
+
+Finally, \pkg{V8} provides a method for validating JavaScript code without evaluation. ///we don't do this cuz we can't in Java Scripting API.///
 
 \subsection{Python integrations}
 
