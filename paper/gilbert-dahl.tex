@@ -143,14 +143,26 @@ The \pkg{rJava} package does not directly support callbacks into R. Instead, cal
 
 In conclusion, \pkg{jsr223} provides an alternative integration for the Java platform that is easy to learn and use.
 
+\subsection{Groovy integrations}
+
 \subsection{JavaScript integrations}
 
-\subsection{Groovy integrations}
+Currently, the most prominent JavaScript integration for R is Jeroen Ooms' \CRANpkg{V8} package. It uses the open source \href{https://developers.google.com/v8/}{V8 JavaScript engine} used in Google's \href{https://www.google.com/chrome/browser/features.html}{Chrome browser}.
+
+There are three primary differences between \pkg{V8} and \pkg{jsr223}. First, the JavaScript engine included with \pkg{V8} provides only essential ECMAscript functionality. This does not include file and network operations. In contrast, \pkg{jsr223} provides access to the entire JVM which includes, of course, file and network libraries as well as many others.
+
+All data exchanged between \pkg{V8} and R is serialized using JSON (JavaScript Object Notation). JSON is very flexible and is able to represent virtually any data structure. However, JSON converts all values to/from string representations which adds overhead and imposes round-off error for floating point values. ///example.
+
+\begin{verbatim}
+identical(engine$eval("Math.PI;"), pi)
+
+identical(pi, fromJSON(toJSON(pi, digits = NA)))
+\end{verbatim}
 
 \subsection{Python integrations}
 
 \subsection{Other integrations}
-Scala. Kotlin. Ruby. ///RScript?
+Kotlin. Ruby. ///RScript?
 Currently, \pkg{jsr223} is the only integration for the Ruby and Kotlin languages on CRAN.%///ok here? still true?
 
 \section{Package installation}
@@ -158,9 +170,9 @@ Currently, \pkg{jsr223} is the only integration for the Ruby and Kotlin language
 The \pkg{jsr223} package requires Java 8 Standard Edition or above. The current version of the Java Runtime Environment (JRE) can be determined by executing \samp{java -version} from a system command prompt. See the example output below. Java 8 is denoted by version 1.8.x\_xx.
 
 \begin{verbatim}
-java version "1.8.0_91"
-Java(TM) SE Runtime Environment (build 1.8.0_91-b15)
-Java HotSpot(TM) 64-Bit Server VM (build 25.91-b15, mixed mode)
+java version "1.8.0_144"
+Java(TM) SE Runtime Environment (build 1.8.0_144-b01)
+Java HotSpot(TM) 64-Bit Server VM (build 25.144-b01, mixed mode)
 \end{verbatim}
 
 The JRE can be obtained from  \href{http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html}{Oracle's web site}. Select the architecture (32 or 64 bit) that matches your R installation.
@@ -1558,7 +1570,7 @@ engine$terminate()
 \section{Conclusion}
 
 %///people can use tools they know. Java is very accessible.
-///
+do Java stuff faster.
 
 \clearpage
 

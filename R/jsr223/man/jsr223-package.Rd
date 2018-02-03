@@ -5,11 +5,11 @@
 \docType{package}
 
 \title{
-A Simple Interface Between R, Java, and Java-Based Scripting Languages JavaScript, Jython (Python), JRuby (Ruby), Groovy, and Kotlin
+A Simple Interface Between R, Java, and Java-Based Scripting Languages Groovy, JavaScript, JRuby (Ruby), Jython (Python), and Kotlin
 }
 
 \description{
-The \CRANpkg{jsr223} package provides a high-level integration for Java that makes Java objects easy to use from within R and simplifies bi-directional data exchange for a wide variety of objects. Furthermore, \pkg{jsr223} employs the \href{http://docs.oracle.com/javase/8/docs/technotes/guides/scripting/}{Java Scripting API} to bring five scripting languages to the R software environment: JavaScript, Ruby, Python, Groovy, and Kotlin.
+The \CRANpkg{jsr223} package provides a high-level integration for Java that makes Java objects easy to use from within R and simplifies bi-directional data exchange for a wide variety of objects. Furthermore, \pkg{jsr223} employs the \href{http://docs.oracle.com/javase/8/docs/technotes/guides/scripting/}{Java Scripting API} to bring several scripting languages to the R software environment: JavaScript, Ruby, Python, Groovy, and Kotlin.
 }
 
 \details{
