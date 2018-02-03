@@ -15,6 +15,7 @@
 %///because of Ruby and Kotlin, every general example must be qualified accordingly when global variables are used. or, create a section that can be referred to in every case.
 %///standardize functions with () or not. not. remove all ()
 %///do a direct link to code examples? include readme.md file to explain.
+%///pagination
 \maketitle
 
 \abstract{
@@ -987,7 +988,7 @@ engine <- ScriptEngine$new(
 # The getClassPath method displays the current class path.
 engine$getClassPath()
 
-# Define the means and covariance matrix that will be used to create the
+# Define the means vector and covariance matrix that will be used to create the
 # bivariate normal distribution.
 engine$means <- c(0, 2)
 engine$covariances <- diag(1, nrow = 2)
@@ -1070,7 +1071,7 @@ engine <- ScriptEngine$new(
   class.path = "~/my-path/commons-math3-3.6.1.jar"
 )
 
-# Define the means and covariance matrix that will be used to create the
+# Define the means vector and covariance matrix that will be used to create the
 # bivariate normal distribution.
 engine$means <- c(0, 2)
 engine$covariances <- diag(1, nrow = 2)
@@ -1216,9 +1217,8 @@ engine$myArray
 
 \subsection{A simple Python HTTP server}
 
-This code sample creates a basic HTTP server in Python that calls R to produce HTML content. The Python script listed here defines two classes. The \code{MyHandler} class processes HEAD and GET requests for the server. The \code{MyServer} class is used by the R script to start and stop the web server. The Python code is adapted from the \href{https://wiki.python.org/moin/BaseHttpServer}{Python Wiki}.
+This code sample creates a simple HTTP server. It demonstrates calling Python class members from R and calling R code from Python. The Python script below defines two classes: the \code{MyHandler} class processes HEAD and GET requests for the server; and the \code{MyServer} class is used from an R script to start and stop the web server. The Python code is adapted from the \href{https://wiki.python.org/moin/BaseHttpServer}{Python Wiki}.
 
-%///test this code with line-wrapping enabled
 \begin{verbatim}
 import time
 import BaseHTTPServer
@@ -1246,25 +1246,21 @@ class MyServer:
         server_class = BaseHTTPServer.HTTPServer
         self.httpd = server_class((self.host_name, self.port_number), MyHandler)
         self.httpd.timeout = timeout
-        print time.asctime(),
-            "Server Starts - %s:%s" % (self.host_name, self.port_number)
+        print time.asctime(), "Server Started - %s:%s" % (self.host_name, self.port_number)
     def handle_request(self):
-        # This method exists only for demonstration purposes. For a production
-        # scenario, see 'SocketServer.serve_forever()'.
+        # This method exists only for demonstration purposes. For a more robust
+        # implementation, see 'SocketServer.serve_forever()'.
         self.httpd.handle_request()
     def close(self):
         self.httpd.server_close()
-        print time.asctime(),
-            "Server Stops - %s:%s" % (self.host_name, self.port_number)
+        print time.asctime(), "Server Stopped - %s:%s" % (self.host_name, self.port_number)
 \end{verbatim}
 
-The R script sources the Python script above and starts the web server. It also defines \code{getHtmlTable}: a function that generates HTML content for the web server. For demonstration purposes, the R script shuts down the Python web server automatically after 60 seconds. Run the R script and point a web browser to \url{http://127.0.0.1:8080} to see the result.
+The R script here sources the Python script and starts the web server. It also defines \code{getHtmlTable}: a function that generates HTML content for the web server. Run the R script and point a web browser to \url{http://localhost:8080} to see the result. For demonstration purposes, the R script shuts down the Python web server automatically after 60 seconds.
 
 \begin{verbatim}
 library("xtable")
 library("jsr223")
-
-server.runtime = 60 # Seconds before the HTTP server shuts down.
 
 # Format the iris data set as an HTML table. This function will be called from
 # the Python web server in response to an HTTP GET request.
@@ -1283,7 +1279,7 @@ engine <- ScriptEngine$new(
 # Source the Python script.
 engine$source("./python-http-server.py", discard.return.value = TRUE)
 
-runServer <- function() {
+runServer <- function(server.runtime = 60) {
   # Automatically shut down server when this function exits.
   on.exit(
     {
@@ -1297,22 +1293,22 @@ runServer <- function() {
   # not be used in a production scenario.
   engine %@% "server = MyServer('localhost', 8080, 2)"
 
-  # Handle requests for 'server.runtime' seconds before shutting down. The
-  # 'handle_request' method waits for the timeout specified in the 'MyServer'
-  # constructor before returning to the event loop to allow interruptions. In a
-  # production scenario, the R side would not be involved in monitoring
-  # requests. See Python's 'SocketServer.serve_forever()' for more information.
+  # Handle requests for 'server.runtime' seconds before shutting down. The 
+  # 'handle_request' method waits for the timeout specified in the 'MyServer' 
+  # constructor before returning to the event loop to allow interruptions. In a 
+  # true web service, the R side would not be involved in monitoring requests.
+  # See Python's 'SocketServer.serve_forever()' for more information.
   started <- as.numeric(Sys.time())
   while(as.numeric(Sys.time()) - started < server.runtime)
     engine$invokeMethod("server", "handle_request")
 }
 
-runServer()
+runServer(60)
 \end{verbatim}
 
 \section{R with Ruby}
 
-The \href{https://www.ruby-lang.org}{Ruby} programming language is a general-purpose, object-oriented programming language invented by Yukihiro Matsumoto. According to Matsumoto, he designed the language to “help every programmer in the world to be productive, and to enjoy programming, and to be happy” ///cite. \href{http://jruby.org/}{JRuby} is a Java implementation of the Ruby language. JRuby is compatible with the popular web application framework \href{http://rubyonrails.org/}{Ruby on Rails}. %///cite https://www.youtube.com/watch?v=oEkJvvGEtB4
+The \href{https://www.ruby-lang.org}{Ruby} programming language is a general-purpose, object-oriented programming language invented by Yukihiro Matsumoto. According to Matsumoto, he designed the language to ``help every programmer in the world to be productive, and to enjoy programming, and to be happy'' \citep{rubyvideo}. \href{http://jruby.org/}{JRuby} is a Java implementation of the Ruby language. It is compatible with the popular web application framework \href{http://rubyonrails.org/}{Ruby on Rails}.
 
 \subsection{Ruby idiosyncrasies}
 
@@ -1338,7 +1334,7 @@ engine <- ScriptEngine$new(
   )
 )
 
-# Define the means and covariance matrix that will be used to create the
+# Define the means vector and covariance matrix that will be used to create the
 # bivariate normal distribution.
 engine$means <- c(0, 2)
 engine$covariances <- diag(1, nrow = 2)
@@ -1381,66 +1377,39 @@ engine$terminate()
 
 \subsection{Ruby gems}
 
-Ruby libraries and programs are distributed in a standardized package format called a \textit{gem}. We demonstrate using gems in \pkg{jsr223} with Ty Rauber's \href{https://github.com/tyrauber/stock_quote}{\code{stock\_quote}} gem ///cite?.
+Ruby libraries and programs are distributed in a standardized package format called a \textit{gem}. We demonstrate using gems in \pkg{jsr223} with Benjamin Curtis's \href{https://github.com/stympy/faker}{\code{faker}}: a library used to produce fake records for data sets. %///cite?
 
-A full installation of JRuby is required to use gems. Install JRuby and the \code{stock\_quote} gem using the instructions found in \href{https://github.com/jruby/jruby/wiki/GettingStarted}{Getting Started with JRuby}.%///cite?
+A full installation of JRuby is required to use gems. Install JRuby and using the instructions found in \href{https://github.com/jruby/jruby/wiki/GettingStarted}{Getting Started with JRuby}. %///cite?
+Install the \code{faker} gem using \samp{gem install faker} in a terminal.
 
-To access \code{stock\_quote} with \pkg{jsr223}, the paths to the gem and its dependencies must be added to the \code{ScriptEngine\$new} class path. These paths can be discovered using the JRuby REPL, \code{jirb}, as shown here.
+To access \code{faker} with \pkg{jsr223}, the paths to the gem and its dependencies must be added to the \code{ScriptEngine\$new} class path. These paths can be discovered using the JRuby REPL, \code{jirb}, in a terminal session as shown here.
 
 \begin{verbatim}
 me@ubuntu:~$ jirb
-irb(main):001:0> require 'stock_quote'
+irb(main):001:0> require 'faker'
 => true
 irb(main):002:0> puts $LOAD_PATH
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/unf-0.1.4-java/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/domain_name-0.5.20160826/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/http-cookie-1.0.3/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/mime-types-2.99.3/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/netrc-0.11.0/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/rest-client-1.8.0/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/stock_quote-1.2.3/lib
-~/jruby-9.1.5.0/lib/ruby/2.3/site_ruby
-~/jruby-9.1.5.0/lib/ruby/stdlib
+~/jruby-9.1.15.0/lib/ruby/gems/shared/gems/concurrent-ruby-1.0.5-java/lib
+~/jruby-9.1.15.0/lib/ruby/gems/shared/gems/i18n-0.9.3/lib
+~/jruby-9.1.15.0/lib/ruby/gems/shared/gems/faker-1.8.7/lib
+~/jruby-9.1.15.0/lib/ruby/2.3/site_ruby
+~/jruby-9.1.15.0/lib/ruby/stdlib
 => nil
 irb(main):003:0> exit
 \end{verbatim}
 
-Supply the resulting paths to the \code{class.path} parameter of the \pkg{jsr223} \code{ScriptEngine\$new} method. In our experience, the \samp{site\_ruby} path did not exist. If \code{ScriptEngine\$new} throws an error indicating a path does not exist, simply exclude it from the class path.
+These resulting paths will be required along with the path to \file{jruby.jar} (the latter is in the \file{lib} subfolder of the JRuby installation). Supply these paths to the \code{class.path} parameter of the \pkg{jsr223} \code{ScriptEngine\$new} method when creating the script engine instance. In our experience, the \samp{site\_ruby} path did not exist. If \code{ScriptEngine\$new} throws an error indicating a path does not exist, simply exclude it from the class path.
 
-The code sample below downloads closing price history for two stocks and displays them in a combined time series plot (Figure \ref{fig:stocks}). The R packages \CRANpkg{jsonlite} ///cite and \CRANpkg{ggplot2} ///cite are required. %///Maybe do without jsonlite///
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=1\linewidth]{graphics/stocks}
-\caption{Plot of closing stock prices produced by data obtained using Ty Rauber's \code{stock\_quote} Ruby gem.}
-\label{fig:stocks}
-\end{figure}
+The code below uses the \code{faker} gem to generate a data frame containing fake names and titles.
 
 \begin{verbatim}
 library("jsr223")
-library("jsonlite")
-library("ggplot2")
-
-# In addition to the script engine JAR, include all of the required gem paths in
-# the class path. In this case, we use 'jruby.jar' from the full installation
-# instead of the standalone script engine JAR file.
-#
-# The gem paths were obtained by running the JRuby REPL 'jirb' in the terminal
-# and executing the following two commands:
-#
-# require 'stock_quote'
-# puts $LOAD_PATH
 
 class.path <- "
-~/jruby-9.1.5.0/lib/jruby.jar
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/unf-0.1.4-java/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/domain_name-0.5.20160826/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/http-cookie-1.0.3/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/mime-types-2.99.3/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/netrc-0.11.0/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/rest-client-1.8.0/lib
-~/jruby-9.1.5.0/lib/ruby/gems/shared/gems/stock_quote-1.2.3/lib
-~/jruby-9.1.5.0/lib/ruby/stdlib
+~/jruby-9.1.12.0/lib/jruby.jar
+~/jruby-9.1.12.0/lib/ruby/gems/shared/gems/i18n-0.8.6/lib
+~/jruby-9.1.12.0/lib/ruby/gems/shared/gems/faker-1.8.4/lib
+~/jruby-9.1.12.0/lib/ruby/stdlib
 "
 class.path <- unlist(strsplit(class.path, "\n", fixed = TRUE))
 
@@ -1450,67 +1419,54 @@ engine <- ScriptEngine$new(
 )
 
 # Import the required Ruby libraries.
-engine %@% "
-require 'date'
-require 'stock_quote'
-"
+engine %@% "require 'faker'"
 
-# Print some real-time stock data to the console.
-engine %@% "
-$stock = StockQuote::Stock.quote('AEPGX')
-puts $stock.name, $stock.change
-"
+# To create data deterministically, set a seed.
+engine %@% "Faker::Config.random = Random.new(10)"
 
-# Ruby function to retrieve a year of closing stock prices for a given symbol in
-# JSON format.
+# Demonstrate unique, fake name.
+engine %~% "Faker::Name.unique.name"
+
+## [1] "Ms. Adrain Torphy"
+
+# Define a Ruby function to return a given number of fake profiles.
 engine %@% "
-def getStockYear(symbol)
-  end_date = Date.today
-  start_date = end_date.prev_year
-  h = StockQuote::Stock.history(
-    symbol,
-    start_date = start_date,
-    end_date = end_date,
-    select = 'Close, Date',
-    format = 'json'
-  )
-  return JSON.generate(h.fetch('quote'))
+def random_profile(n = 1)
+  fname = Array.new(n)
+  lname = Array.new(n)
+  title = Array.new(n)
+  for i in 0..(n - 1)
+    fname[i] = Faker::Name.unique.first_name
+    lname[i] = Faker::Name.unique.last_name
+    title[i] = Faker::Name.unique.title
+  end
+  return {'fname' => fname, 'lname' => lname, 'title' => title}
 end
 "
 
-# R function wrapper to convert the Ruby JSON result to a data frame.
-getStockYear <- function(symbol) {
-  json <- engine$invokeFunction("getStockYear", symbol)
-  df <- jsonlite::fromJSON(json)
-  df$Close <- as.numeric(df$Close)
-  df$Date <- as.POSIXct(df$Date)
-  df
-}
+# Retrieve 5 fake profiles. The Ruby hash of same-length arrays will be
+# automatically converted to a dataframe.
+engine$invokeFunction("random_profile", 5)
 
-# Get closing values as data frames for two stocks.
-aepgx <- getStockYear("AEPGX")
-agthx <- getStockYear("AGTHX")
-
-# Graph the closing values via 'ggplot2'.
-ggplot() +
-  geom_line(data = aepgx, aes(x = Date, y = Close, color = "AEPGX")) +
-  geom_line(data = agthx, aes(x = Date, y = Close, color = "AGTHX")) +
-  ggtitle("Closing Stock Prices: AEPGX, AGTHX") +
-  theme(legend.position = c(0.1, 0.9), legend.title = element_blank()) +
-  labs(x = "Date", y = "Closing Price")
+##     fname      lname                            title
+## 1 Quentin     Barton           Dynamic Paradigm Agent
+## 2   Claud    Bernier         Regional Metrics Planner
+## 3   Kevin Hodkiewicz      Investor Marketing Designer
+## 4    Toni    Stracke Legacy Implementation Strategist
+## 5  Jannie       Haag Dynamic Implementation Architect
 
 engine$terminate()
 \end{verbatim}
 
 \section{R with Kotlin}
 
-\href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language that supports both functional and object-oriented programming paradigms. Kotlin is concise and pragmatic; in many cases, it requires less code than Java to accomplish the same task. For example, class definitions are particularly succinct. Kotlin version 1.0 was released in 2016 \citep{kotlin-release} making it the newest of the \pkg{jsr223}-supported languages. 
+\href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language that supports both functional and object-oriented programming paradigms. Kotlin is concise and pragmatic; in many cases, it requires less code than Java to accomplish the same task. Kotlin version 1.0 was released in 2016 \citep{kotlin-release} making it the newest of the \pkg{jsr223}-supported languages. 
 
-Kotlin's implementation of the Java Scripting API is progressing quickly though not complete. We will not list the deficiencies here as they will probably be resolved soon. If you experience a problem, refer to the \href{https://github.com/floidgilbert/jsr223/issues}{\pkg{jsr223} issue tracker} to review problems and workarounds. Select the ``Kotlin issues'' label and include both open and closed issues in your search.
+Kotlin's JSR-223 implementation is progressing quickly though it is not complete. We will not list the deficiencies here as they will probably be resolved soon. See the \href{https://github.com/floidgilbert/jsr223/issues}{\pkg{jsr223} issue tracker} to review pending issues and workarounds. In the issue tracker search dialog, select the ``Kotlin issues'' label and include both open and closed issues.
 
 \hypertarget{kotlinidiosyncrasies}{\subsection{Kotlin idiosyncrasies}}
 
-The Kotlin script engine handles bindings using a global map object instead of global variables. The best way to illustrate this behavior is by example. The following code creates and retrieves a binding \code{myValue} as you would expect.
+The Kotlin script engine handles bindings through a global map object instead of creating global variables in the script engine environment. The best way to illustrate this behavior is by example. The following code creates and retrieves a binding \code{myValue} as you would expect.
 
 \begin{verbatim}
 engine$myValue <- 4
@@ -1527,7 +1483,7 @@ engine %~% 'jsr223Bindings["myValue"]'
 ## [1] 3.1
 \end{verbatim}
 
-Kotlin documentation demonstrates managing bindings through an object named \code{bindings}. However, the \code{bindings} object is read-only. This is a reported bug. The accepted workaround is to use \code{jsr223Bindings}.
+Kotlin documentation demonstrates managing bindings through an object named \code{bindings}. However, the \code{bindings} object is read-only as of this writing. This is a reported bug. The accepted workaround is to use \code{jsr223Bindings}.
 
 In \hyperlink{callbacks}{Callbacks}, we explain how a global \code{R} object is added to the script engine environment to enable callbacks into the R environment. This \code{R} object is necessarily present in \code{jsr223Bindings}, but we do not recommend accessing it from that structure. Instead, use the global \code{R} variable as demonstrated in the code here.
 
@@ -1543,7 +1499,7 @@ engine %@% '(jsr223Bindings["R"] as org.fgilbert.jsr223.RClient).set("c", 3)'
 
 \subsection{Kotlin and Java classes}
 
-Kotlin is designed to be interoperable with Java. This simple example uses the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library} to sample from a bivariate normal distribution.
+Kotlin is designed to be interoperable with Java. This example uses the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library} to sample from a bivariate normal distribution.
 
 \begin{verbatim}
 library("jsr223")
@@ -1561,7 +1517,7 @@ engine <- ScriptEngine$new(
   )
 )
 
-# Define the means and covariance matrix that will be used to create the
+# Define the means vector and covariance matrix that will be used to create the
 # bivariate normal distribution.
 engine$means <- c(0, 2)
 engine$covariances <- diag(1, nrow = 2)

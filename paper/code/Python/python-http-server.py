@@ -29,12 +29,12 @@ class MyServer:
         server_class = BaseHTTPServer.HTTPServer
         self.httpd = server_class((self.host_name, self.port_number), MyHandler)
         self.httpd.timeout = timeout
-        print time.asctime(), "Server Starts - %s:%s" % (self.host_name, self.port_number)
+        print time.asctime(), "Server Started - %s:%s" % (self.host_name, self.port_number)
     def handle_request(self):
-        # This method exists only for demonstration purposes. For a production 
-        # scenario, see 'SocketServer.serve_forever()'.
+        # This method exists only for demonstration purposes. For a more robust
+        # implementation, see 'SocketServer.serve_forever()'.
         self.httpd.handle_request()
     def close(self):
         self.httpd.server_close()
-        print time.asctime(), "Server Stops - %s:%s" % (self.host_name, self.port_number)
+        print time.asctime(), "Server Stopped - %s:%s" % (self.host_name, self.port_number)
 

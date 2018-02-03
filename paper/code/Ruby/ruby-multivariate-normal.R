@@ -6,15 +6,15 @@ library("jsr223")
 # Include both the JRuby script engine and the Apache Commons Mathematics
 # libraries in the class path. Specify the paths seperately in a character
 # vector.
-engine <- startEngine(
+engine <- ScriptEngine$new(
   engine.name = "ruby", 
   class.path = c(
-    "../../../engines/jruby-complete-9.1.2.0.jar",
-    "../commons-math3-3.6.1.jar"
+    "~/my-path/engines/jruby-complete-9.1.2.0.jar",
+    "~/my-path/commons-math3-3.6.1.jar"
   )
 )
 
-# Define the means and covariance matrix that will be used to create the 
+# Define the means vector and covariance matrix that will be used to create the 
 # bivariate normal distribution.
 engine$means <- c(0, 2)
 engine$covariances <- diag(1, nrow = 2)

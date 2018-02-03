@@ -3,7 +3,8 @@
 
 library("jsr223")
 
-# Install the faker gem using
+# Install the faker gem by executing the following line at a command prompt.
+# 
 #   gem install faker
 # 
 # In addition to the JRuby script engine JAR, include all of the required gem
@@ -20,10 +21,10 @@ library("jsr223")
 # engine from starting. Simply remove any such folders from the class path list.
 
 class.path <- "
-C:/jruby-9.1.12.0/lib/jruby.jar
-C:/jruby-9.1.12.0/lib/ruby/gems/shared/gems/i18n-0.8.6/lib
-C:/jruby-9.1.12.0/lib/ruby/gems/shared/gems/faker-1.8.4/lib
-C:/jruby-9.1.12.0/lib/ruby/stdlib
+~/jruby-9.1.12.0/lib/jruby.jar
+~/jruby-9.1.12.0/lib/ruby/gems/shared/gems/i18n-0.8.6/lib
+~/jruby-9.1.12.0/lib/ruby/gems/shared/gems/faker-1.8.4/lib
+~/jruby-9.1.12.0/lib/ruby/stdlib
 "
 class.path <- unlist(strsplit(class.path, "\n", fixed = TRUE))
 
@@ -56,7 +57,7 @@ def random_profile(n = 1)
 end
 "
 
-# Retrieve 10 fake profiles. The Ruby hash of same-length arrays will be
+# Retrieve 5 fake profiles. The Ruby hash of same-length arrays will be
 # automatically converted to a dataframe.
 engine$invokeFunction("random_profile", 5)
 
