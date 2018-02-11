@@ -5,7 +5,7 @@
 \docType{package}
 
 \title{
-A Simple Interface Between R, Java, and Java-Based Scripting Languages Groovy, JavaScript, JRuby (Ruby), Jython (Python), and Kotlin
+A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby (Ruby), Jython (Python), and Kotlin
 }
 
 \description{

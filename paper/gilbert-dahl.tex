@@ -2,13 +2,6 @@
 \title{\pkg{jsr223}: A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby, Jython, and Kotlin}
 \author{by Floid R. Gilbert and David B. Dahl}
 
-%///review bib
-%///forgot to re-cite the programming languages. Look at old versions of papers.
-%///change pkg to cranpkg where nec.
-%///update links to Oracle to openJDK instead.
-%///can use other languages in the future, if they decide to do \pkg{jsr223} support. Scala has support...but it's not ready yet and David has a better package.
-%///do a direct link to code examples? include readme.md file to explain.
-%///pagination
 \maketitle
 
 \abstract{
@@ -23,15 +16,15 @@ The R package \CRANpkg{jsr223} is a high-level integration for the Java platform
 
 About the same time Ross Ihaka and Robert Gentleman began developing R at the University of Auckland in the early 1990s, James Gosling and the so-called Green project team was working on a new programming language at Sun Microsystems in California. The Green team didn't set out to make a new language; rather, they were trying to move platform-independent, distributed computing into the consumer electronics marketplace. As Gosling explained, ``All along, the language was a tool, not the end'' \citep{javainsidestory}. Unexpectedly, the programming language outlived the Green project and flourished into one of the most popular development platforms in computing history. That platform, Java, now powers applications ranging from the enterprise (\href{https://www.google.com/gmail/about/}{GMail}), to games (\href{https://minecraft.net}{Minecraft}), to interactive media (\href{https://en.wikipedia.org/wiki/Blu-ray}{Blu-ray}), to mobile devices (\href{https://www.android.com/}{Android}).
 
-In 2003, Simon Urbanek released \pkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that the user has granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding dynamic source code directly within R script.
+In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that the user has granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding dynamic source code directly within R script.
 
-Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \pkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
+Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \CRANpkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
 
 There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223} languages can be used to quickly embed Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223} languages. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the \pkg{jsr223}-supported languages.
 
 \subsection{Document organization}
 
-We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223} languages. All code samples related to this document are available at \href{https://github.com/floidgilbert/jsr223}{GitHub}.
+We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223} languages. All code examples related to this document are available at \href{https://github.com/floidgilbert/jsr223/tree/master/examples}{GitHub}.
 
 \section{Helpful terminology and concepts}
 
@@ -118,8 +111,7 @@ o <- .jarray(a, dispatch = TRUE)
 b <- .jevalArray(o, simplify = TRUE)
 \end{verbatim}
 
-Again, the \pkg{jsr223} package builds on \pkg{rJava} functionality by extending data exchange. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\pkg{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n $>$ 2. See the related issue at the \pkg{rJava} Github repository: ``.jarray(..., dispatch=T) on multi-dimensional arrays creates Java objects with wrong content.''} In addition, \pkg{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. %Many language integration packages employ JSON serialization to implement a similar feature set. Our package uses custom serialization routines to avoid the round-off error and overhead associated with JSON.
-%///consider adding details for data exchange in the full article.
+Again, the \pkg{jsr223} package builds on \pkg{rJava} functionality by extending data exchange. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\pkg{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n $>$ 2. See the related issue at the \pkg{rJava} Github repository: ``.jarray(..., dispatch=T) on multi-dimensional arrays creates Java objects with wrong content.''} In addition, \pkg{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays.
 
 This code snippet demonstrates data exchange using \pkg{jsr223}. The variable \code{engine} is a \pkg{jsr223} ScriptEngine object. Similar to the preceding \pkg{rJava} example, this code copies a matrix to the Java environment and back again. The same syntax is used for all supported data types and structures.
 
@@ -131,8 +123,7 @@ engine$a <- a
 engine$a
 \end{verbatim}
 
-%///not sure this is true about \pkg{JRI} when invoked from \pkg{rJava}. Find out. It could add or remove material here. Could consider showing a \pkg{jsr223} example.
-The \pkg{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \CRANpkg{JRI}: the Java/R Interface. To use \pkg{JRI}, R must be compiled with the shared library option \samp{-{}-enable-R-shlib}. \pkg{JRI} also requires several paths and environment variables to be set, so it includes a launch script to get started. The \pkg{JRI} interface is technical and extensive. In contrast, \pkg{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \pkg{jsr223} package does not use \pkg{JRI}, so there is no requirement for R to be compiled as a shared library.
+The \pkg{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \CRANpkg{JRI}: the Java/R Interface. To use \pkg{JRI}, R must be compiled with the shared library option \samp{-{}-enable-R-shlib}. The \pkg{JRI} interface is technical and extensive. In contrast, \pkg{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \pkg{jsr223} package does not use \pkg{JRI}, so there is no requirement for R to be compiled as a shared library.
 
 In conclusion, \pkg{jsr223} provides an alternative integration for the Java platform that is easy to learn and use.
 
@@ -193,7 +184,6 @@ In summary, \pkg{rGroovy} exposes a simple interface for executing Groovy code a
 
 The most prominent JavaScript integration for R is Jeroen Ooms' \CRANpkg{V8} package. It uses the open source \href{https://developers.google.com/v8/}{V8 JavaScript engine} featured in Google's \href{https://www.google.com/chrome/browser/features.html}{Chrome} browser. We discuss the three primary differences between \pkg{V8} and \pkg{jsr223}.
 
-%///how often do we say ``in contrast''?
 First, the JavaScript engine included with \pkg{V8} provides only essential ECMAscript functionality. For example, \pkg{V8} does not include even basic file and network operations. In contrast, \pkg{jsr223} provides access to the entire JVM which includes a vast array of libraries and computing functionality.
 
 %///cite jsonlite?
@@ -511,7 +501,7 @@ Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by \CRANp
 
 The \pkg{jdx} package (and hence \pkg{jsr223}) supports converting R vectors, factors, n-dimensional arrays, data frames, named lists, unnamed lists, nested lists (i.e., lists containing lists), and environments to generic Java objects. Row-major and column-major ordering options are available for arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported.
 
-Java scalars, n-dimensional arrays, collections, and maps can be converted to standard objects in the R environment. These structures cover all of the primary data types in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform.
+Java scalars, n-dimensional arrays, collections, and maps can be converted to standard objects in the R environment. These structures cover all of the primary data types in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform. This includes many scripting language-specific structures such as Python tuples and JavaScript objects.
 
 All \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}. The most pertinent details are discussed in the following sections. For a more thorough discussion, see the vignette included with the \pkg{jdx} package.
 
@@ -569,8 +559,6 @@ engine %~% "m[0][1]"
 ## [1] 3
 \end{verbatim}
 
-%///update this based on what is changed in jdx.
-%///furthermore, I might have the names all wrong. the data structures are correct, but the names might be wrong.
 The \code{setArrayOrder} script engine method controls ordering for arrays converted from R to Java, and vice versa. Three array index ordering schemes are available: \code{'row-major'}, \code{'column-major'}, and \code{'column-minor'}. These settings control how the destination Java array is constructed.
 
 Before describing the ordering schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. 
@@ -970,8 +958,6 @@ draws = R.eval('sample(4, 2, prob = probabilities)');
 
 \subsection{Compiling script}
 
-///mention that functions/methods are already compiled to bytecode.
-
 The Java Scripting API supports compiling script to Java bytecode before evaluation. If unstructured code (i.e., code not encapsulated in methods or functions) is to be executed repeatedly, compiling it will improve performance. This feature does not apply to methods and functions as they are compiled on demand.
 
 The following two lines show how to compile code snippets and source files, respectively. For the latter, local disk files or URLs can be specified. In both cases, a compiled script object is returned.
@@ -1119,6 +1105,22 @@ engine$terminate()
 The popularity of JavaScript has overflowed the arena of web development into standalone solutions involving databases, charting, machine learning, and network-enabled utilities, to name just a few. Many of these solutions can be harnessed by R with the help of \pkg{jsr223}. Even browser-based scripts that require a document object model (DOM) can be executed using Java's \code{WebView} browser. Popular JavaScript solutions can be found at \href{https://www.javascripting.com/}{JavaScripting}, an online database of JavaScript solutions. \href{https://github.com/trending/javascript?since=monthly}{Github} also lists trending solutions for JavaScript, as well as other languages.
 
 \href{https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/}{Nashorn} is the JavaScript dialect included in Java 8. Nashorn implements ECMAScript 5.1. No download is required to use JavaScript with \pkg{jsr223}. JavaScript Nashorn provides wide support for Java classes, including the ability to extend classes and implement interfaces. For details, see the \href{https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/}{official Nashorn documentation}.
+
+Data in JavaScript objects be converted to R named lists or data frames, depending on content. The following converts a simple JavaScript object to an R named list.
+
+\begin{verbatim}
+engine %@% 'var person = {fname:"Jim", lname:"Hyatt", title:"Principal"};'
+engine$person
+
+## $`fname`
+## [1] "Jim"
+## 
+## $lname
+## [1] "Hyatt"
+## 
+## $title
+## [1] "Principal"
+\end{verbatim}
 
 \subsection{JavaScript and Java classes}
 

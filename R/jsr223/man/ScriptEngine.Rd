@@ -197,7 +197,7 @@ Returns \code{TRUE} or \code{FALSE} indicating whether the script engine instanc
 }
 
 \item{\code{remove(identifier)}}{
-Removes a variable from the script engine environment. The name of the variable is specified in the length-one character vector \code{identifier}. For example, if \code{engine} is a script engine instance, remove the variabled named \code{myValue} using \code{engine$remove("myValue")}.
+Removes a variable from the script engine environment. The name of the variable is specified in the length-one character vector \code{identifier}. For example, if \code{engine} is a script engine instance, remove the variabled named \code{myValue} using \code{engine$remove("myValue")}. Returns \code{TRUE} if the variable exists and \code{FALSE} otherwise.
 }
 
 \item{\code{set(identifier, value)}}{
