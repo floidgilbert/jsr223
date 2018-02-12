@@ -44,9 +44,9 @@ A \dfn{scripting engine} (usually shortened to \dfn{script engine}) is software 
 
 There are many integrations that combine the strengths of R with other programming languages. These language integrations can generally be classified as either \dfn{R-major} or \dfn{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \pkg{rJava} is an R-major integration that allows Java objects to be used within an R session. The Java/R Interface (\CRANpkg{JRI}), in contrast, is an R-minor integration that enables Java applications to embed R.
 
-The \pkg{jsr223} package provides an R-major integration for the Java platform and the \pkg{jsr223} programming languages. In this software review, we provide context for the \pkg{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \CRANpkg{Rserve} \citep{rserve} and \CRANpkg{OpenCPU} \citep{opencpu} are not included in this discussion because their objectives and features do not necessarily align with those of \pkg{jsr223}.
+The \pkg{jsr223} package provides an R-major integration for the Java platform and the \pkg{jsr223} programming languages. In this software review, we provide context for the \pkg{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \CRANpkg{Rserve} \citep{rserve} and \CRANpkg{OpenCPU} \citep{opencpu} are not included in this discussion because their objectives and features do not necessarily align with those of \pkg{jsr223}. We do, however, include a brief discussion of R language implementations for the JVM.
 
-Before we discuss individual packages, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn multiple integration packages.
+Before we compare \pkg{jsr223} to other R packages, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn multiple integration packages.
 
 \subsection{\pkg{rJava}}
 
@@ -245,6 +245,22 @@ In all, \pkg{jsr223} provides a more complete integration for Jython than \pkg{r
 Currently, \pkg{jsr223} is the only integration for the Ruby and Kotlin languages on CRAN.
 
 There are other programming languages that implement the JSR-223 specification, but are not officially supported by the \pkg{jsr223} project. Technically, \pkg{jsr223} will work with any of these languages. However, we may not officially support a specific implementation for a number of reasons. Our most notable exclusion is \href{https://www.scala-lang.org/}{Scala}). We decline to support the Scala JSR-223 implementation simply because it is not complete. (For a very thorough Scala integration for R, consider the \CRANpkg{rscala} package.) We also exclude languages that are no longer being developed (e.g. \href{http://www.beanshell.org/}{BeanShell}).
+
+\subsection{Renjin and FastR - R language implementations for the JVM}
+
+%///citations
+%Renjin and FastR are 
+%Renjin is R on the JVM. Can use Java objects directly.
+%Presumeably, so can FastR.
+%
+%The main advantage, \pkg{jsr223} makes Java accessible via the reference implementation. All packages available to R. Many R packages are not available to JVM because of native libraries.
+%
+%There are others. See this article.
+%https://4dpiecharts.com/2013/10/13/fearsome-engines-part-3-which-one-should-you-use/
+%https://dynamicecology.wordpress.com/2014/01/14/r-isnt-just-r-anymore/
+%https://github.com/oracle/fastr
+
+///
 
 \section{Package installation}
 
