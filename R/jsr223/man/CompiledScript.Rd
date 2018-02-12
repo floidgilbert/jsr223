@@ -20,7 +20,7 @@ Not applicable. See the Methods section.
 }
 
 \details{
-The complete \pkg{jsr223} documentation can be found in the ///vignette.
+The complete \pkg{jsr223} documentation can be found in the \href{../doc/jsr223.pdf}{vignette}.
 }
 
 \value{

@@ -10,16 +10,13 @@
 \alias{\%~\%.ScriptEngine}
 \alias{\%@\%}
 \alias{\%@\%.ScriptEngine}
-%///see if these aliases work
-%///need to document that all set* functions return previous value.
-%///
 
 \title{
 Create an Instance of a Java-based Scripting Language Engine
 }
 
 \description{
-The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \code{\link{ScriptEngine}} instance is used to execute arbitrary code and pass data back and forth between the script engine environment and R. The script engine environment contains a global object named \code{R} that facilitates callbacks into the R environment. Complete documentation is located in the \pkg{jsr223} vignette///.
+The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \code{\link{ScriptEngine}} instance is used to execute arbitrary code and pass data back and forth between the script engine environment and R. The script engine environment contains a global object named \code{R} that facilitates callbacks into the R environment. Complete documentation is located in the \pkg{jsr223} \href{../doc/jsr223.pdf}{vignette}.
 }
 
 \usage{
@@ -28,7 +25,7 @@ ScriptEngine$new(engine.name, class.path = "")
 
 \arguments{
   \item{engine.name}{
-A character vector of length one that specifies the type of script engine to create. Valid engine names are \samp{js} or \samp{javascript} for JavaScript, \samp{ruby}, \samp{python}, and \samp{groovy}. The engine name is case sensitive.
+A character vector of length one that specifies the type of script engine to create. Valid engine names are \samp{js} or \samp{javascript} for JavaScript, \samp{ruby}, \samp{python}, \samp{groovy}, and \samp{kotlin}. The engine name is case sensitive.
 }
   \item{class.path}{
 A character vector of paths to any JAR files that are required for the scripting engine and any script dependencies. A \var{class.path} value is required for all engines except JavaScript. Scripting engine JAR files can be obtained from the language-specific web sites referenced in the section \strong{Script Engines}. Note that class paths accumulate between script engine instances started in the same R session because they all use the same Java Virtual Machine. This is a limitation of \CRANpkg{rJava}, the package that \pkg{jsr223} builds on.
@@ -36,7 +33,7 @@ A character vector of paths to any JAR files that are required for the scripting
 }
 
 \details{
-The complete \pkg{jsr223} documentation is in the ///vignette. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed easily in the R documentation.
+The complete \pkg{jsr223} documentation is in the \href{../doc/jsr223.pdf}{vignette}. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed easily in the R documentation.
 
 In this document, the section \strong{Script Engine Settings} describes class methods pertaining to configurable options. The section \strong{Methods} lists the rest of the class methods. The section \strong{Callbacks} provides an overview of the functionality allowing code in the script engine to access data and execute code in the R environment. Finally, \strong{Script Engines} includes links to the supported script engine providers.
 
@@ -56,7 +53,7 @@ Returns a length-one character vector containing the current array order scheme.
 }
 
 \item{\code{setArrayOrder(value)}}{
-Sets the current array ordering scheme used for all n-dimensional arrays (such as matrices) converted to and from the script engine. Valid values are \code{'row-major'} (the default), \code{'column-major'}, and \code{'column-minor'}. These indexing schemes are described in the ///vig.
+Sets the current array ordering scheme used for all n-dimensional arrays (such as matrices) converted to and from the script engine. Valid values are \code{'row-major'} (the default), \code{'column-major'}, and \code{'column-minor'}. These indexing schemes are described in the \href{../doc/jsr223.pdf}{vignette}. This method returns the previous setting invisibly.
 }
 
 \item{\code{getCoerceFactors()}}{
@@ -64,7 +61,7 @@ Returns a length-one logical vector indicating whether the \var{coerce factors} 
 }
 
 \item{\code{setCoerceFactors(value)}}{
-Enables or disables the \var{coerce factors} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, an attempt is made to coerce R factors to integer, numeric, or logical vectors before converting them to a Java array. If the attempt fails, or if the setting is disabled, the factor is converted to a Java string array. This setting applies to standalone factors as well as factors in data frames.
+Enables or disables the \var{coerce factors} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, an attempt is made to coerce R factors to integer, numeric, or logical vectors before converting them to a Java array. If the attempt fails, or if the setting is disabled, the factor is converted to a Java string array. This setting applies to standalone factors as well as factors in data frames. This method returns the previous setting invisibly.
 }
 
 \item{\code{getDataFrameRowMajor()}}{
@@ -72,7 +69,7 @@ Returns a length-one logical vector indicating whether the \var{data frame row m
 }
 
 \item{\code{setDataFrameRowMajor(value)}}{
-Enables or disables the \var{data frame row major} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, data frames are converted to Java objects in row-major fashion. When disabled, column-major ordering is used. See the vignette for details///.
+Enables or disables the \var{data frame row major} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, data frames are converted to Java objects in row-major fashion. When disabled, column-major ordering is used. See the \href{../doc/jsr223.pdf}{vignette} for details. This method returns the previous setting invisibly.
 }
 
 \item{\code{getInterpolate()}}{
@@ -80,7 +77,7 @@ Returns a length-one logical vector indicating whether the \var{string interpola
 }
 
 \item{\code{setInterpolate(value)}}{
-Enables or disables the \var{string interpolation} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, R code placed between \code{@\{} and \code{\}} in a script is evaluated and replaced by the a string representation of the return value. A script may contain multiple \code{@\{...\}} expressions.
+Enables or disables the \var{string interpolation} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, R code placed between \code{@\{} and \code{\}} in a script is evaluated and replaced by the a string representation of the return value. A script may contain multiple \code{@\{...\}} expressions. This method returns the previous setting invisibly.
 }
 
 \item{\code{getLengthOneVectorAsArray()}}{
@@ -88,7 +85,7 @@ Returns a length-one logical vector indicating whether the \var{length one vecto
 }
 
 \item{\code{setLengthOneVectorAsArray(value)}}{
-Enables or disables the \var{length one vector as array} setting. Valid values are \code{TRUE} and \code{FALSE} (the default). When disabled, length-one R vectors and factors are converted to Java scalars. When enabled, length-one R vectors and factors are converted to Java arrays. This latter effect can also be produced by wrapping the vector in the \dQuote{as-is} function before passing it to the script engine (e.g. \code{engine$myValue <- I(variable)}).
+Enables or disables the \var{length one vector as array} setting. Valid values are \code{TRUE} and \code{FALSE} (the default). When disabled, length-one R vectors and factors are converted to Java scalars. When enabled, length-one R vectors and factors are converted to Java arrays. This latter effect can also be produced by wrapping the vector in the \dQuote{as-is} function before passing it to the script engine (e.g. \code{engine$myValue <- I(variable)}). This method returns the previous setting invisibly.
 }
 
 \item{\code{getStandardOutputMode()}}{
@@ -96,7 +93,7 @@ Returns a length-one character vector containing the current standard output mod
 }
 
 \item{\code{setStandardOutputMode(value)}}{
-Controls how text written to standard output is handled. The default value, \code{'console'}, indicates that standard output will be printed in the R console. This output cannot be captured using standard R methods. The \code{'buffer'} setting indicates that standard output will be saved in an internal buffer. This buffered output can be retrieved and cleared using the \code{getStandardOutput} method, or cleared using the \code{clearStandardOutput} method. Finally, the \code{'quiet'} setting indicates that standard output will be discarded.
+Controls how text written to standard output is handled. The default value, \code{'console'}, indicates that standard output will be printed in the R console. This output cannot be captured using standard R methods. The \code{'buffer'} setting indicates that standard output will be saved in an internal buffer. This buffered output can be retrieved and cleared using the \code{getStandardOutput} method, or cleared using the \code{clearStandardOutput} method. Finally, the \code{'quiet'} setting indicates that standard output will be discarded. This method returns the previous setting invisibly.
 }
 
 \item{\code{getStringsAsFactors()}}{
@@ -104,7 +101,7 @@ Returns a length-one logical vector, or \code{NULL}, indicating whether the \var
 }
 
 \item{\code{setStringsAsFactors(value)}}{
-When converting a Java object to a data frame, the \var{strings as factors} setting controls whether character vectors are converted to factors. The default value of \code{NULL} indicates that the R system setting \code{stringsAsFactors} should be used (see \code{getOption("stringsAsFactors")}). A value of \code{TRUE} ensures that character vectors are converted to factors. A setting of \code{FALSE} disables conversion to factors.
+When converting a Java object to a data frame, the \var{strings as factors} setting controls whether character vectors are converted to factors. The default value of \code{NULL} indicates that the R system setting \code{stringsAsFactors} should be used (see \code{getOption("stringsAsFactors")}). A value of \code{TRUE} ensures that character vectors are converted to factors. A setting of \code{FALSE} disables conversion to factors. This method returns the previous setting invisibly.
 }
 
 }
@@ -149,7 +146,7 @@ Starts a simple REPL in the current script language. The REPL is useful for quic
 }
 
 \item{\code{eval(script, discard.return.value = FALSE, bindings = NULL)}}{
-Evaluates code contained in the \code{script} character vector. If \code{discard.return.value = FALSE}, the method returns the result of the last expression in the script, if any, or \code{NULL} otherwise. The \code{bindings} argument accepts an R named list. The name/value pairs in the list replace the script engine's global bindings during script execution.///examples here or refer to vig?
+Evaluates code contained in the \code{script} character vector. If \code{discard.return.value = FALSE}, the method returns the result of the last expression in the script, if any, or \code{NULL} otherwise. The \code{bindings} argument accepts an R named list. The name/value pairs in the list replace the script engine's global bindings during script execution.
 }
 
 \item{\code{finalize()}}{
@@ -189,7 +186,7 @@ Invoke a function in the script engine environment. The argument \code{function.
 }
 
 \item{\code{invokeMethod(object.name, method.name, ...)}}{
-Invoke a method of an object in the script engine environment. The arguments \code{object.name} and \code{method.name} are character vectors containing the names of the object and method, respectively. The \code{...} indicates any number of arguments to be passed to the method. The return value is the result of the method converted to an R object. The Groovy and Python engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript and Ruby engines only support calling methods of native scripting objects.
+Invoke a method of an object in the script engine environment. The arguments \code{object.name} and \code{method.name} are character vectors containing the names of the object and method, respectively. The \code{...} indicates any number of arguments to be passed to the method. The return value is the result of the method converted to an R object. The Groovy, Python, and Kotlin engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript and Ruby engines only support calling methods of native scripting objects.
 }
 
 \item{\code{isInitialized()}}{
@@ -205,7 +202,7 @@ Assigns \code{value} to a global variable in the script engine environment. The 
 }
 
 \item{\code{source(file.name, discard.return.value = FALSE, bindings = NULL)}}{
-Evaluates code contained in the file specified by the length-one character vector \code{file.name}. Local file paths or URLs are accepted. If \code{discard.return.value = FALSE}, the method returns the result of the last expression in the script, if any, or \code{NULL} otherwise. The \code{bindings} argument accepts an R named list. The name/value pairs in the list replace the script engine's global bindings during script execution.///examples here or refer to vig?
+Evaluates code contained in the file specified by the length-one character vector \code{file.name}. Local file paths or URLs are accepted. If \code{discard.return.value = FALSE}, the method returns the result of the last expression in the script, if any, or \code{NULL} otherwise. The \code{bindings} argument accepts an R named list. The name/value pairs in the list replace the script engine's global bindings during script execution.
 }
 
 \item{\code{terminate()}}{
@@ -234,7 +231,7 @@ Finally, to evaluate R code, use
 }
 
 \section{Script Engines}{
-The \pkg{jsr223} package supports the following Java-based languages. Follow a link below to visit the language's supporting web site and to download script engine JAR files. Detailed instructions can be found ///vig.
+The \pkg{jsr223} package supports the following Java-based languages. Follow a link below to visit the language's supporting web site and to download script engine JAR files. Detailed instructions are found in the \href{../doc/jsr223.pdf}{vignette}.
 
 \href{http://groovy-lang.org}{Groovy} -- A Java-like language enhanced with modern dynamic programming features.
 
@@ -243,6 +240,8 @@ The \pkg{jsr223} package supports the following Java-based languages. Follow a l
 \href{http://jruby.org}{JRuby} -- A Java-based implementation of the Ruby programming language.
 
 \href{http://jython.org}{Jython} -- A Java-based implementation of the Python programming language.
+
+\href{http://kotlinlang.org}{Kotlin} -- A statically typed programming language that supports both functional and object-oriented programming paradigms.
 }
 
 \seealso{
