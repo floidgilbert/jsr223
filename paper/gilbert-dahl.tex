@@ -222,13 +222,13 @@ The \pkg{reticulate} package is a very thorough Python integration for R. It inc
 The \pkg{rJython} package is similar to \pkg{jsr223} in that it employs Jython. Both \pkg{jsr223} and \pkg{rJython} can execute arbitrary Python code, call Python functions and methods directly from R, use Java objects, and copy data between environments. However, there are several important differences between the packages. They are detailed in the list below.
 
 \begin{itemize}
-\item Data exchange for \pkg{rJython} can be handled via JSON or direct calls to the Jython interpreter object via \pkg{rJava}.
+\item Data exchange for \pkg{rJython} can be handled via JSON or direct calls to the Jython interpreter object via \pkg{rJava}. \pkg{jsr223} uses a single, unified approach to data conversion via custom data conversion routines.
 
-\item When using \pkg{rJava}, \pkg{rJython} data exchange is essentially limited to vectors and matrices.
+\item When using \pkg{rJava}, \pkg{rJython} data exchange is essentially limited to vectors and matrices. \pkg{jsr223} includes data exchange capabilities for all major R data structures.
 
-\item When using JSON, \pkg{rJython} converts R objects to generic Python structures. \pkg{jsr223} converts R objects to generic Java structures. 
+\item When using JSON, \pkg{rJython} converts R objects to generic Python structures. \pkg{jsr223} converts R objects to generic Java structures.
 
-\item \pkg{rJython}'s JSON features are provided by the \CRANpkg{rjson} package on the R side. As we describe in \hyperlink{javascriptintegrations}{JavaScript integrations}, JSON implementations incur overhead and loss of numeric precision. Furthermore, \pkg{rjson} does not handle some R structures very well. For example, n-dimensional arrays and unnamed lists are both converted to one-dimensional JSON arrays. Lastly, \pkg{rJython} converts data frames to Python dictionaries, but dictionaries are always returned to R as named lists.
+\item \pkg{rJython}'s JSON features are provided by the \CRANpkg{rjson} package on the R side. As we describe in \hyperlink{javascriptintegrations}{JavaScript integrations}, JSON implementations incur overhead and loss of numeric precision. Furthermore, \pkg{rjson} does not handle some R structures very well. For example, n-dimensional arrays and unnamed lists are both converted to one-dimensional JSON arrays. Lastly, \pkg{rJython} converts data frames to Python dictionaries, but Python dictionaries are always returned to R as named lists. \pkg{jsr223} exhibits none of these limitations.
 
 \item \pkg{rJython} does not provide configurable data exchange options. \pkg{jsr223} provides several options for converting factors, data frames, and n-dimensional arrays.
 
@@ -505,7 +505,7 @@ Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by \CRANp
 
 The \pkg{jdx} package (and hence \pkg{jsr223}) supports converting R vectors, factors, n-dimensional arrays, data frames, named lists, unnamed lists, nested lists (i.e., lists containing lists), and environments to generic Java objects. Row-major and column-major ordering options are available for arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported.
 
-Java scalars, n-dimensional arrays, collections, and maps can be converted to standard objects in the R environment. These structures cover all of the primary data types in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform. This includes many scripting language-specific structures such as Python tuples and JavaScript objects.
+Java scalars, n-dimensional arrays, collections, and maps can be converted to standard objects in the R environment. These structures cover all of the primary data types in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform. This includes most scripting language-specific structures such as Python dictionaries and native JavaScript objects.
 
 All \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}. The most pertinent details are discussed in the following sections. For a more thorough discussion, see the vignette included with the \pkg{jdx} package.
 
