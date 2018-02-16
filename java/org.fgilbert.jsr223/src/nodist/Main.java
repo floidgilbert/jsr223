@@ -6,83 +6,34 @@ package nodist;
 //import java.util.ArrayList;
 //import java.util.List;
 //import org.fgilbert.jdx.*;
-//import org.fgilbert.jsr223.Controller;
+import org.fgilbert.jsr223.Controller;
 import javax.script.*;
 
 class Main {
 
-	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, ScriptException {
-		Class<?> cls = Class.forName("org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory");
-		ScriptEngineFactory factory = (ScriptEngineFactory) cls.newInstance();
-		ScriptEngine engine = factory.getScriptEngine();
-		Invocable iengine = (Invocable) engine;
-
-		// This block fails to invoke the method `f` on `a`.
+	public static void main(String[] args) {
+		Controller controller = null;
 		try {
-			engine.eval("class A {fun f(): Int {return 8}}");
-			engine.eval("fun ff(): Int {return 18}");
-			engine.eval("val a = A()");
-			System.out.println(engine.eval("a.f()"));
-			engine.eval("jsr223Bindings[\"a\"] = a");
-			System.out.println(iengine.invokeMethod("a", "f"));
-			System.out.println(iengine.invokeFunction("ff"));
-		} catch (Throwable t) {
-			
+			controller = new Controller("jruby");
+			controller.putEvaluationRequest("puts 'a'", true);
+			controller.setStandardOutputMode(Controller.StandardOutputMode.BUFFER);
+			controller.putEvaluationRequest("puts 'b'", true);
+			controller.waitForEvaluation();
+			System.out.println(controller.getStandardOutput());
+			controller.setStandardOutputMode(Controller.StandardOutputMode.CONSOLE);
+			controller.putEvaluationRequest("puts 'b'", true);
+			controller.waitForEvaluation();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (controller != null)
+				try {
+					controller.terminate();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 		}
-		
-		// This block succeeds.
-		try {
-			engine.eval("jsr223Bindings[\"a\"] = a");
-			System.out.println(iengine.invokeMethod("a", "f"));
-		} catch (Throwable t) {
-			
-		}
-		
 	}
-	
-	
-//	public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, ScriptException {
-//		Class<?> cls = Class.forName("org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory");
-//		ScriptEngineFactory factory = (ScriptEngineFactory) cls.newInstance();
-//		ScriptEngine engine = factory.getScriptEngine();
-//		engine.put("a", 1);
-//
-//		// This block fails to update `a`
-//		try {
-//			System.out.println(engine.eval("bindings::class.qualifiedName"));
-//			engine.eval("bindings[\"a\"] = 100"); // This line fails
-//		} catch (Throwable t) {
-//			
-//		}
-//		System.out.println(engine.get("a")); // Prints 1
-//		
-//		// This block works
-//		try {
-//			engine.eval("val b = bindings as javax.script.SimpleBindings");
-//			engine.eval("b[\"a\"] = 100");
-//		} catch (Throwable t) {
-//			
-//		}
-//		System.out.println(engine.get("a")); // Prints 100
-//		
-//	}
-	
-	
-//	public static void main(String[] args) {
-//		Controller controller = null;
-//		try {
-//			controller = new Controller("kotlin");
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		} finally {
-//			if (controller != null)
-//				try {
-//					controller.terminate();
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//		}
-//	}
 	
 //	public static void mainXSF(String[] args) {
 //		Integer[][][][][] array = {{{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}, {{{{null, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, 2}}}, {{{0, 1, 2}, {null, 1, 2}}, {{0, 1, 2}, {0, 1, null}}}}};

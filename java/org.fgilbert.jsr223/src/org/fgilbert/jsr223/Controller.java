@@ -36,7 +36,6 @@ public class Controller {
 	private final int STANDARD_OUTPUT_BUFFER_SIZE_MAX = 4096000;  // If buffer exceeds this size, shrink to this size.
 
 	private JavaToR.ArrayOrder arrayOrder = ArrayOrder.ROW_MAJOR;
-	private Writer defaultContextWriter;
 	private ScriptEngine engine;
 	private String[][] engineInformation;
 	private EvaluationThread evaluationThread;
@@ -532,20 +531,14 @@ public class Controller {
 		standardOutputMode = value;
 		switch (value) {
 		case CONSOLE:
-			if (defaultContextWriter != null) {
-				engine.getContext().setWriter(defaultContextWriter);
-				defaultContextWriter = null;
-			}
+			engine.getContext().setWriter(new SimpleScriptContext().getWriter());
 			break;
 		case QUIET:
-			if (defaultContextWriter == null)
-				defaultContextWriter = engine.getContext().getWriter();
 			engine.getContext().setWriter(new SilentWriter());
 			break;
 		case BUFFER:
-			if (defaultContextWriter == null)
-				defaultContextWriter = engine.getContext().getWriter();
-			if (!StringWriter.class.equals((engine.getContext().getWriter().getClass())))
+			Writer writer = engine.getContext().getWriter();
+			if (writer == null || !StringWriter.class.equals((writer.getClass())))
 				engine.getContext().setWriter(new StringWriter(STANDARD_OUTPUT_BUFFER_SIZE_DEFAULT));
 			break;
 		}
@@ -558,7 +551,6 @@ public class Controller {
 		if (!initialized)
 			return;
 		evaluationThread.putQueueItem(new Message(MessageType.REQUEST, Subject.RQ_QUIT, null));
-		defaultContextWriter = null;
 		engine = null;
 		evaluationThread = null;
 		manager = null;
