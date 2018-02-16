@@ -179,10 +179,10 @@ engine$setStandardOutputMode("console")
 engine %@% 'println("You should see this message (1).")'
 
 engine$setStandardOutputMode("quiet")
-engine %@% "println('You should not see this message (1).');"
+engine %@% 'println("You should not see this message (1).")'
 
 engine$setStandardOutputMode("buffer")
-engine %@% "println('You should not see this message (2).');"
+engine %@% 'println("You should not see this message (2).")'
 assertIdentical("You should not see this message (2).", removeCarriageReturns(engine$getStandardOutput()))
 engine %@% "println('You should not see this message (3).');"
 engine$clearStandardOutput()

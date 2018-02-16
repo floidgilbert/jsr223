@@ -52,5 +52,3 @@ engine %~% 'R.set("c", 4)'
 # Terminate the script engine.
 engine$terminate()
 
-engine %@% 'jsr223Bindings["myValue"] = 3.1'
-engine %~% 'jsr223Bindings["myValue"]'
