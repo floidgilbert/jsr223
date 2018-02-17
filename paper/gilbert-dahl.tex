@@ -16,17 +16,71 @@ The R package \CRANpkg{jsr223} is a high-level integration for the Java platform
 
 \hypertarget{introduction}{\section{Introduction}}
 
-%About the same time Ross Ihaka and Robert Gentleman began developing R at the University of Auckland in the early 1990s, James Gosling and the so-called Green project team was working on a new programming language at Sun Microsystems in California. The Green team didn't set out to make a new language; rather, they were trying to move platform-independent, distributed computing into the consumer electronics marketplace. As Gosling explained, ``All along, the language was a tool, not the end.'' The Green project was short-lived. However, the resulting programming language, Java, flourished into one of the most popular development platforms in computing history. %Today, the Java computing environment is deployed in environments ranging from enterprise servers to mobile phones.
+About the same time Ross Ihaka and Robert Gentleman began developing R at the University of Auckland in the early 1990s, James Gosling and the so-called Green Project Team was working on a new programming language at Sun Microsystems in California. The Green Team didn't set out to make a new language; rather, they were trying to move platform-independent, distributed computing into the consumer electronics marketplace. As Gosling explained, ``All along, the language was a tool, not the end'' \citep{javainsidestory}. Unexpectedly, the programming language outlived the Green Project and flourished into one of the most popular development platforms in computing history. That platform, Java, now powers applications ranging from the enterprise (\href{https://www.google.com/gmail/about/}{GMail}), to games (\href{https://minecraft.net}{Minecraft}), to interactive media (\href{https://en.wikipedia.org/wiki/Blu-ray}{Blu-ray}), to mobile devices (\href{https://www.android.com/}{Android}).
 
-About the same time Ross Ihaka and Robert Gentleman began developing R at the University of Auckland in the early 1990s, James Gosling and the so-called Green project team was working on a new programming language at Sun Microsystems in California. The Green team didn't set out to make a new language; rather, they were trying to move platform-independent, distributed computing into the consumer electronics marketplace. As Gosling explained, ``All along, the language was a tool, not the end'' \citep{javainsidestory}. Unexpectedly, the programming language outlived the Green project and flourished into one of the most popular development platforms in computing history. That platform, Java, now powers applications ranging from the enterprise (\href{https://www.google.com/gmail/about/}{GMail}), to games (\href{https://minecraft.net}{Minecraft}), to interactive media (\href{https://en.wikipedia.org/wiki/Blu-ray}{Blu-ray}), to mobile devices (\href{https://www.android.com/}{Android}).
+In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that it gives the user granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding dynamic source code directly within R script.
 
-In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that the user has granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding dynamic source code directly within R script.
+Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. Our primary goal is to make Java libraries easier to use from R. We achieve this goal by (i) providing a simple interface to several programming languages that can use Java objects in natural syntax, and (ii) significantly extending data exchange capabilities between R and the Java platform. To illustrate this approach, we consider an introductory example. Several technical details are intentionally omitted to facilitate ///.
 
-Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. ///In short, use Java libraries easier, exchange data easier. Also some scripting languages. Give an example.///We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \CRANpkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) ///Mention libraries more clearly. All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
+First, we create a \pkg{jsr223} \code{ScriptEngine} object. This object dynamically executes code that accesses Java objects. In this example, we create a script engine that executes Groovy language code. Groovy is a scripting language whose syntax is very similar to the Java programming language. Hence, it is a natural choice for Java integration. The variable \code{class.path} is a character vector containing paths to the Java libraries required for this demonstration.
+
+\begin{verbatim}
+library("jsr223")
+engine <- ScriptEngine$new("groovy", class.path)
+\end{verbatim}
+Next, we use the script engine to execute a Groovy code snippet that defines a function that returns a Java HashMap object. Notice that the syntax is very similar to Java. One obvious difference is that we can define a .
+
+\begin{verbatim}
+engine %@% '
+  import edu.stanford.nlp.simple.*;
+
+  def getPartsOfSpeech(String sentence) {
+    s = new Sentence(sentence);
+    m = new HashMap<String, Object>();
+    m.put("parts.of.speech", s.posTags());
+    m.put("words", s.words());
+    return m;
+  }
+'
+\end{verbatim}
+Finally, we call the function from R, specifying a ///.
+
+\begin{verbatim}
+engine$invokeFunction(
+  "getPartsOfSpeech",
+  "The jsr223 package makes Java objects easy to use!"
+)
+
+##    parts.of.speech   words
+## 1               DT     The
+## 2               NN  jsr223
+## 3               NN package
+## 4              VBZ   makes
+## 5              NNP    Java
+## 6              NNS objects
+## 7               JJ    easy
+## 8               TO      to
+## 9               VB     use
+## 10               .       !
+\end{verbatim}
+
+Our task is to ./// This shows that we don't need to compile Java wrapper classes to implement sophisticated functionality///. This leads to faster development or prototyping.
+
+
+To date, the \pkg{jsr223} package officially supports five Java-compatible languages ////:. While our primary goal is to simplify access to Java objects, we also get the benefit of ///solutions in all of these other languages. The \pkg{jsr223} package has these features.
+
+///list the other features uncommon in these types of integration - callbacks without additional dependencies or configurations.
+
+by providing a unified integration interface to several programming languages that target the Java platform.
+
+
+from for effective Java integrations for R by making Java libraries more easily accessible and simplifying data exchange.
+
+///In short, use Java libraries easier, exchange data easier. Also some scripting languages. Give an example.///We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \CRANpkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) ///Mention libraries more clearly. All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
 
 There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223} languages can be used to quickly embed Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223} languages. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the \pkg{jsr223}-supported languages.
 
-\subsection{Document organization}
+\section{Document organization}
 
 We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223} languages. All code examples related to this document are available at \href{https://github.com/floidgilbert/jsr223/tree/master/examples}{GitHub}.
 ///Do a sly TOC here with links to the stuff people want to read.
@@ -822,7 +876,7 @@ The jdx package converts R raw values to Java byte values and vice versa. R raw 
 
 Functions and methods defined in script can be called directly from R via the \code{invokeFunction} and \code{invokeMethod} script engine methods. Any number of supported R structures can be passed as parameter values.
 
-\strong{Note:} The Groovy, Python, and Kotlin engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript and Ruby engines only support calling methods of native scripting objects.
+\strong{Note:} The Groovy, Python, and Kotlin engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript and Ruby engines only support calling methods of native scripting objects. For the latter two engines, we recommend wrapping Java objects in native functions or methods to facilitate their use from R.
 
 As described in \hyperlink{handlingrvectors}{Handling R vectors}, length-one vectors are converted to Java scalars by default. One way to ensure that a vector is always converted to a Java array is by wrapping it in the ``as-is'' function \code{I()}. This feature is particularly useful when passing multiple parameters to a script function. In the same function, some parameters may require scalars while others require arrays. Simply use \code{I()} to indicate which vectors should be converted to arrays.
 
