@@ -1,3 +1,4 @@
+\docType{class}
 \name{CompiledScript}
 \alias{CompiledScript}
 
@@ -6,25 +7,21 @@ CompiledScript Class
 }
 
 \description{
-The \code{\link{CompiledScript}} class represents script compiled by a script engine. This class does not have a public constructor. Create an instance of this class with the \code{\link{ScriptEngine}} methods \code{compile} and \code{compileSource}.
+The \code{\link{CompiledScript}} class represents script compiled by a script engine.
 }
 
 \usage{
-# CompiledScript does not have a public constructor.
-# Create an instance of this class with the
-# ScriptEngine methods compile and compileSource.
-}
-
-\arguments{
-Not applicable. See the Methods section.
+CompiledScript
 }
 
 \details{
+CompiledScript does not have a public constructor. Create an instance of this class with the \code{\link{ScriptEngine}} methods \code{compile} and \code{compileSource}.
+
 The complete \pkg{jsr223} documentation can be found in the \href{../doc/jsr223.pdf}{vignette}.
 }
 
 \value{
-An \CRANpkg{R6} class named \code{CompiledScript}.
+Object of \code{\link{R6Class}} that represents a compiled script.
 }
 
 \section{Methods}{

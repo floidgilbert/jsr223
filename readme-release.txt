@@ -8,7 +8,7 @@ This document contains build and release instructions for jsr223. Instructions a
 
 - Close all sessions using the package.
 
-- Uninstall jsr223: `detach("package:jsr223", unload=TRUE); remove.packages("jsr223")`
+- Uninstall jsr223: detach("package:jsr223", unload=TRUE); remove.packages("jsr223")
   Sometimes the JAR files fail to update during build in RStudio.
 
 - In Java project...
@@ -28,14 +28,14 @@ This document contains build and release instructions for jsr223. Instructions a
 
 --- Change version numbers and dependencies in DESCRIPTION file.
 
---- Build and test R project.
+--- Build and test R project on all supported platforms.
     Run standard tests with `devtools::test()`.
-    Run the non-distributed tests in the tests folder above the R project folder. Be sure to read any testing instructions carefully.
+    Run the non-distributed tests in the tests folder above the R project folder (if any). Be sure to read testing instructions in each file carefully.
     Run `devtools::check()`.
 
 --- Build R project source package.
 
---- Move source package into an empty directory and check it using `R CMD check --as-cran`
+--- Move source package into an empty directory and check it using `R CMD check --as-cran jsr223_xxx.tar.gz`
 
 - Update release notes/news (R/jdx/NEWS).
 

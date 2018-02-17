@@ -22,13 +22,14 @@ About the same time Ross Ihaka and Robert Gentleman began developing R at the Un
 
 In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that the user has granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding dynamic source code directly within R script.
 
-Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \CRANpkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
+Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. ///In short, use Java libraries easier, exchange data easier. Also some scripting languages. Give an example.///We use the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec} to provide a unified integration interface to several programming languages. To date, \CRANpkg{jsr223} supports five languages: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) ///Mention libraries more clearly. All of these languages can create and use Java objects. Hence, \pkg{jsr223} enables developers to easily embed other languages in R that can, in turn, use Java classes in natural syntax. As we will show, this approach is easier to use than \pkg{rJava}'s low-level JNI interface. In addition to multi-language support for the Java platform, \pkg{jsr223} provides an intuitive callback API to access R from any of the supported languages. Finally, the \pkg{jsr223} package simplifies and extends data exchange between R and Java. In all, \pkg{jsr223} lowers the barrier to the performance benefits and cross-platform capabilities of the Java platform.
 
 There are three primary use cases for \pkg{jsr223}. Most importantly, any of the \pkg{jsr223} languages can be used to quickly embed Java solutions in R. Second, \pkg{jsr223} provides access to solutions developed in any of the \pkg{jsr223} languages. Lastly, the callback interface included with \pkg{jsr223} can be used to embed R within any of the \pkg{jsr223}-supported languages.
 
 \subsection{Document organization}
 
 We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223} languages. All code examples related to this document are available at \href{https://github.com/floidgilbert/jsr223/tree/master/examples}{GitHub}.
+///Do a sly TOC here with links to the stuff people want to read.
 
 \section{Helpful terminology and concepts}
 
@@ -48,7 +49,7 @@ The \pkg{jsr223} package provides an R-major integration for the Java platform a
 
 Before we compare \pkg{jsr223} to other R packages, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn multiple integration packages.
 
-\subsection{\pkg{rJava}}
+\subsection{\pkg{rJava} software review}
 
 As noted in the introduction, \pkg{rJava} is the preeminent Java integration for R. It provides a low-level interface to compiled Java classes via the JNI. The \pkg{jsr223} package uses \pkg{rJava} together with the Java Scripting API to create a simple, multi-language integration for R and the Java platform.
 
@@ -131,7 +132,7 @@ The \pkg{rJava} package does not directly support callbacks into R. Instead, cal
 
 In conclusion, \pkg{jsr223} provides an alternative integration for the Java platform that is easy to learn and use.
 
-\subsection{Groovy integrations}
+\subsection{Groovy integrations software review}
 
 The only other Groovy language integration on CRAN is \CRANpkg{rGroovy}. It is a simple integration that uses \pkg{rJava} to instantiate \code{groovy.lang.GroovyShell} and pass code snippets to its \code{evaluate} method. We outline the typical integration approach using \pkg{rGroovy}.
 
@@ -184,7 +185,7 @@ In comparison to \pkg{rGroovy}, the \pkg{jsr223} implementation is more concise 
 
 In summary, \pkg{rGroovy} exposes a simple interface for executing Groovy code and returning a result. Data exchange is primarily handled through \pkg{rJava}, and therefore requires knowledge of \pkg{rJava} and JNI. The \pkg{jsr223} integration is more comprehensive and does not require any knowledge of \pkg{rJava}.
 
-\hypertarget{javascriptintegrations}{\subsection{JavaScript integrations}}
+\hypertarget{javascriptintegrations}{\subsection{JavaScript integrations software review}}
 
 The most prominent JavaScript integration for R is Jeroen Ooms' \CRANpkg{V8} package. It uses the open source \href{https://developers.google.com/v8/}{V8 JavaScript engine} featured in Google's \href{https://www.google.com/chrome/browser/features.html}{Chrome} browser. We discuss the three primary differences between \pkg{V8} and \pkg{jsr223}.
 
@@ -211,7 +212,7 @@ identical(engine$pi, pi)
 
 The third significant difference between \pkg{V8} and \pkg{jsr223} is code validation. \pkg{V8} includes an interface to validate JavaScript code without executing it. The Java Scripting API does not provide an interface for code validation, hence, \pkg{jsr223} does not provide this feature either. We have investigated other avenues to validate code, but none have been reliable across all of the supported languages. Moreover, this feature is generally not critical for most applications requiring integration. Rather, this feature is most useful for interactive code editors.
 
-\subsection{Python integrations}
+\subsection{Python integrations software review}
 
 %///cite packages
 In this section, we compare \pkg{jsr223} with two Python integrations for R: \CRANpkg{reticulate} and \CRANpkg{rJython}. Of the many Python integrations available for R on CRAN, \pkg{reticulate} is the most popular as measured by monthly downloads.\footnote{The \pkg{reticulate} package has 3,681 downloads per month according to \href{http://rdocumentation.org}{http://rdocumentation.org.} The next most popular Python integration is \CRANpkg{PythonInR} with 322 monthly downloads.} We also discuss \pkg{rJython} because, like \pkg{jsr223}, it targets Python on the JVM.
@@ -240,13 +241,13 @@ The \pkg{rJython} package is similar to \pkg{jsr223} in that it employs Jython. 
 \end{itemize}
 In all, \pkg{jsr223} provides a more complete integration for Jython than \pkg{rJython}.
 
-\subsection{Other integrations}
+\subsection{Software review for miscellaneous integrations}
 
 Currently, \pkg{jsr223} is the only integration for the Ruby and Kotlin languages on CRAN.
 
 There are other programming languages that implement the JSR-223 specification, but are not officially supported by the \pkg{jsr223} project. Technically, \pkg{jsr223} will work with any of these languages. However, we may not officially support a specific implementation for a number of reasons. Our most notable exclusion is \href{https://www.scala-lang.org/}{Scala}. We decline to support the Scala JSR-223 implementation simply because it is not complete. (For a very thorough Scala integration for R, consider the \CRANpkg{rscala} package.) We also exclude languages that are no longer being developed (e.g. \href{http://www.beanshell.org/}{BeanShell}).
 
-\subsection{Renjin and FastR - R language implementations for the JVM}
+\subsection{Renjin and FastR software review}
 
 %///citations
 %Renjin and FastR are 
@@ -279,7 +280,7 @@ The JRE can be obtained from  \href{http://www.oracle.com/technetwork/java/javas
 \begin{verbatim}
 install.packages("jsr223")
 \end{verbatim}
-This command will also download and install the \pkg{rJava} dependency necessary. However, the \pkg{rJava} installation will fail if R is not yet configured to use Java. To configure R for Java in Linux or OSX, execute \samp{sudo R CMD javareconf} in a terminal. For Windows, open a command prompt “As Administrator” and execute \samp{R CMD javareconf}. If the Java reconfiguration command generates errors, address the errors and execute the command again. One common error can be resolved by determining whether the GNU Compiler Collection (GCC) is accessible. To check for GCC, execute `gcc --help` from a terminal. This command will fail if GCC is not installed or if the license agreement has not been accepted.
+This command will also download and install the \pkg{rJava} dependency necessary. However, the \pkg{rJava} installation will fail if R is not yet configured to use Java on Unix, Linux, or OSX. To configure R for Java, execute \samp{sudo R CMD javareconf} in a terminal. This command is not required for Windows systems. If the Java reconfiguration command generates errors, address the errors and execute the command again. One common error can be resolved by determining whether the GNU Compiler Collection (GCC) is accessible. To check for GCC, execute `gcc --help` from a terminal. This command will fail if GCC is not installed or if the license agreement has not been accepted.
 
 \hypertarget{scriptengineinstallation}{\section{Script engine installation and instantiation}}
 

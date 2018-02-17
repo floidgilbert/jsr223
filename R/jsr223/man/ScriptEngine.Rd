@@ -1,3 +1,4 @@
+\docType{class}
 \name{ScriptEngine}
 \alias{ScriptEngine}
 \alias{$<-.ScriptEngine}
@@ -12,7 +13,7 @@
 \alias{\%@\%.ScriptEngine}
 
 \title{
-Create an Instance of a Java-based Scripting Language Engine
+ScriptEngine Class
 }
 
 \description{
@@ -20,16 +21,7 @@ The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \c
 }
 
 \usage{
-ScriptEngine$new(engine.name, class.path = "")
-}
-
-\arguments{
-  \item{engine.name}{
-A character vector of length one that specifies the type of script engine to create. Valid engine names are \samp{js} or \samp{javascript} for JavaScript, \samp{ruby}, \samp{python}, \samp{groovy}, and \samp{kotlin}. The engine name is case sensitive.
-}
-  \item{class.path}{
-A character vector of paths to any JAR files that are required for the scripting engine and any script dependencies. A \var{class.path} value is required for all engines except JavaScript. Scripting engine JAR files can be obtained from the language-specific web sites referenced in the section \strong{Script Engines}. Note that class paths accumulate between script engine instances started in the same R session because they all use the same Java Virtual Machine. This is a limitation of \CRANpkg{rJava}, the package that \pkg{jsr223} builds on.
-}
+ScriptEngine
 }
 
 \details{
@@ -41,7 +33,18 @@ The bridge between R and the script engine is not thread-safe; multiple R thread
 }
 
 \value{
-An \CRANpkg{R6} class named \code{ScriptEngine} that represents an instance of a Java-based script engine.
+Object of \code{\link{R6Class}} that represents an instance of a Java-based script engine.
+}
+
+\section{Constructor Method}{
+\describe{
+\item{\code{new(engine.name, class.path = "")}}{Creates a script engine object.
+
+\code{engine.name} is a character vector of length one that specifies the type of script engine to create. Valid engine names are \samp{js} or \samp{javascript} for JavaScript, \samp{ruby}, \samp{python}, \samp{groovy}, and \samp{kotlin}. The engine name is case sensitive.
+
+\code{class.path} is a character vector of paths to any JAR files that are required for the scripting engine and any script dependencies. A \var{class.path} value is required for all engines except JavaScript. Scripting engine JAR files can be obtained from the language-specific web sites referenced in the section \strong{Script Engines}. Note that class paths accumulate between script engine instances started in the same R session because they all use the same Java Virtual Machine. This is a limitation of \CRANpkg{rJava}, the package that \pkg{jsr223} builds on.
+}
+}
 }
 
 \section{Script Engine Settings}{
