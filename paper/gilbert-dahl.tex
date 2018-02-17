@@ -20,7 +20,7 @@ About the same time Ross Ihaka and Robert Gentleman began developing R at the Un
 
 In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that it gives the user granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding dynamic source code directly within R script.
 
-Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. Our primary goal is to make Java libraries easier to use from R. We achieve this goal by (i) providing a simple interface to several programming languages that can use Java objects in natural syntax, and (ii) significantly extending data exchange capabilities between R and the Java platform. To illustrate this approach, we consider an introductory example. Several technical details are intentionally omitted to facilitate ///.
+Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level, extended interface to the Java platform. Our primary goal is to make Java libraries easier to use from within R. We achieve this goal by (i) providing a simple interface to several programming languages that can use Java objects in natural syntax, and (ii) significantly extending data exchange capabilities between R and the Java platform. To illustrate this approach, we consider an introductory example. Some technical details are intentionally omitted at this stage.
 
 First, we create a \pkg{jsr223} \code{ScriptEngine} object. This object dynamically executes code that accesses Java objects. In this example, we create a script engine that executes Groovy language code. Groovy is a scripting language whose syntax is very similar to the Java programming language. Hence, it is a natural choice for Java integration. The variable \code{class.path} is a character vector containing paths to the Java libraries required for this demonstration.
 
@@ -29,7 +29,9 @@ library("jsr223")
 engine <- ScriptEngine$new("groovy", class.path)
 \end{verbatim}
 Next, we use the script engine to execute a Groovy code snippet that defines a function that returns a Java HashMap object. Notice that the syntax is very similar to Java. One obvious difference is that we can define a .
-
+///change this to handle multiple setnences. return a list of data frames
+///put the code example online in the groovy section
+///does not use json. we use custom on top of \pkg{rJava}. precision. less overhead.
 \begin{verbatim}
 engine %@% '
   import edu.stanford.nlp.simple.*;
