@@ -22,26 +22,29 @@ About the same time Ross Ihaka and Robert Gentleman began developing R at the Un
 
 In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that it gives the user granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding source code directly within R script.
 
-Our \CRANpkg{jsr223} package builds on \pkg{rJava} to make Java libraries easier to use from within R. We achieve this by embedding other programming languages in R that can, in turn, use Java objects in natural syntax. As we show in the \hyperlink{rjavasoftwarereview}{\pkg{rJava} software review}, this approach is generally simpler and more intuitive than \pkg{rJava}'s low-level JNI interface. To date, \pkg{jsr223} supports embedding five programming languages that target the Java platform: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) Besides providing simplified access to Java libraries, \pkg{jsr223} also makes countless existing solutions in these supported programming languages immediately available to R developers. For example, Ruby gems can be embedded in R and popular JavaScript libraries can be sourced directly from the Internet.
+Our \CRANpkg{jsr223} package builds on \pkg{rJava} to make Java libraries easier to use from within R. We achieve this by embedding other programming languages in R that can, in turn, use Java objects in natural syntax. As we show in the \hyperlink{rjava-software-review}{\pkg{rJava} software review}, this approach is generally simpler and more intuitive than \pkg{rJava}'s low-level JNI interface. To date, \pkg{jsr223} supports embedding five programming languages that target the Java platform: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) Besides providing simplified access to Java libraries, \pkg{jsr223} also makes countless existing solutions in these supported programming languages immediately available to R developers. For example, Ruby gems can be embedded in R and popular JavaScript libraries can be sourced directly from the Internet.
 
 The \pkg{jsr223} package features extensive, configurable data exchange between R and Java. R vectors, factors, n-dimensional arrays, data frames, lists, and environments are converted to standard Java objects. Java scalars, n-dimensional arrays, maps, and collections are inspected for content and converted to the most appropriate R structure (i.e., vectors, n-dimensional arrays, data frames, or lists). Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. Many language integrations for R provide a comparable feature set by using JSON (JavaScript Object Notation) libraries. In contrast, the \pkg{jsr223} package implements data exchange using custom Java routines to avoid the serialization overhead and the loss of floating point precision inherent in JSON data conversion.
 
-Other distinguishing features of the \pkg{jsr223} package include a simple callback interface to access the R environment from embedded scripts, direct calls from R to scripted functions and methods, script compiling, and string interpolation. In all, \pkg{jsr223} lowers the barrier to the expansive libraries and performance benefits of the Java platform and several programming languages.
+Other distinguishing features of the \pkg{jsr223} package include a simple callback interface to access the R environment from embedded scripts, script compiling, and string interpolation. In all, \pkg{jsr223} lowers the barrier to using sophisticated Java solutions from within R.
 
 \section{Document organization}
 
+In \hyperlink{use-cases}{Use cases}, we provide brief examples that demonstrate core \pkg{jsr223} functionality. \hyperlink{the-jsr223-package-implementation}{The \pkg{jsr223} package implementation} section contains a brief description of the \pkg{jsr223} software internals. The sections \hyperlink{helpful-terminology-and-concepts}{Helpful terminology and concepts}, \hyperlink{package-installation}{Package installation}, \hyperlink{script-engine-installation}{Script engine installation and instantiation}, and \hyperlink{quick-start-guide}{Quick start guide} provide the details necessary to install \pkg{jsr223} and become familiar with all of its features. If you are primarily interested in using \pkg{jsr223} with a specific programming language, jump to \hyperlink{r-with-groovy}{R with Groovy}, \hyperlink{r-with-javascript}{R with JavaScript}, \hyperlink{r-with-python}{R with Python}, \hyperlink{r-with-ruby}{R with Ruby}, or \hyperlink{r-with-kotlin}{R with Kotlin}. The section \hyperlink{software-review}{Software review} includes a discussion that puts the \pkg{jsr223} project in context with other relevant software solutions.
 
+All code examples related to this document are available at \href{https://github.com/floidgilbert/jsr223/tree/master/examples}{GitHub}.
 
-We define some needed terminology, and then we put the \pkg{jsr223} project in context with a review of relevant software. Next, there are the necessary installation instructions and a quick start guide to demonstrate major package features. The most interesting sections follow with code samples that blend R with the \pkg{jsr223} languages. All code examples related to this document are available at \href{https://github.com/floidgilbert/jsr223/tree/master/examples}{GitHub}.
-///Do a sly TOC here with links to the stuff people want to read.
+\hypertarget{use-cases}{\section{Use cases}}
 
-\section{A first example}
+This section includes two simple examples that demonstrate the core functionality of the \pkg{jsr223} package. For more information about \pkg{jsr223} features, see the \hyperlink{quick-start-guide}{Quick Start Guide}.
+
+\subsection{Stanford Natural Language Processor}
 
 %///cite stanford
-This example demonstrates accessing Java libraries and converting Java objects to R. uses \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence.
+This example demonstrates using Java libraries from R and converting Java objects to R objects. We use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. %///where to download jars.
 
-%///cite Groovy.
-First, we create a \pkg{jsr223} \code{ScriptEngine} object that dynamically executes source code. In this case, we use a \href{http://groovy-lang.org/}{Groovy} language script engine. Groovy syntax is very similar to the Java programming language; hence, it is a natural choice for Java integration. ///engine name/// The variable \code{class.path} is a character vector containing paths to the required Java libraries. It is supplied to the \code{ScriptEngine\$new} constructor method. The new \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
+%///cite Groovy. wait, don't we reference groovy before now?
+The first step is to create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. In this example, we use a \href{http://groovy-lang.org/}{Groovy} language script engine. Groovy syntax is very similar to the Java programming language; hence, it is a natural choice for Java integration. The variable \code{class.path} is a character vector containing paths to the required Java libraries. It is supplied to the \code{ScriptEngine\$new} constructor method. The \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
 
 \begin{verbatim}
 library("jsr223")
@@ -56,7 +59,8 @@ class.path <- c(
 engine <- ScriptEngine$new("Groovy", class.path)
 \end{verbatim}
 %///put the code example online in the groovy section
-Next, we execute a Groovy code snippet. The operator /// use the \code{engine} object and the \code{\%@\%} operator to . The snippet imports the Stanford NLP ///simple package and defines a function named \code{getPartsOfSpeech}. The function processes English text and stores the results in a list of Java map objects. Each map object contains the results for a single sentence.
+Now that we have a script engine instance, we can execute a Groovy code. The \pkg{jsr223} interface provides several methods to do this. In this example, we use the \code{\%@\%} operator which executes source code and discards the return value. The snippet here imports a Stanford NLP package and defines a Groovy function named \code{getPartsOfSpeech}. It tags each word in a text with a grammatical part of speech. The return value is a list of maps. Each map contains the parts of speech and word indices for a single sentence.
+
 \begin{verbatim}
 engine %@% '
   import edu.stanford.nlp.simple.*;
@@ -76,7 +80,7 @@ engine %@% '
   }
 '
 \end{verbatim}
-Finally, we use \code{engine\$invokeFunction} to call the Groovy function from R, specifying the name of the function and the text we wish to process. The \pkg{jsr223} package automatically converts the resulting Java objects to R objects. In this example, the result is a list of R data frames. Each data frame contains the words of a sentence, the corresponding parts of speech, and the beginning/ending offsets. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
+Finally, we use \code{engine\$invokeFunction} to call code{getPartsOfSpeech} from R, specifying the name of the function and the text we wish to process. The \pkg{jsr223} package automatically converts the return value to R objects; in this case, a list of data frames. Each data frame contains the words of a sentence, the corresponding parts of speech, and the beginning/ending offsets. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
 
 \begin{verbatim}
 engine$invokeFunction(
@@ -106,22 +110,31 @@ engine$invokeFunction(
 ## 5        .       .           72         73
 \end{verbatim}
 
-The preceding example shows how simple ``glue'' code can be embedded in R to quickly and effectively leverage Java solutions. Our approach enables developers to access Java objects with less code and more natural syntax than \pkg{rJava}'s low-level JNI implementation. See \hyperlink{rjavasoftwarereview}{\pkg{rJava} software review} for a technical discussion and a direct code comparison. The example also shows how \pkg{jsr223} converts complex Java structures to R objects. Other comparable integration packages use JavaScript Object Notation (JSON) to provide a comparable feature set for data exchange. Our \pkg{jsr223} package uses custom conversion routines based on native data types that avoid the overhead of JSON serialization to strings and the consequential loss of numeric precision.
+The preceding example shows how simple ``glue'' code can be embedded in R to quickly and effectively leverage Java solutions. The \pkg{jsr223} approach enables developers to access Java objects using natural, object-oriented syntax. The example also demonstrates how \pkg{jsr223} intuitively converts nested Java structures to R objects.
 
-%///we could have imjplemented this in several ways.
+\subsection{Metropolis sampler}
 
-The \pkg{jsr223} package includes several options for code execution and data exchange, callbacks, etc that are not /// in this example./// see the quick start guide for a complete review of features.
+This example uses a generic java class with dynamic bits provided by javascript. maybe other languages.
 
-\section{Dynamic ///something}
+Markov chain Monte Carlo 
+///implementing interfaces
+///returning data fast
+///performance
 
-\section{The \pkg{jsr223} package architecture}
+\hypertarget{the-jsr223-package-implementation}{\section{The \pkg{jsr223} package implementation}}
 
-%///probably move to implementation/architecture
-\pkg{jsr223} uses \pkg{rJava} to leverage the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec}. This specification (get old words) The  to provide a unified integration interface to several programming languages. 
-The \pkg{jsr223} package uses \pkg{rJava} to . Perofrmance benefits by minimizing error checking and object inspection. \pkg{jsr223} is therefore lightweight and does not add much overhead compared to direct calls with \pkg{rJava}. ///maybe move to software 
-Our unified, multi-language integration is made possible by the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec}.///put this somwhere else? in software architecture? built on \pkg{rJava}. Not JSON.
+The \pkg{jsr223} package is built on \CRANpkg{rJava}. The design of \pkg{jsr223} follows cues from \pkg{rJava}, \CRANpkg{rscala} \citep{rscala}, and \CRANpkg{V8} \citep{v8pkg}.
 
-\section{Helpful terminology and concepts}
+The \pkg{jsr223} package uses the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec}. The JSR-223 specification includes two crucial elements: an interface for Java applications to execute code written in scripting languages, and a guide for scripting languages to create Java objects in their own syntax. Hence, the JSR-223 specification is the basis for our integration.
+
+Many programming language projects have implemented JSR-223. Our \pkg{jsr223} package officially supports most of them. Technically, any JSR-223 implementation will work with \pkg{jsr223}, but we may not officially support some languages for various reasons. The most notable exclusion is \href{https://www.scala-lang.org/}{Scala}; we don't support it simply because the JSR-223 implementation is incomplete. (For a very thorough Scala integration for R, consider the \CRANpkg{rscala} package.) We also exclude languages that are no longer being actively developed, like \href{http://www.beanshell.org/}{BeanShell}.
+
+%///cite \pkg{jdx}
+Data exchange for \pkg{jsr223} is provided by \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but it was broken out into a separate package to simplify maintenance and to make its features available to other developers. For more information, see \hyperlink{data-exchange-details}{Data exchange details}.
+
+Callbacks allow embedded scripts to call back into the same R session. In \pkg{jsr223}, callbacks are implemented via multi-threading and a custom messaging protocol. This implementation is lightweight, does not require any special configuration, and supports infinite recursion between R and the script engine (limited only by stack space).
+
+\hypertarget{helpful-terminology-and-concepts}{\section{Helpful terminology and concepts}}
 
 Java programs are compiled to Java bytecode that can be executed by an instance of a Java Virtual Machine (JVM). A JVM is an abstraction layer that provides a platform-independent execution environment for Java programs. A JVM interprets Java bytecode to machine code (i.e., processor-specific instructions). JVMs are available for a wide variety of hardware and software platforms. In principle, the same Java program will run on any platform that supports a JVM. The Java paradigm contrasts with traditional compiled languages, such as C, that are compiled directly to processor-dependent machine code, and therefore must be recompiled for every targeted architecture. Often, changes in the source code are also required to support different platforms.
 
@@ -131,7 +144,7 @@ A \dfn{scripting engine} (usually shortened to \dfn{script engine}) is software 
 
 \dfn{Bindings} refers to the name/value pairs associated with variables in a given scope. Conceptually, a variable's name is bound to its value. The variable names and values in R's global environment are examples of bindings.
 
-\section{Package installation}
+\hypertarget{package-installation}{\section{Package installation}}
 
 The \pkg{jsr223} package requires Java 8 Standard Edition or above. The current version of the Java Runtime Environment (JRE) can be determined by executing \samp{java -version} from a system command prompt. See the example output below. Java 8 is denoted by version 1.8.x\_xx.
 
@@ -150,7 +163,7 @@ install.packages("jsr223")
 \end{verbatim}
 This command will also download and install the \pkg{rJava} dependency necessary. However, the \pkg{rJava} installation will fail if R is not yet configured to use Java on Unix, Linux, or OSX. To configure R for Java, execute \samp{sudo R CMD javareconf} in a terminal. This command is not required for Windows systems. If the Java reconfiguration command generates errors, address the errors and execute the command again. One common error can be resolved by determining whether the GNU Compiler Collection (GCC) is accessible. To check for GCC, execute `gcc --help` from a terminal. This command will fail if GCC is not installed or if the license agreement has not been accepted.
 
-\hypertarget{scriptengineinstallation}{\section{Script engine installation and instantiation}}
+\hypertarget{script-engine-installation}{\section{Script engine installation and instantiation}}
 
 To create an instance of a language's script engine, \pkg{jsr223} requires access to the associated Java Archive (JAR) files. These instructions will help you obtain the required files and create a script engine instance.
 
@@ -192,7 +205,7 @@ library("jsr223")
 engine <- ScriptEngine$new("python", class.path = "~/your-path/jython-standalone.jar")
 \end{verbatim}
 
-\hypertarget{kotlinscriptengineinstallation}{\subsection{Kotlin}}
+\hypertarget{kotlin-script-engine-installation}{\subsection{Kotlin}}
 
 \href{https://kotlinlang.org/}{Kotlin} is a relatively new programming language that is interoperable with Java. As of this writing, a standalone JAR file is not available for the script engine. The most straight-forward way to obtain the files is to use selected files from the Community Edition of the \href{https://www.jetbrains.com/idea/}{JetBrains IntelliJ Idea} integrated development environment (IDE). The IDE doesn't need to be installed. Download the IDE's archive file (e.g., a zip file, not the executable installer package). Create an empty target folder on your system for the Kotlin files. Extract the \file{bin} and \file{plugins/Kotlin} folders to the target folder preserving the original folder structures. \strong{Note:} The \file{bin} folder isn't strictly required, but it will eliminate warnings on some systems. Make note of the fully-qualified path to the \file{plugins/Kotlin} folder; it will be used by \pkg{jsr223} to load the script engine.
 
@@ -220,13 +233,13 @@ engine <- ScriptEngine$new(
 %Visit the Kotlin web site at \url{https://kotlinlang.org/} and follow the link to download the standalone compiler. Extract the compiler into a directory and make note of the path; it will be used to create a script engine instance. The compiler distribution does not include the required script engine file \file{kotlin-script-util-*.jar}. Perhaps the simplest way to obtain it is to use the Maven repository. Follow \href{https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-script-util}{this link}, or search for \samp{kotlin-script-util} at \url{https://mvnrepository.com}. Click the link corresponding your version of the Kotlin compiler. Click the link labeled \samp{jar} under the listed files. Save the JAR file to the \file{lib} subfolder of the Kotlin compiler installation directory.
 
 \clearpage
-\hypertarget{quickstartguide}{\section{Quick start guide}}
+\hypertarget{quick-start-guide}{\section{Quick start guide}}
 
 The primary features of \pkg{jsr223} are designed to be accessible to R programmers of all experience levels. This quick start guide illustrates these features with simple code examples. In general, the code samples work with all supported script engines with two exceptions.
 
 \begin{enumerate}
 \item Global variables in Ruby script must be prefixed with a dollar sign.
-\item Kotlin script engine bindings are not created as global variables. See \hyperlink{kotlinidiosyncrasies}{Kotlin idiosyncrasies}.
+\item Kotlin script engine bindings are not created as global variables. See \hyperlink{kotlin-idiosyncrasies}{Kotlin idiosyncrasies}.
 \end{enumerate}
 
 \subsection{Hello world}
@@ -247,7 +260,7 @@ engine$terminate()
 
 The \code{ScriptEngine\$new} constructor method creates a script engine instance. In the preceding example, we assign the new script engine object to the variable \code{engine}. The first argument of \code{ScriptEngine\$new} specifies the type of script engine to create. In this case, we create a JavaScript engine. The third line assigns the value \code{"Hello world"} to a global variable named \code{message} in the script engine environment. The next line executes a JavaScript code snippet using the \code{\%$\sim$\%} operator. The snippet uses the JavaScript \code{print} method to write the message to the console. The last line in the example terminates the script engine and releases the associated resources.
 
-To create a script engine other than JavaScript, specify a different script engine name and a character vector containing the required script engine JAR files. (See \hyperlink{scriptengineinstallation}{Script engine installation} for instructions to obtain script engines.) The supported script engine names are listed in Table \ref{tab:script-engine-type-names}. These names are defined by the script engine provider. \strong{Note:} Script engine names are case sensitive.
+To create a script engine other than JavaScript, specify a different script engine name and a character vector containing the required script engine JAR files. (See \hyperlink{script-engine-installation}{Script engine installation} for instructions to obtain script engines.) The supported script engine names are listed in Table \ref{tab:script-engine-type-names}. These names are defined by the script engine provider. \strong{Note:} Script engine names are case sensitive.
 
 The next example reproduces the “Hello world” example in Ruby script.
 
@@ -371,7 +384,7 @@ engine$myValue2
 
 ## [1] 6
 \end{verbatim}
-The Kotlin language is an exception to this behavior. It handles bindings through a the global object \code{jsr223Bindings} as follows. See \hyperlink{kotlinidiosyncrasies}{Kotlin idiosyncrasies} for more information.
+The Kotlin language is an exception to this behavior. It handles bindings through a the global object \code{jsr223Bindings} as follows. See \hyperlink{kotlin-idiosyncrasies}{Kotlin idiosyncrasies} for more information.
 
 \begin{verbatim}
 engine$myValue1 <- 5
@@ -399,7 +412,7 @@ All \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}. 
 
 The \pkg{jsr223} \code{ScriptEngine} class exposes several methods that control settings for a script engine instance. These methods are named using the Java getter/setter convention: methods that set values are prefixed with ``set'' and methods that retrieve values begin with ``get''. For example, if \code{engine} is a script engine object, \code{engine\$setArrayOrder('column-major')} will change the \textit{array order} setting. The code \code{engine\$getArrayOrder()} will retrieve the current \textit{array order} setting.
 
-\hypertarget{handlingrvectors}{\subsection{Handling R vectors}}
+\hypertarget{handling-r-vectors}{\subsection{Handling R vectors}}
 
 By default, length-one R vectors are converted to Java scalars when passed to the script engine environment. If a Java length-one array is desired, wrap the value in the R ``as-is'' function (e.g., \code{I(myValue)}), or set the \textit{length one vector as array} setting to \code{TRUE} using the \code{setLengthOneVectorAsArray} method. By default, length-one vectors are converted to Java scalars as demonstrated here.
 
@@ -503,7 +516,7 @@ engine %~% "java.util.Arrays.deepToString(a);"
 ## [1] "[[[1, 3], [2, 4]], [[5, 7], [6, 8]]]"
 \end{verbatim}
 
-\hypertarget{handlingrdataframes}{\subsection{Handling R data frames}}
+\hypertarget{handling-r-data-frames}{\subsection{Handling R data frames}}
 
 R data frames can be converted to the script engine using either row-major or column-major order. Row-major order (the default) creates a list of records. This representation is perhaps the most common in programming for tabular data. Column-major order, on the other hand, creates a list of columns. Column-major structures are faster to create and are generally preferred for aggregate column calculations. Change the \textit{data frame order} setting with the \code{setDataFrameRowMajor} method.
 
@@ -604,7 +617,7 @@ When creating a data frame in R, character vectors are converted to factors by d
 \subsection{Handling R lists and environments}
 The \pkg{jsr223} package converts R lists and environments to Java objects. List elements may be any R data structure supported by \pkg{jsr223}, including other lists (i.e., nested lists). There is no limitation to the levels of nesting.
 
-R named lists and environments are converted to Java \href{https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html}{\code{java.util.HashMap}} objects. See \hyperlink{handlingrdataframes}{Handling R data frames} for map code examples. The only difference is that a data frame's contents are always converted to a map of arrays. For lists, the map elements may be any data structure.
+R named lists and environments are converted to Java \href{https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html}{\code{java.util.HashMap}} objects. See \hyperlink{handling-r-data-frames}{Handling R data frames} for map code examples. The only difference is that a data frame's contents are always converted to a map of arrays. For lists, the map elements may be any data structure.
 
 R unnamed lists are converted to Java objects implementing the \href{https://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html}{\code{java.util.ArrayList}} interface. The following code demonstrates basic \code{java.util.ArrayList} functionality.
 
@@ -635,7 +648,7 @@ engine %~% "list.size()"
 ## [1] 4
 \end{verbatim}
 
-\subsection{Data exchange details}
+\hypertarget{data-exchange-details}{\subsection{Data exchange details}}
 
 So far, we have discussed all of the basic functionality and settings related to data exchange. This section includes a few additional notes for data exchange. A comprehensive guide, including details for unexpected conversion behaviors, is included in the \pkg{jdx} package vignette.
 
@@ -693,7 +706,7 @@ Functions and methods defined in script can be called directly from R via the \c
 
 \strong{Note:} The Groovy, Python, and Kotlin engines can use \code{invokeMethod} to call methods of Java objects. The JavaScript and Ruby engines only support calling methods of native scripting objects. For the latter two engines, we recommend wrapping Java objects in native functions or methods to facilitate their use from R.
 
-As described in \hyperlink{handlingrvectors}{Handling R vectors}, length-one vectors are converted to Java scalars by default. One way to ensure that a vector is always converted to a Java array is by wrapping it in the ``as-is'' function \code{I()}. This feature is particularly useful when passing multiple parameters to a script function. In the same function, some parameters may require scalars while others require arrays. Simply use \code{I()} to indicate which vectors should be converted to arrays.
+As described in \hyperlink{handling-r-vectors}{Handling R vectors}, length-one vectors are converted to Java scalars by default. One way to ensure that a vector is always converted to a Java array is by wrapping it in the ``as-is'' function \code{I()}. This feature is particularly useful when passing multiple parameters to a script function. In the same function, some parameters may require scalars while others require arrays. Simply use \code{I()} to indicate which vectors should be converted to arrays.
 
 The following example demonstrates calling a simple JavaScript function, \code{sumThis}, that sums the elements of an array. If the first parameter is not an array, the function throws an error.
 
@@ -745,7 +758,7 @@ engine$invokeMethod("Math", "abs", -3)
 ## [1] 3
 \end{verbatim}
 
-\hypertarget{stringinterpolation}{\subsection{String interpolation}}
+\hypertarget{string-interpolation}{\subsection{String interpolation}}
 
 \pkg{jsr223} features string interpolation before code evaluation. R code placed between \code{@\{} and \code{\}} in a code snippet is evaluated and replaced by the a string representation of the return value before the snippet is executed by the script engine. A script may contain multiple \code{@\{...\}} expressions. String interpolation is enabled by default. It can be disabled using \code{engine\$setInterpolation(FALSE)}.
 
@@ -934,7 +947,7 @@ Exiting console.
 Most developers are familiar with the command history in the R REPL.  Unfortunately, command history for the \pkg{jsr223} REPL is unreliable or non-existent because there is no functional standard for saving and restoring commands in R consoles.
 
 \clearpage
-\section{R with Groovy}
+\hypertarget{r-with-groovy}{\section{R with Groovy}}
 
 \href{http://www.groovy-lang.org/}{Groovy} is a dynamically typed programming language that closely follows Java syntax. Hence, the \pkg{jsr223} integration for Groovy enables developers to essentially embed Java language solutions in R. There are some minor language differences between Groovy and Java; they are described in the online guide  \href{http://groovy-lang.org/differences.html}{Differences with Java}. %///cite?.
 
@@ -992,7 +1005,7 @@ engine$terminate()
 \end{verbatim}
 
 \clearpage
-\section{R with JavaScript}
+\hypertarget{r-with-javascript}{\section{R with JavaScript}}
 
 The popularity of JavaScript has overflowed the arena of web development into standalone solutions involving databases, charting, machine learning, and network-enabled utilities, to name just a few. Many of these solutions can be harnessed by R with the help of \pkg{jsr223}. Even browser-based scripts that require a document object model (DOM) can be executed using Java's \code{WebView} browser. Popular JavaScript solutions can be found at \href{https://www.javascripting.com/}{JavaScripting}, an online database of JavaScript solutions. \href{https://github.com/trending/javascript?since=monthly}{Github} also lists trending solutions for JavaScript, as well as other languages.
 
@@ -1160,7 +1173,7 @@ v.wordWrap(
 \end{verbatim}
 
 \clearpage
-\hypertarget{rwithpython}{\section{R with Python}}
+\hypertarget{r-with-python}{\section{R with Python}}
 
 Like R, the \href{https://www.python.org/}{Python} programming language is used widely in science and analytics. Python has many powerful language features, yet it is known for being concise and easy to read. The \href{http://www.jython.org/}{Jython} project has migrated core Python to the Java platform. This implementation does not include popular libraries such as NumPy and SciPy. These libraries compile to machine code and, as such, they are not compatible with the JVM. However, JVM implementations of some Python native libraries are being developed in a related project, \href{http://www.jyni.org/}{JyNI} (the Jython Native Interface). To include these libraries in a \pkg{jsr223} solution, download the JyNI JAR file and include it in the class path when instantiating a Jython script engine.
 
@@ -1301,7 +1314,7 @@ runServer(60)
 \end{verbatim}
 
 \clearpage
-\section{R with Ruby}
+\hypertarget{r-with-ruby}{\section{R with Ruby}}
 
 The \href{https://www.ruby-lang.org}{Ruby} programming language is a general-purpose, object-oriented programming language invented by Yukihiro Matsumoto. According to Matsumoto, he designed the language to ``help every programmer in the world to be productive, and to enjoy programming, and to be happy'' \citep{rubyvideo}. \href{http://jruby.org/}{JRuby} is a Java implementation of the Ruby language. It is compatible with the popular web application framework \href{http://rubyonrails.org/}{Ruby on Rails}.
 
@@ -1454,13 +1467,14 @@ engine$terminate()
 \end{verbatim}
 
 \clearpage
-\section{R with Kotlin}
+\hypertarget{r-with-kotlin}{\section{R with Kotlin}}
+
 
 \href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language that supports both functional and object-oriented programming paradigms. Kotlin is concise and pragmatic; in many cases, it requires less code than Java to accomplish the same task. Kotlin version 1.0 was released in 2016 \citep{kotlin-release} making it the newest of the \pkg{jsr223}-supported languages. 
 
 Kotlin's JSR-223 implementation is progressing quickly though it is not complete. We will not list the deficiencies here as they will probably be resolved soon. See the \href{https://github.com/floidgilbert/jsr223/issues}{\pkg{jsr223} issue tracker} to review pending issues and workarounds. In the issue tracker search dialog, select the ``Kotlin issues'' label and include both open and closed issues.
 
-\hypertarget{kotlinidiosyncrasies}{\subsection{Kotlin idiosyncrasies}}
+\hypertarget{kotlin-idiosyncrasies}{\subsection{Kotlin idiosyncrasies}}
 
 The Kotlin script engine handles bindings through a global map object instead of creating global variables in the script engine environment. The best way to illustrate this behavior is by example. The following code creates and retrieves a binding \code{myValue} as you would expect.
 
@@ -1547,7 +1561,7 @@ replicate(3, engine$invokeMethod("mvn", "sample"))
 engine$terminate()
 \end{verbatim}
 
-\hypertarget{softwarereview}{\section{Software review}}
+\hypertarget{software-review}{\section{Software review}}
 
 There are many integrations that combine the strengths of R with other programming languages. These language integrations can generally be classified as either \dfn{R-major} or \dfn{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \pkg{rJava} is an R-major integration that allows Java objects to be used within an R session. The Java/R Interface (\CRANpkg{JRI}), in contrast, is an R-minor integration that enables Java applications to embed R.
 
@@ -1555,7 +1569,9 @@ The \pkg{jsr223} package provides an R-major integration for the Java platform a
 
 Before we compare \pkg{jsr223} to other R packages, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn multiple integration packages.
 
-\subsection{\pkg{rJava} software review}
+Our software review does not include integrations for Ruby and Kotlin because \pkg{jsr223} is the only R-major integration for those languages on CRAN.
+
+\hypertarget{rjava-software-review}{\subsection{\pkg{rJava} software review}}
 
 As noted in the introduction, \pkg{rJava} is the preeminent Java integration for R. It provides a low-level interface to compiled Java classes via the JNI. The \pkg{jsr223} package uses \pkg{rJava} together with the Java Scripting API to create a simple, multi-language integration for R and the Java platform.
 
@@ -1606,7 +1622,7 @@ engine %@% "
 # Close the window
 engine %@% "f.dispose();"
 \end{verbatim}
-To execute source code in a file, use the script engine object's \code{source} method: \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local file path or a URL. % Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward. The ability to embed source code in R facilitates prototyping and promotes rapid application development.
+To execute source code in a file, use the script engine object's \code{source} method: \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local file path or a URL. Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward. The ability to embed source code in R facilitates prototyping and promotes rapid application development.
 
 In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} does include a high-level interface for invoking object methods. It uses the Java reflection API to automatically locate the correct method signature. This is an impressive feature, but according to the \pkg{rJava} web site, its high-level interface is experimental and does not work correctly for all scenarios. There are no such limitations for the \pkg{jsr223} scripting languages.
 
@@ -1638,7 +1654,7 @@ The \pkg{rJava} package does not directly support callbacks into R. Instead, cal
 
 In conclusion, \pkg{jsr223} provides an alternative integration for the Java platform that is easy to learn and use.
 
-\subsection{Groovy integrations software review}
+\hypertarget{groovy-integrations}{\subsection{Groovy integrations software review}}
 
 The only other Groovy language integration on CRAN is \CRANpkg{rGroovy}. It is a simple integration that uses \pkg{rJava} to instantiate \code{groovy.lang.GroovyShell} and pass code snippets to its \code{evaluate} method. We outline the typical integration approach using \pkg{rGroovy}.
 
@@ -1691,7 +1707,7 @@ In comparison to \pkg{rGroovy}, the \pkg{jsr223} implementation is more concise 
 
 In summary, \pkg{rGroovy} exposes a simple interface for executing Groovy code and returning a result. Data exchange is primarily handled through \pkg{rJava}, and therefore requires knowledge of \pkg{rJava} and JNI. The \pkg{jsr223} integration is more comprehensive and does not require any knowledge of \pkg{rJava}.
 
-\hypertarget{javascriptintegrations}{\subsection{JavaScript integrations software review}}
+\hypertarget{javascript-integrations}{\subsection{JavaScript integrations software review}}
 
 The most prominent JavaScript integration for R is Jeroen Ooms' \CRANpkg{V8} package. It uses the open source \href{https://developers.google.com/v8/}{V8 JavaScript engine} featured in Google's \href{https://www.google.com/chrome/browser/features.html}{Chrome} browser. We discuss the three primary differences between \pkg{V8} and \pkg{jsr223}.
 
@@ -1718,7 +1734,7 @@ identical(engine$pi, pi)
 
 The third significant difference between \pkg{V8} and \pkg{jsr223} is code validation. \pkg{V8} includes an interface to validate JavaScript code. The Java Scripting API does not provide an interface for code validation, hence, \pkg{jsr223} does not provide this feature. We have investigated other avenues to validate code, but none are uniformly reliable across all of the \pkg{jsr223} supported languages. Moreover, this feature is generally not critical for most integration applications; code validation is most useful for interactive code entry.
 
-\subsection{Python integrations software review}
+\hypertarget{python-integrations}{\subsection{Python integrations software review}}
 
 %///cite packages
 In this section, we compare \pkg{jsr223} with two Python integrations for R: \CRANpkg{reticulate} and \CRANpkg{rJython}. Of the many Python integrations available for R on CRAN, \pkg{reticulate} is the most popular as measured by monthly downloads.\footnote{The \pkg{reticulate} package has 3,681 downloads per month according to \href{http://rdocumentation.org}{http://rdocumentation.org.} The next most popular Python integration is \CRANpkg{PythonInR} with 322 monthly downloads.} We also discuss \pkg{rJython} because, like \pkg{jsr223}, it targets Python on the JVM.
@@ -1735,7 +1751,7 @@ The \pkg{rJython} package is similar to \pkg{jsr223} in that it employs Jython. 
 
 \item When using JSON, \pkg{rJython} converts R objects to generic Python structures. \pkg{jsr223} converts R objects to generic Java structures.
 
-\item \pkg{rJython}'s JSON features are provided by the \CRANpkg{rjson} package on the R side. As we describe in \hyperlink{javascriptintegrations}{JavaScript integrations}, JSON implementations incur overhead and loss of numeric precision. Furthermore, \pkg{rjson} does not handle some R structures very well. For example, n-dimensional arrays and unnamed lists are both converted to one-dimensional JSON arrays. Lastly, \pkg{rJython} converts data frames to Python dictionaries, but Python dictionaries are always returned to R as named lists. \pkg{jsr223} exhibits none of these limitations.
+\item \pkg{rJython}'s JSON features are provided by the \CRANpkg{rjson} package on the R side. As we describe in \hyperlink{javascript-integrations}{JavaScript integrations}, JSON implementations incur overhead and loss of numeric precision. Furthermore, \pkg{rjson} does not handle some R structures very well. For example, n-dimensional arrays and unnamed lists are both converted to one-dimensional JSON arrays. Lastly, \pkg{rJython} converts data frames to Python dictionaries, but Python dictionaries are always returned to R as named lists. \pkg{jsr223} exhibits none of these limitations.
 
 \item \pkg{rJython} does not provide configurable data exchange options. \pkg{jsr223} provides several options for converting factors, data frames, and n-dimensional arrays.
 
@@ -1746,12 +1762,6 @@ The \pkg{rJython} package is similar to \pkg{jsr223} in that it employs Jython. 
 \item \pkg{rJython} does not supply interfaces for script compiling or capturing console output.
 \end{itemize}
 In all, \pkg{jsr223} provides a more complete integration for Jython than \pkg{rJython}.
-
-\subsection{Software review for miscellaneous integrations}
-
-Currently, \pkg{jsr223} is the only integration for the Ruby and Kotlin languages on CRAN.
-
-There are other programming languages that implement the JSR-223 specification, but are not officially supported by the \pkg{jsr223} project. Technically, \pkg{jsr223} will work with any of these languages. However, we may not officially support a specific implementation for a number of reasons. Our most notable exclusion is \href{https://www.scala-lang.org/}{Scala}. We decline to support the Scala JSR-223 implementation simply because it is not complete. (For a very thorough Scala integration for R, consider the \CRANpkg{rscala} package.) We also exclude languages that are no longer being developed (e.g. \href{http://www.beanshell.org/}{BeanShell}).
 
 \subsection{Renjin and FastR software review}
 
@@ -1767,7 +1777,6 @@ There are other programming languages that implement the JSR-223 specification, 
 %https://dynamicecology.wordpress.com/2014/01/14/r-isnt-just-r-anymore/
 %https://github.com/oracle/fastr
 
-\clearpage
 \section{Conclusion}
 
 ///
