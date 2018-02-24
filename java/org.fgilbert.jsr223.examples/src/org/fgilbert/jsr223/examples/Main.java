@@ -1,7 +1,5 @@
 package org.fgilbert.jsr223.examples;
 
-import org.fgilbert.jsr223.examples.MetropolisSamplerUnivariateProposals.ProposalDistribution;
-
 public class Main {
 
 	public Main() {
@@ -9,24 +7,14 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-
-		///probably do as a separate inner class or something instead? need to use the kind (local?) that will inherit the stuff around it.
-		MetropolisSamplerUnivariateProposals m = new MetropolisSamplerUnivariateProposals() {
-			@Override
-			public double logPosterior(double[] parameters) {
-				double pi = parameters[0];
-				double lambda = parameters[1];
-				return 0;
-			}
-		};
+		double[] a = {1,2,3};
+		double[] b = null;
 		
-		ProposalDistribution p = new m.ProposalDistribution() {
-			@Override
-			public double sample(double previousValue) {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-		};
+		b = a.clone();
+		System.out.println(a[1]);
+		b[1] = 3;
+		System.out.println(a[1]);
+
 		
 	}
 }
