@@ -22,6 +22,7 @@ About the same time Ross Ihaka and Robert Gentleman began developing R at the Un
 
 In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that it gives the user granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding source code directly within R script.
 
+%///link and cite all languages here.
 Our \CRANpkg{jsr223} package builds on \pkg{rJava} to make Java libraries easier to use from within R. We achieve this by embedding other programming languages in R that can, in turn, use Java objects in natural syntax. As we show in the \hyperlink{rjava-software-review}{\pkg{rJava} software review}, this approach is generally simpler and more intuitive than \pkg{rJava}'s low-level JNI interface. To date, \pkg{jsr223} supports embedding five programming languages that target the Java platform: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) Besides providing simplified access to Java libraries, \pkg{jsr223} also makes countless existing solutions in these supported programming languages immediately available to R developers. For example, Ruby gems can be embedded in R and popular JavaScript libraries can be sourced directly from the Internet.
 
 The \pkg{jsr223} package features extensive, configurable data exchange between R and Java. R vectors, factors, n-dimensional arrays, data frames, lists, and environments are converted to standard Java objects. Java scalars, n-dimensional arrays, maps, and collections are inspected for content and converted to the most appropriate R structure (i.e., vectors, n-dimensional arrays, data frames, or lists). Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. Many language integrations for R provide a comparable feature set by using JSON (JavaScript Object Notation) libraries. In contrast, the \pkg{jsr223} package implements data exchange using custom Java routines to avoid the serialization overhead and the loss of floating point precision inherent in JSON data conversion.
@@ -36,15 +37,16 @@ All code examples related to this document are available at \href{https://github
 
 \hypertarget{use-cases}{\section{Use cases}}
 
-This section includes two simple examples that demonstrate the core functionality of the \pkg{jsr223} package. For more information about \pkg{jsr223} features, see the \hyperlink{quick-start-guide}{Quick Start Guide}.
+This section includes two simple examples that demonstrate the core functionality of the \pkg{jsr223} package. For a complete overview of \pkg{jsr223} features, see the \hyperlink{quick-start-guide}{Quick Start Guide}.
 
-\subsection{Stanford Natural Language Processor}
+\subsection{Using Java libraries}
 
 %///cite stanford
-This example demonstrates using Java libraries from R and converting Java objects to R objects. We use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. %///where to download jars.
+This example demonstrates using Java libraries from R and converting Java data structures to R objects. Specifically, we show how to use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. We create and use the objects in the Groovy language. Groovy syntax is very similar to the Java programming language; hence, it is a natural choice for Java integrations.
 
-%///cite Groovy. wait, don't we reference groovy before now?
-The first step is to create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. In this example, we use a \href{http://groovy-lang.org/}{Groovy} language script engine. Groovy syntax is very similar to the Java programming language; hence, it is a natural choice for Java integration. The variable \code{class.path} is a character vector containing paths to the required Java libraries. It is supplied to the \code{ScriptEngine\$new} constructor method. The \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
+The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}. The Groovy script engine file can be obtained by following the instructions under \hyperlink{script-engine-installation}{Script engine installation and instantiation} in this document. %///cite from https://stanfordnlp.github.io/CoreNLP/index.html#license
+
+The first step: create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. We create the object by using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
 
 \begin{verbatim}
 library("jsr223")
@@ -59,7 +61,7 @@ class.path <- c(
 engine <- ScriptEngine$new("Groovy", class.path)
 \end{verbatim}
 %///put the code example online in the groovy section
-Now that we have a script engine instance, we can execute a Groovy code. The \pkg{jsr223} interface provides several methods to do this. In this example, we use the \code{\%@\%} operator which executes source code and discards the return value. The snippet here imports a Stanford NLP package and defines a Groovy function named \code{getPartsOfSpeech}. It tags each word in a text with a grammatical part of speech. The return value is a list of maps. Each map contains the parts of speech and word indices for a single sentence.
+Now we can execute Groovy source code. The \pkg{jsr223} interface provides several methods to do this. In this example, we use the \code{\%@\%} operator which executes source code and discards the return value. The code snippet follows the \code{\%@\%} operator; it is simply a multi-line character constant. The code snippet imports a Stanford NLP package and defines a Groovy function named \code{getPartsOfSpeech}. The function tags each element in a text with the corresponding grammatical part of speech.  The return value is a list of maps where each map contains the parts of speech and word indices for a single sentence.
 
 \begin{verbatim}
 engine %@% '
@@ -80,7 +82,7 @@ engine %@% '
   }
 '
 \end{verbatim}
-Finally, we use \code{engine\$invokeFunction} to call code{getPartsOfSpeech} from R, specifying the name of the function and the text we wish to process. The \pkg{jsr223} package automatically converts the return value to R objects; in this case, a list of data frames. Each data frame contains the words of a sentence, the corresponding parts of speech, and the beginning/ending offsets. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
+Finally, we use \code{engine\$invokeFunction} to call code{getPartsOfSpeech} from R. The \code{invokeFunction} method takes the name of the function as the first parameter and any number of function parameters. The \pkg{jsr223} package automatically converts the function's return value to R objects. In this case, the list of Java map objects is converted to a list of R data frames. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
 
 \begin{verbatim}
 engine$invokeFunction(
@@ -110,9 +112,11 @@ engine$invokeFunction(
 ## 5        .       .           72         73
 \end{verbatim}
 
-The preceding example shows how simple ``glue'' code can be embedded in R to quickly and effectively leverage Java solutions. The \pkg{jsr223} approach enables developers to access Java objects using natural, object-oriented syntax. The example also demonstrates how \pkg{jsr223} intuitively converts nested Java structures to R objects.
+The preceding example shows how so-called ``glue'' code can be embedded in R to quickly and effectively leverage Java solutions. The \pkg{jsr223} integration enables developers to embed code that uses Java objects in natural syntax. The example also demonstrates how \pkg{jsr223} intuitively converts Java data structures to R objects.
 
-\subsection{Metropolis sampler}
+\subsection{Dynamic code implementing Java interfaces ///bad title}
+
+Metropolis sampler
 
 This example uses a generic java class with dynamic bits provided by javascript. maybe other languages.
 
