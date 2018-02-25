@@ -2,12 +2,14 @@ package org.fgilbert.jsr223.examples;
 
 import static java.lang.Math.*;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
+import org.apache.commons.math3.random.SynchronizedRandomGenerator;
+import org.apache.commons.math3.random.Well19937c;
 
 public class ProposalDistributionUnivariateNormal extends ProposalDistributionUnivariate {
 
 	private double standardDeviation;
 	private double variance;
-	private UniformRealDistribution unif = new UniformRealDistribution();
+	private UniformRealDistribution unif = new UniformRealDistribution(new SynchronizedRandomGenerator(new Well19937c()), 0, 1);
 	
 	public ProposalDistributionUnivariateNormal(double variance) {
 		super();

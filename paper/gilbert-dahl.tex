@@ -41,48 +41,55 @@ This section includes two simple examples that demonstrate the core functionalit
 
 \subsection{Using Java libraries}
 
+This example shows how so-called ``glue'' code can be embedded in R to quickly leverage Java solutions from within R. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects.
+
+
+%///review every word and code item very closely. put this together after writing it first with groovy. changed the wording. make it very apparent that we can convert JS objects to R.
 %///cite stanford
-This example demonstrates using Java libraries from R and converting Java data structures to R objects. Specifically, we show how to use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. We create and use the objects in the Groovy language. Groovy syntax is very similar to the Java programming language; hence, it is a natural choice for Java integrations.
+%This example demonstrates using Java libraries from R and converting Java data structures to R objects. 
+Specifically, we show how to use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}.
 
-The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}. The Groovy script engine file can be obtained by following the instructions under \hyperlink{script-engine-installation}{Script engine installation and instantiation} in this document. %///cite from https://stanfordnlp.github.io/CoreNLP/index.html#license
-
-The first step: create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. We create the object by using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
+The first step: create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
 
 \begin{verbatim}
-library("jsr223")
-
 class.path <- c(
-  "./groovy-all-2.4.7.jar",
   "./protobuf.jar",
   "./stanford-corenlp-3.9.0.jar",
   "./stanford-corenlp-3.9.0-models.jar"
 )
 
-engine <- ScriptEngine$new("Groovy", class.path)
+library("jsr223")
+engine <- ScriptEngine$new("JavaScript", class.path)
 \end{verbatim}
-%///put the code example online in the groovy section
-Now we can execute Groovy source code. The \pkg{jsr223} interface provides several methods to do this. In this example, we use the \code{\%@\%} operator which executes source code and discards the return value. The code snippet follows the \code{\%@\%} operator; it is simply a multi-line character constant. The code snippet imports a Stanford NLP package and defines a Groovy function named \code{getPartsOfSpeech}. The function tags each element in a text with the corresponding grammatical part of speech.  The return value is a list of maps where each map contains the parts of speech and word indices for a single sentence.
+Now we can execute JavaScript source code. The \pkg{jsr223} interface provides several methods to execute code. In this example, we use the \code{\%@\%} operator which executes a code snippet and discards the return value, if any, instead of returning it to R. This code snippet, supplied as a character constant, imports the Stanford NLP \code{Document} class. This syntax is peculiar to the JavaScript language integration with Java. The resulting object, \code{DocumentClass} is a ///. It can be used to instantiate objects or access static methods.
+
+\begin{verbatim}
+engine %@% 'var DocumentClass = Java.type("edu.stanford.nlp.simple.Document");'
+\end{verbatim}
+
+ and defines a JavaScript function named \code{getPartsOfSpeech}. The function tags each element in a text with the corresponding grammatical part of speech. ///describe the return value being built.
 
 \begin{verbatim}
 engine %@% '
-  import edu.stanford.nlp.simple.*;
-
-  def getPartsOfSpeech(String text) {
-    doc = new Document(text);
-    list = new ArrayList<Map>(doc.sentences().size());
-    for (sentence in doc.sentences()) {
-      m = new LinkedHashMap<String, Object>();
-      m.put("words", sentence.words());
-      m.put("pos.tag", sentence.posTags());
-      m.put("offset.begin", sentence.characterOffsetBegin());
-      m.put("offset.end", sentence.characterOffsetEnd());
-      list.add(m);
+  function getPartsOfSpeech(text) {
+    var doc = new DocumentClass(text);
+    var list = [];
+    for (i = 0; i < doc.sentences().size(); i++) {
+      var sentence = doc.sentences().get(i);
+      var o = {
+        "words":sentence.words(),
+        "pos.tag":sentence.posTags(),
+        "offset.begin":sentence.characterOffsetBegin(),
+        "offset.end":sentence.characterOffsetEnd()
+      }
+      list.push(o);
     }
     return list;
   }
 '
 \end{verbatim}
-Finally, we use \code{engine\$invokeFunction} to call code{getPartsOfSpeech} from R. The \code{invokeFunction} method takes the name of the function as the first parameter and any number of function parameters. The \pkg{jsr223} package automatically converts the function's return value to R objects. In this case, the list of Java map objects is converted to a list of R data frames. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
+%///maybe make a comment about how concise the JS code is.
+Finally, we use \code{engine\$invokeFunction} to call code{getPartsOfSpeech} from R. The \code{invokeFunction} method takes the name of the function as the first parameter and any number of function parameters. The \pkg{jsr223} package automatically converts the function's return value to R objects. In this case, it converts the list of JavaScript objects to a list of R data frames. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
 
 \begin{verbatim}
 engine$invokeFunction(
@@ -112,9 +119,16 @@ engine$invokeFunction(
 ## 5        .       .           72         73
 \end{verbatim}
 
-The preceding example shows how so-called ``glue'' code can be embedded in R to quickly and effectively leverage Java solutions. The \pkg{jsr223} integration enables developers to embed code that uses Java objects in natural syntax. The example also demonstrates how \pkg{jsr223} intuitively converts Java data structures to R objects.
+\subsection{Extending Java classes}
 
-\subsection{Dynamic code implementing Java interfaces ///bad title}
+This example demonstrates using Java libraries from R and converting Java data structures to R objects. Specifically, we show how to use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. We create and use the objects in the Groovy language. Groovy syntax is very similar to the Java programming language; hence, it is a natural choice for Java integrations.
+
+The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}. The Groovy script engine file can be obtained by following the instructions under \hyperlink{script-engine-installation}{Script engine installation and instantiation} in this document. %///cite from https://stanfordnlp.github.io/CoreNLP/index.html#license
+
+The first step: create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. We create the object by using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
+
+
+Mention performance and how all data was transformed back in less than a second.
 
 Metropolis sampler
 
@@ -124,6 +138,26 @@ Markov chain Monte Carlo
 ///implementing interfaces
 ///returning data fast
 ///performance
+
+\begin{table}[h]
+\centering
+\label{tab:mcmc}
+\caption{Results of MCMC. Quantiles, acceptance ratio, and effective sample size (ESS).}  %///
+\begin{tabular}{lrrrrrrrr}
+\hline
+Parm & Chain & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & Acc. Ratio & ESS \\ 
+\hline
+$\pi$ &    1 & 0.294 & 0.463 & 0.543 & 0.611 & 0.714 & 0.235 & 1006 \\ 
+$\pi$ &    2 & 0.292 & 0.461 & 0.536 & 0.607 & 0.715 & 0.229 &  805 \\ 
+$\pi$ &    3 & 0.294 & 0.459 & 0.534 & 0.603 & 0.710 & 0.232 &  929 \\ 
+$\pi$ &    4 & 0.311 & 0.458 & 0.532 & 0.598 & 0.714 & 0.242 &  987 \\ 
+$\lambda$ &    1 & 0.955 & 1.331 & 1.571 & 1.843 & 2.422 & 0.315 & 1007 \\ 
+$\lambda$ &    2 & 0.937 & 1.340 & 1.563 & 1.820 & 2.409 & 0.316 & 1068 \\ 
+$\lambda$ &    3 & 0.939 & 1.321 & 1.560 & 1.808 & 2.395 & 0.316 & 1119 \\ 
+$\lambda$ &    4 & 0.953 & 1.325 & 1.546 & 1.823 & 2.359 & 0.314 & 1187 \\ 
+\hline
+\end{tabular}
+\end{table}
 
 \hypertarget{the-jsr223-package-implementation}{\section{The \pkg{jsr223} package implementation}}
 
