@@ -162,20 +162,20 @@ A \dfn{scripting engine} (usually shortened to \dfn{script engine}) is software 
 
 \section{Typical use cases}
 
-This section includes introductory examples that demonstrate the core functionality of the \pkg{jsr223} package. For a complete overview of \pkg{jsr223} features, see the \hyperlink{feature-documentation}{Feature documentation}.
+This section includes introductory examples that demonstrate the core functionality of the \pkg{jsr223} package. For a complete overview of \pkg{jsr223} features, see the \hyperlink{feature-documentation}{Feature documentation}. Following that section, we include specific documentation for each of the supported languages.
 
 \subsection{Using Java libraries}
 
-This example shows how so-called ``glue'' code can be embedded in R to quickly leverage sophisticated Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects.
+This introductory example shows how so-called ``glue'' code can be embedded in R to quickly leverage sophisticated Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects.
 
 %///probably put some of the writing about data exchange somewhere in this document.
 
 %///review every word and code item very closely. put this together after writing it first with groovy. changed the wording. make it very apparent that we can convert JS objects to R.
 %///cite stanford
 %This example demonstrates using Java libraries from R and converting Java data structures to R objects. 
-Specifically, we show how to use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}.
+We use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) Java libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}.
 
-The first step: create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
+The first step: create a \pkg{jsr223} \code{"ScriptEngine"} instance that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{"ScriptEngine"} object instance is assigned to the variable \code{engine}.
 
 \begin{verbatim}
 class.path <- c(
@@ -187,13 +187,12 @@ class.path <- c(
 library("jsr223")
 engine <- ScriptEngine$new("JavaScript", class.path)
 \end{verbatim}
-Now we can execute JavaScript source code. The \pkg{jsr223} interface provides several methods to execute code. In this example, we use the \code{\%@\%} operator which executes a code snippet and discards the return value, if any, instead of returning it to R. This code snippet, supplied as a character constant, imports the Stanford NLP \code{Document} class. This syntax is peculiar to the JavaScript language integration with Java. The resulting object, \code{DocumentClass} is a ///. It can be used to instantiate objects or access static methods.
+Now we can execute JavaScript source code. The \pkg{jsr223} interface provides several methods to execute code. In this example, we use the \code{\%@\%} operator; it  executes a code snippet and discards the return value, if any. The snippet in the following code example is supplied as a character constant. It imports the Stanford NLP \code{"Document"} class. This syntax is peculiar to the JavaScript dialect. The resulting object, \code{DocumentClass}, can be used to instantiate objects or access static methods.
 
 \begin{verbatim}
 engine %@% 'var DocumentClass = Java.type("edu.stanford.nlp.simple.Document");'
 \end{verbatim}
-
- and defines a JavaScript function named \code{getPartsOfSpeech}. The function tags each element in a text with the corresponding grammatical part of speech. ///describe the return value being built.
+The next code sample defines a JavaScript function named \code{getPartsOfSpeech}. It tags each element in a text with a grammatical part of speech (e.g., noun, adjective, verb). The text is parsed by a new instance of the \code{"Document"} class using the \code{DocumentClass} object we created in the script above. The result is a list of JavaScript objects. Each JavaScript object contains the information for a single sentence.
 
 \begin{verbatim}
 engine %@% '
@@ -214,8 +213,7 @@ engine %@% '
   }
 '
 \end{verbatim}
-%///maybe make a comment about how concise the JS code is.
-Finally, we use \code{engine\$invokeFunction} to call \code{getPartsOfSpeech} from R. The \code{invokeFunction} method takes the name of the function as the first parameter and any number of function parameters. The \pkg{jsr223} package automatically converts the function's return value to R objects. In this case, it intuitively converts the list of JavaScript objects to a list of R data frames. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
+We use \code{engine\$invokeFunction} to call \code{getPartsOfSpeech} from R. The \code{invokeFunction} method takes the name of the function as the first parameter and any number of function parameters. The \pkg{jsr223} package automatically converts the function's return value to R objects. In this case, it intuitively converts the list of JavaScript objects to a list of R data frames. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
 
 \begin{verbatim}
 engine$invokeFunction(
@@ -245,15 +243,51 @@ engine$invokeFunction(
 ## 5        .       .           72         73
 \end{verbatim}
 
-\subsection{Extending Java classes}
+In this example, we effectively leveraged Stanford's CoreNLP library with a minimum amount of code. This same functionality can be easily replicated in any of the \pkg{jsr223} supported programming languages.
+
+\subsection{Dynamic behavior for existing solutions}
+
+One of the most powerful features in modern programming is the ability to modify the behavior of existing solutions by defining custom methods or classes. In this example, we define a custom density function for a multi-threaded Metropolis-Hastings sampler. We do so by extending (i.e., subclassing) a Java abstract class. We could have implemented this solution using anonymous classes, lambda functions, or closures. These approaches usually require less code, and they are supported within the various languages supported by \pkg{jsr223}. However, these approaches did not execute as quickly in this application. We wish to optimize performance for this MCMC sampler.
+
+The Groovy scripting language follows the Java programming language very closely; hence, it is a natural choice for Java integrations. We use Groovy for this example to demonstrate how advanced Java solutions can be implemented in R using Java-like code. As such, those familiar with Groovy may notice that our code is unnecessarily strict.
+
+For this example, we consider a Bayesian analysis for count data, $y_1,\dots,y_n$ that we believe to be independently and identically distributed according to a zero-inflated Poisson sampling model where $0 < \pi < 1$ and $\lambda > 0$:
+
+\begin{align*}
+\text{Pr}(y_i = 0 \mid \pi, \lambda) &= \pi + (1-\pi) \exp(-\lambda) \\
+\text{Pr}(y_i = k \mid \pi, \lambda) &= (1  -\pi) \frac{\lambda^k \exp(-\lambda)}{k!}, \quad \text{for } k = 1, 2, \ldots
+\end{align*}
+
+We choose 
+
+This solution employs two scripts: (i) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results; and (ii) a Groovy script to extend and execute the Metropolis-Hastings sampler class.
+
+We describe the Groovy script first. Though the script here is presented in parts, it must be 
+
+\begin{enumerate}
+\item 
+\end{enumerate}
+
+%///citations, links.
+As in the previous example, we create an instance of \code{"ScriptEngine"} by providing the script language name and the necessary class paths. In this case, the class paths include the Groovy script engine, our JAR file that contains the Metropolis-Hastings sampler, and the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library}. These JAR files are available in our GitHub examples (\url{https://github.com/floidgilbert/jsr223/tree/master/examples}).
+
+\begin{verbatim}
+library("jsr223")
+
+class.path <- c(
+  "~/groovy-all-2.4.7.jar",
+  "~/org.fgilbert.jsr223.examples-0.3.0.jar",
+  "~/commons-math3-3.6.1.jar"
+)
+
+engine <- ScriptEngine$new("Groovy", class.path)
+\end{verbatim}
+
+
 
 ///it is possible to use Groovy closures or anonymous classes to do the same thing with less code (no need to extend a class...pass the method as a function to sample, but it's twice as slow in our tests). so far, formally extending an anonymous class is the fastest under these circumstances.
 With four threads using Intel i7-5500U @
 %# 2.40Ghz, 8GB RAM, our timings averaged 68 milliseconds per call.
-
-This example demonstrates using Java libraries from R and converting Java data structures to R objects. Specifically, we show how to use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. We create and use the objects in the Groovy language. Groovy syntax is very similar to the Java programming language; hence, it is a natural choice for Java integrations.
-
-The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}. The Groovy script engine file can be obtained by following the instructions under \hyperlink{script-engine-installation}{Script engine installation and instantiation} in this document. %///cite from https://stanfordnlp.github.io/CoreNLP/index.html#license
 
 The first step: create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. We create the object by using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
 
@@ -287,6 +321,8 @@ $\lambda$ &    4 & 0.953 & 1.325 & 1.546 & 1.823 & 2.359 & 0.268 & 1187 \\
 \hline
 \end{tabular}
 \end{table}
+
+conclusion. Compiled code offers significant performance benefits. Yet, dynamic behavior can still be implemented. Changing the behavior of an existing usually is done through passing functions as parameters or 
 
 \subsection{Using other language libraries}
 
@@ -585,7 +621,7 @@ All \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}. 
 
 \subsection{Setting and getting script engine options}
 
-The \pkg{jsr223} \code{ScriptEngine} class exposes several methods that control settings for a script engine instance. These methods are named using the Java getter/setter convention: methods that set values are prefixed with ``set'' and methods that retrieve values begin with ``get''. For example, if \code{engine} is a script engine object, \code{engine\$setArrayOrder('column-major')} will change the \textit{array order} setting. The code \code{engine\$getArrayOrder()} will retrieve the current \textit{array order} setting.
+The \pkg{jsr223} \code{"ScriptEngine"} class exposes several methods that control settings for a script engine instance. These methods are named using the Java getter/setter convention: methods that set values are prefixed with ``set'' and methods that retrieve values begin with ``get''. For example, if \code{engine} is a script engine object, \code{engine\$setArrayOrder('column-major')} will change the \textit{array order} setting. The code \code{engine\$getArrayOrder()} will retrieve the current \textit{array order} setting.
 
 \hypertarget{handling-r-vectors}{}
 \subsection{Handling R vectors}
@@ -1826,7 +1862,7 @@ To execute source code in a file, use the script engine object's \code{source} m
 
 In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} does include a high-level interface for invoking object methods. It uses the Java reflection API to automatically locate the correct method signature. This is an impressive feature, but according to the \pkg{rJava} web site, its high-level interface is experimental and does not work correctly for all scenarios. There are no such limitations for the \pkg{jsr223} scripting languages.
 
-The \pkg{jsr223} languages also feature support for advanced object-oriented constructs. For example, classes can be extended and interfaces can be implemented using any language. These features allow developers to quickly implement sophisticated solutions in R without developing, compiling, and distributing custom Java classes.
+The \pkg{jsr223} languages also feature support for advanced object-oriented constructs. For example, classes can be extended and interfaces can be implemented using any language. These features allow developers to quickly implement sophisticated solutions in R without developing, compiling, and distributing custom Java classes. This can speed the development and distribution cycle significantly.
 
 The \pkg{rJava} package supports exchanging scalars, arrays, and matrices between R and Java. The following R code demonstrates converting an R matrix to a Java object, and vice versa, using \pkg{rJava}.
 
@@ -1850,7 +1886,7 @@ engine$a <- a
 engine$a
 \end{verbatim}
 
-The \pkg{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \pkg{JRI}: the Java/R Interface. To use \pkg{JRI}, R must be compiled with the shared library option \samp{-{}-enable-R-shlib}. The \pkg{JRI} interface is technical and extensive. In contrast, \pkg{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \pkg{jsr223} package does not use \pkg{JRI}, so there is no requirement for R to be compiled as a shared library.
+The \pkg{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \pkg{JRI}: the Java/R Interface. The \pkg{JRI} interface is included with \pkg{rJava}. However, to use \pkg{JRI}, R must be compiled with the shared library option \samp{-{}-enable-R-shlib}. The \pkg{JRI} interface is technical and extensive. In contrast, \pkg{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \pkg{jsr223} package does not use \pkg{JRI}, so there is no requirement for R to be compiled as a shared library.
 
 In conclusion, \pkg{jsr223} provides an alternative integration for the Java platform that is easy to learn and use.
 
@@ -1975,25 +2011,13 @@ Renjin can be used as a library in GNU R. Their package cannot be installed from
 
 Overall, Renjin is a promising Java solution for R, but it is not fully developed. In comparison, \pkg{jsr223} presents a viable Java solution for R today.
 
-\section{Conclusion}
+\section{Limitations and issues}
 
-///
-%In all, \pkg{jsr223} significantly extends the computing capabilities of the R software environment.
-%///people can use tools they know. Java is more accessible.
-%can use for other languages.
-%fits the R everything.
-%simple to use.
-%easy to learn.
+All limitations and issues are managed via the GitHub issue tracker at \url{https://github.com/floidgilbert/jsr223/issues}. Be default, the tracker lists only open issues.
 
-%\textsc{The examples given above show how the anchoredDistr package allows flexible post-processing of
-%results by virtue of the MAD software such that users can apply their own post-processing analyses,
-%such as dimension-reduction techniques. The first example shown here is available as external and
-%internal datasets in the anchoredDistr package. The second example is also included in anchoredDistr
-%and is further detailed in the package vignette. The release version of the anchoredDistr package
-%is hosted on CRAN and the development version is hosted on GitHub, which can be accessed
-%by calling devtools::install_github("hsavoy/anchoredDistr") or by downloading from http://
-%hsavoy.github.io/anchoredDistr.}
-%
+\section{Summary}
+
+Java is one of the most popular development platforms of all time, and it continues to grow in popularity as more languages, tools, and technologies employ the JVM. The \pkg{jsr223} package is a high-level, user-friendly interface that enables R developers to more easily tap into Java solutions. The unified integration interface with Groovy, JavaScript, Python, Ruby, and Kotlin also facilitates access to solutions developed in these languages. In all, \pkg{jsr223} significantly extends the computing capabilities of the R software environment.
 
 \section{Document version history}
 
