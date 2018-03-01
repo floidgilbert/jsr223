@@ -4,6 +4,9 @@ engines
 R/jsr223/.Rproj.user
 java/archive
 java/org.fgilbert.jsr223/bin
-java/org.fgilbert.jsr223.examples/bin
+java/org.fgilbert.jsr223/src/nodist
+examples/Java/org.fgilbert.jsr223.examples/bin
+examples/Java/org.fgilbert.jsr223.examples/src/nodist
+private
 temp
 .Rproj.user

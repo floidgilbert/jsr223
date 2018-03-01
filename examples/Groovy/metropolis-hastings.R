@@ -1,16 +1,39 @@
+# This script requires 'metropolis-hastings.groovy' which can be located in the
+# same folder. The required JAR files can be found in the root of the examples
+# folder.
+#
+# The example demonstrates dynamic code behavior by extending an abstract Java
+# class, MhSamplerUnivariateProposal. The class defines an abstract method,
+# logPosterior, that can be implemented in script (Groovy, in this case).
+#
+# This example also demonstrates script compiling and dynamic bindings.
+#
+# The basic idea: We are performing a Bayesian analysis for a zero-inflated
+# Poisson model with Beta and Gamma priors. The parameters of interest are pi
+# and lambda. We wish to draw samples from the posterior using a
+# high-performance, multi-threaded Java class that implements the
+# Metropolis-Hasting algorithm.
+#
+# See comments in this script and 'metropolis-hastings.groovy' for more
+# information.
+#
+# The Metropolis-Hasting sampler classes are located in
+# examples/Java/org.fgilbert.jsr223.examples.
+
 #  ------------------------------------------------------------------------
 library("jsr223")
-library("xtable")
 
 class.path <- c(
-  "D:\\Offline\\Work\\jsr223\\engines\\groovy-all-2.4.7.jar",
-  "D:\\Offline\\Work\\jsr223\\examples\\org.fgilbert.jsr223.examples-0.3.0.jar",
-  "D:\\Offline\\Work\\jsr223\\examples\\commons-math3-3.6.1.jar"
+  "~/groovy-all-2.4.7.jar",
+  "~/org.fgilbert.jsr223.examples-0.3.0.jar",
+  "~/commons-math3-3.6.1.jar"
 )
 
 engine <- ScriptEngine$new("Groovy", class.path)
 
-# Initial values for four seperate chains
+# The sampler takes initial values for each chain. Each chain can be run on a
+# separate thread. The parameters are pi (0 <= pi <= 1) and lambda (0 =>
+# lambda).
 starting.values <- rbind(
   c(0.999, 0.001)
   , c(0.001, 0.001)
@@ -18,6 +41,23 @@ starting.values <- rbind(
   , c(0.999, 30)
 )
 
+# These bindings will be accessed as global variables in the Groovy environment.
+#
+# `alpha`, `beta`, `theta`, and `kappa` are parameters for the Beta and Gamma
+# priors, respectively. The are used to define the posterior function.
+#
+# `data` is an array of the data values. In this case, counts.
+#
+# `proposalVariances` are the variance parameters for the proposal distributions
+# (both Gaussian).
+#
+# `startingValues` are the starting values for each chain.
+#
+# `iterations` are the number of iterations for each chain.
+#
+# `threads` the number of threads to use. Chains are allocated to threads. If
+# there are more chains than threads, the threads will be recycled.
+#
 bindings <- list(
   alpha = 1,
   beta = 1,
@@ -29,15 +69,36 @@ bindings <- list(
   iterations = 10000L,
   threads = parallel::detectCores()
 )
+
+# Compile the Groovy script to Java byte code. This approach is recommended only
+# for unstructured code (i.e., code not encapsulated in methods or functions).
+# Otherwise, define functions/methods and call them with engine$invokeMethod or
+# engine$invokeFunction.
 cs <- engine$compileSource("metropolis-hastings.groovy")
+
+# Execute the compiled code, passing in the bindings as a list. The bindings
+# are accessable as global variables in the script.
 r <- cs$eval(bindings = bindings)
 
+# We can change the bindings and execute the compiled code again with different
+# parameters. We do not need to recompile the script. It is very similar to
+# calling a function. Here, we adjust the variance for the second proposal
+# function.
+bindings$proposalVariances[2] <- 1.5^2
+r <- cs$eval(bindings = bindings)
 
 # Benchmark ---------------------------------------------------------------
-microbenchmark::microbenchmark(cs$eval(bindings = bindings), times = 50L)
 
+# Display the timings for evaluation.
+microbenchmark::microbenchmark(cs$eval(bindings = bindings), times = 20L)
+
+# Display the timings for evaluation when return value is discarded. This shows
+# about how much time is required to convert the Java data strucutures to R
+# objects.
+microbenchmark::microbenchmark(cs$eval(bindings = bindings, discard.return.value = TRUE), times = 20L)
 
 # Summarize MCMC Results --------------------------------------------------
+
 parameter.names <- c("pi", "lambda")
 parameter.count <- length(parameter.names)
 chain.count <- length(r)
@@ -63,6 +124,6 @@ df <- data.frame(rep(parameter.names, each = chain.count), table)
 colnames(df) <- c("Parameter", "Chain", "2.5%", "25%", "50%", "75%", "97.5%", "Acc. Ratio", "ESS")
 df
 
-xt <- xtable(df, label = "tab:abc", digits = 3, display = c("d", "s", "d", "f", "f", "f", "f", "f", "f", "d"))
-print(xt, include.rownames = FALSE, caption.placement = "top")
+xt <- xtable::xtable(df, label = "tab:abc", digits = 3, display = c("d", "s", "d", "f", "f", "f", "f", "f", "f", "d"))
+xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
 
