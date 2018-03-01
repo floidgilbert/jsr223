@@ -126,7 +126,7 @@ In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed
 %///link and cite all languages here.
 Our \CRANpkg{jsr223} package builds on \pkg{rJava} to make Java libraries easier to use from within R. We achieve this by embedding other programming languages in R that can, in turn, use Java objects in natural syntax. As we show in the \hyperlink{rjava-software-review}{\pkg{rJava} software review}, this approach is generally simpler and more intuitive than \pkg{rJava}'s low-level JNI interface. To date, \pkg{jsr223} supports embedding five programming languages that target the Java platform: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) Besides providing simplified access to Java libraries, \pkg{jsr223} also makes countless existing solutions in these supported programming languages immediately available to R developers. For example, Ruby gems can be embedded in R and popular JavaScript libraries can be sourced directly from the Internet.
 
-The \pkg{jsr223} package features extensive, configurable data exchange between R and Java. R vectors, factors, n-dimensional arrays, data frames, lists, and environments are converted to standard Java objects. Java scalars, n-dimensional arrays, maps, and collections are inspected for content and converted to the most appropriate R structure (i.e., vectors, n-dimensional arrays, data frames, or lists). Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. Many language integrations for R provide a comparable feature set by using JSON (JavaScript Object Notation) libraries. In contrast, the \pkg{jsr223} package implements data exchange using custom Java routines to avoid the serialization overhead and the loss of floating point precision inherent in JSON data conversion.
+The \pkg{jsr223} package features extensive, configurable data exchange between R and Java. R vectors, factors, n-dimensional arrays, data frames, lists, and environments are converted to standard Java objects. Java scalars, n-dimensional arrays, maps, and collections are inspected for content and converted to the most appropriate R structure (i.e., vectors, n-dimensional arrays, data frames, or lists). In addition, \pkg{jsr223} supports converting most scripting language data structures to R objects (e.g., JavaScript objects and Python tuples). Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. Many language integrations for R provide a comparable feature set by using JSON (JavaScript Object Notation) libraries. In contrast, the \pkg{jsr223} package implements data exchange using custom Java routines to avoid the serialization overhead and the loss of floating point precision inherent in JSON data conversion.
 
 Other distinguishing features of the \pkg{jsr223} package include a simple callback interface to access the R environment from embedded scripts, script compiling, and string interpolation. In all, \pkg{jsr223} lowers the barrier to using sophisticated Java solutions from within R.
 
@@ -166,7 +166,7 @@ This section includes introductory examples that demonstrate the core functional
 
 \subsection{Using Java libraries}
 
-This example shows how so-called ``glue'' code can be embedded in R to quickly leverage Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects.
+This example shows how so-called ``glue'' code can be embedded in R to quickly leverage sophisticated Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects.
 
 %///probably put some of the writing about data exchange somewhere in this document.
 
@@ -573,7 +573,7 @@ engine$myValue2
 ## [1] 6
 \end{verbatim}
 
-All data structures in Java-based scripting languages are backed by Java objects. Discover the Java class for any global variable using  \code{engine\$getJavaClassName("identifier")} where \code{identifier} is the variable's name.
+All data structures in Java-based languages are backed by Java objects. Hence, \pkg{jsr223} can usually convert what appears to be a native language construct to an appropriate R object (e.g. JavaScript objects and Python tuples). Discover the Java class for any global variable using  \code{engine\$getJavaClassName("identifier")} where \code{identifier} is the variable's name.
 
 Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but it was broken out into a separate package to simplify maintenance and to make its features available to other developers.
 
@@ -1191,7 +1191,7 @@ The popularity of JavaScript has overflowed the arena of web development into st
 
 \href{https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/}{Nashorn} is the JavaScript dialect included in Java 8. Nashorn implements ECMAScript 5.1. No download is required to use JavaScript with \pkg{jsr223}. JavaScript Nashorn provides wide support for Java classes, including the ability to extend classes and implement interfaces. For details, see the \href{https://docs.oracle.com/javase/8/docs/technotes/guides/scripting/nashorn/}{official Nashorn documentation}.
 
-Data in JavaScript objects be converted to R named lists or data frames, depending on content. The following converts a simple JavaScript object to an R named list.
+Data in JavaScript objects can be converted to R named lists or data frames, depending on content. The following converts a simple JavaScript object to an R named list. Other native JavaScript types, such as lists, are also converted to R objects.
 
 \begin{verbatim}
 engine %@% 'var person = {fname:"Jim", lname:"Hyatt", title:"Principal"};'
@@ -1370,13 +1370,14 @@ engine$invokeMethod(
 
 Like R, the \href{https://www.python.org/}{Python} programming language is used widely in science and analytics. Python has many powerful language features, yet it is known for being concise and easy to read. The \href{http://www.jython.org/}{Jython} project has migrated core Python to the Java platform. This implementation does not include popular libraries such as NumPy and SciPy. These libraries compile to machine code and, as such, they are not compatible with the JVM. However, JVM implementations of some Python native libraries are being developed in a related project, \href{http://www.jyni.org/}{JyNI} (the Jython Native Interface). To include these libraries in a \pkg{jsr223} solution, download the JyNI JAR file and include it in the class path when instantiating a Jython script engine.
 
+The \pkg{jsr223} package automatically converts most of the core Python data structures to equivalent R objects. For example, lists, tuples, and sets are converted to R vectors; dicts are converted to R data frames or named lists, depending on content.
+
 \subsection{Python idiosyncrasies}
 
 Leading white space is significant in Python; it is used to delimit code blocks. Avoid syntax errors by left-aligning code in multi-line string snippets as shown in the examples.
 
 \subsection{Python and Java classes}
 
-%///make sure it is clear that you don't need to use java classes. we can convert most python types (lists, tuples.)
 To create a Java object in Python, simply import the associated package and call the class constructor. The \href{https://wiki.python.org/jython/NewUsersGuide}{Jython User Guide} provides further details for using Java classes. This example generates a random number using the \code{java.util.Random} class. Notice that the Python code is not indented; leading white space is significant.
 
 \begin{verbatim}
@@ -1418,7 +1419,7 @@ engine$myArray
 
 \subsection{A simple Python HTTP server}
 
-This code sample creates a simple HTTP server. It demonstrates calling Python class members from R and calling R code from Python. The Python script below defines two classes: the \code{MyHandler} class processes HEAD and GET requests for the server; and the \code{MyServer} class is used from an R script to start and stop the web server. The Python code is adapted from the \href{https://wiki.python.org/moin/BaseHttpServer}{Python Wiki}.
+This code sample creates a simple HTTP server using core Python features and libraries. It demonstrates calling Python class members from R and calling R code from Python. The Python script below defines two classes: the \code{MyHandler} class processes HEAD and GET requests for the server; and the \code{MyServer} class is used from an R script to start and stop the web server. The Python code is adapted from the \href{https://wiki.python.org/moin/BaseHttpServer}{Python Wiki}.
 
 \begin{verbatim}
 import time
@@ -1511,6 +1512,8 @@ runServer(60)
 \section{R with Ruby}
 
 The \href{https://www.ruby-lang.org}{Ruby} programming language is a general-purpose, object-oriented programming language invented by Yukihiro Matsumoto. According to Matsumoto, he designed the language to ``help every programmer in the world to be productive, and to enjoy programming, and to be happy'' \citep{rubyvideo}. \href{http://jruby.org/}{JRuby} is a Java implementation of the Ruby language. It is compatible with the popular web application framework \href{http://rubyonrails.org/}{Ruby on Rails}.
+
+The \pkg{jsr223} package automatically converts the primary Ruby data structures to equivalent R objects (e.g. Ruby n-dimensional arrays and hashes).
 
 \subsection{Ruby idiosyncrasies}
 
@@ -1647,7 +1650,7 @@ end
 "
 
 # Retrieve 5 fake profiles. The Ruby hash of same-length arrays will be
-# automatically converted to a dataframe.
+# automatically converted to a data frame.
 engine$invokeFunction("random_profile", 5)
 
 ##     fname      lname                            title
@@ -1970,6 +1973,8 @@ In all, \pkg{jsr223} provides a more complete integration for Jython than \pkg{r
 
 Renjin can be used as a library in GNU R. Their package cannot be installed from CRAN; instead, find the installation instructions at their web site \url{http://www.renjin.org/}. The Renjin R package has a single method that evaluates an R expression. It is designed to improve execution performance for GNU R expressions. It does allow Java classes to be used in R script. Hence, it the Renjin package is not Java platform integration for R.
 
+Overall, Renjin is a promising Java solution for R, but it is not fully developed. In comparison, \pkg{jsr223} presents a viable Java solution for R today.
+
 \section{Conclusion}
 
 ///
@@ -2001,7 +2006,6 @@ Renjin can be used as a library in GNU R. Their package cannot be installed from
 \begin{description}
 \item[2016-03-06] Initial release.
 \end{description}
-
 
 \renewcommand{\refname}{References} % For modifying the bibliography heading
 
