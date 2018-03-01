@@ -37,8 +37,8 @@ public class Sampler extends MhSamplerUnivariateProposal {
   }
 
   // Implement the abstract method logPosterior.
-	@Override
-	public double logPosterior(double[] values) {
+  @Override
+  public double logPosterior(double[] values) {
     double pi = values[0];
     double lambda = values[1];
     if (pi <= 0 || pi >= 1 || lambda < 0)
@@ -48,7 +48,7 @@ public class Sampler extends MhSamplerUnivariateProposal {
       dataZeroCount * log(pi + (1 - pi) * exp(-lambda)) +
       dataPositiveCount * log((1 - pi) * exp(-lambda)) +
       dataSum * log(lambda);
-	}
+  }
 }
 
 /*

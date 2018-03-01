@@ -251,22 +251,71 @@ One of the most powerful features in modern programming is the ability to modify
 
 The Groovy scripting language follows the Java programming language very closely; hence, it is a natural choice for Java integrations. We use Groovy for this example to demonstrate how advanced Java solutions can be implemented in R using Java-like code. As such, those familiar with Groovy may notice that our code is unnecessarily strict.
 
-For this example, we consider a Bayesian analysis for count data, $y_1,\dots,y_n$ that we believe to be independently and identically distributed according to a zero-inflated Poisson sampling model where $0 < \pi < 1$ and $\lambda > 0$:
+For this example, we consider a Bayesian analysis for count data $y_1,\dots,y_n$. We believe the data to be independently and identically distributed according to a zero-inflated Poisson sampling model where $0 < \pi < 1$ and $\lambda > 0$:
 
 \begin{align*}
 \text{Pr}(y_i = 0 \mid \pi, \lambda) &= \pi + (1-\pi) \exp(-\lambda) \\
 \text{Pr}(y_i = k \mid \pi, \lambda) &= (1  -\pi) \frac{\lambda^k \exp(-\lambda)}{k!}, \quad \text{for } k = 1, 2, \ldots
 \end{align*}
 
-We choose 
+We choose independent priors $\pi \sim \text{Beta}(\alpha,\beta)$, $\lambda \sim \text{Gamma}(\theta,\kappa)$. In our analysis, we use a Metropolis-Hastings sampler with separate Gaussian proposal densities for $\pi$ and $\lambda$.
 
-This solution employs two scripts: (i) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results; and (ii) a Groovy script to extend and execute the Metropolis-Hastings sampler class.
+Our analysis employs two scripts: (i) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results; and (ii) a Groovy script to extend and execute the Metropolis-Hastings sampler class.
 
-We describe the Groovy script first. Though the script here is presented in parts, it must be 
+We describe the Groovy script first. Though the script is presented here in parts, it must be executed as one complete script. Download the complete scripts from the \pkg{jsr223} GitHub page.
 
-\begin{enumerate}
-\item 
-\end{enumerate}
+First, we import the necessary classes:
+
+\begin{verbatim}
+import static java.lang.Math.*;
+import org.fgilbert.jsr223.examples.MhSamplerUnivariateProposal;
+import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
+\end{verbatim}
+
+\begin{itemize}
+\item \code{import static java.lang.Math.*} imports all of the static methods of the \code{"Math"} class.
+\item \code{"MhSamplerUnivariateProposal"} is the abstract class that implements the Metropolis-Hastings sampler.
+\item \code{"ProposalDistributionUnivariateNormal"} is a univariate normal implementation of the proposal distribution interface \code{"MhSamplerUnivariateProposal"}.
+\end{itemize}
+
+The Groovy code below defines a class \code{\"Sampler\"} that extends \code{\"MhSamplerUnivariateProposal\"}. The constructor method takes values for the prior and computes sufficient statistics for the posterior function. These values are stored as local variables. The method 
+
+\begin{verbatim}
+public class Sampler extends MhSamplerUnivariateProposal {
+  private double alpha, beta, theta, kappa;
+  private double dataLength, dataSum, dataZeroCount, dataPositiveCount;
+
+  // Constructor for our subclass.
+  public Sampler(double alpha, double beta, double theta, double kappa, int[] data) {
+    this.alpha = alpha;
+    this.beta = beta;
+    this.theta = theta;
+    this.kappa = kappa;
+
+    dataLength = data.length;
+    for (int i = 0; i < dataLength; i++) {
+      dataSum += data[i];
+      if (data[i] == 0)
+        dataZeroCount++;
+    }
+    dataPositiveCount = dataLength - dataZeroCount
+  }
+
+  // Implement the abstract method logPosterior.
+  @Override
+  public double logPosterior(double[] values) {
+    double pi = values[0];
+    double lambda = values[1];
+    if (pi <= 0 || pi >= 1 || lambda < 0)
+      return Double.NEGATIVE_INFINITY;
+    return (alpha - 1) * log(pi) + (beta - 1) * log(1 - pi) +
+      (theta - 1) * log(lambda) - kappa * lambda +
+      dataZeroCount * log(pi + (1 - pi) * exp(-lambda)) +
+      dataPositiveCount * log((1 - pi) * exp(-lambda)) +
+      dataSum * log(lambda);
+  }
+}
+\end{verbatim}
 
 %///citations, links.
 As in the previous example, we create an instance of \code{"ScriptEngine"} by providing the script language name and the necessary class paths. In this case, the class paths include the Groovy script engine, our JAR file that contains the Metropolis-Hastings sampler, and the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library}. These JAR files are available in our GitHub examples (\url{https://github.com/floidgilbert/jsr223/tree/master/examples}).
