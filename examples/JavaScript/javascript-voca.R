@@ -18,8 +18,13 @@ engine %~% "v.prune('A long string to prune.', 12);"
 
 ## [1] "A long..."
 
+# Methods can be invoked from within R using parameters.
+engine$invokeMethod("v", "prune", "A long string to prune.", 12)
+
+## [1] "A long..."
+
 # Provide a different suffix to 'prune'.
-engine %~% "v.prune('A long string to prune.', 16, ' (more)');"
+engine$invokeMethod("v", "prune", "A long string to prune.", 12, "(more)")
 
 ## [1] "A long (more)"
 
@@ -33,7 +38,7 @@ v('Voca chaining example')
 ## [1] "voca"     "chaining" "example"
 
 # Split graphemes.
-engine %~% "v.graphemes('cafe\u0301');"
+engine$invokeMethod("v", "graphemes", "cafe\u0301")
 
 ## [1] "c" "a" "f" "é"
 
@@ -42,17 +47,24 @@ engine %~% "v.wordWrap('A long string to wrap', {width: 10});"
 
 ## [1] "A long\nstring to\nwrap"
 
+# Notice above, the second method parameter is a JavaScript object. We can still
+# use invokeMethod as follows.
+engine$invokeMethod(
+  "v",
+  "wordWrap",
+  "A long sentence to wrap using Voca methods.",
+  list(width = 20)
+)
+
+## [1] "A long\nstring to\nwrap"
+
 # Word wrapping with custom delimiters.
-engine %~% "
-v.wordWrap(
-  'A long string to wrap',
-  {
-    width: 10,
-    newLine: '<br/>',
-    indent: '__'
-  }
-);
-"
+engine$invokeMethod(
+  "v",
+  "wordWrap",
+  "A long sentence to wrap using Voca methods.",
+  list(width = 20, newLine = "<br>", indent="__")
+)
 
 ## [1] "__A long<br/>__string to<br/>__wrap"
 

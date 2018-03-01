@@ -46,6 +46,8 @@ dottedtoc % Dotted lines leading to the page numbers in the table of contents
 \bibliographystyle{abbrvnat}
 \usepackage{microtype}
 \DisableLigatures[-]{family=tt*}
+\usepackage{fancyvrb}
+\usepackage{alltt}
 
 % Redefine section so it isn't all caps.
 \usepackage{titlesec}
@@ -84,6 +86,8 @@ pdfproducer={LaTeX with hyperref and ClassicThesis} % PDF producer
 \newcommand{\kbd}[1]{{\normalfont\texttt{#1}}}
 \newcommand{\key}[1]{{\normalfont\texttt{\uppercase{#1}}}}
 \newcommand{\strong}[1]{\texorpdfstring{{\normalfont\fontseries{b}\selectfont #1}}{#1}}
+\DefineVerbatimEnvironment{example}{Verbatim}{}
+\renewenvironment{example*}{\begin{alltt}}{\end{alltt}}
 
 \hyphenation{Fortran hy-phen-ation} % Specify custom hyphenation points in words with dashes where you would like hyphenation to occur, or alternatively, don't put any dashes in a word to stop hyphenation altogether
 
@@ -284,16 +288,30 @@ $\lambda$ &    4 & 0.953 & 1.325 & 1.546 & 1.823 & 2.359 & 0.268 & 1187 \\
 \end{tabular}
 \end{table}
 
-\subsection{Using other solutions}
+\subsection{Using other language libraries}
 
-In addition to using Java libraries, \pkg{jsr223} can easily take advantage of solutions written in other languages. In some cases, integration is as simple as sourcing a script file. For example, many of the ///
+In addition to using Java libraries, \pkg{jsr223} can easily take advantage of solutions written in other languages. In some cases, integration is as simple as sourcing a script file. For example, many common JavaScript libraries like \href{http://underscorejs.org/}{Underscore} and \href{https://vocajs.com/}{Voca} can be sourced using a URL. The following script sources Voca and parses a string. See \hyperlink{using-javascript-solutions-voca}{Using JavaScript Solutions - Voca} for a more in-depth example.
 
 \begin{verbatim}
 engine$source(
   "https://raw.githubusercontent.com/panzerdp/voca/master/dist/voca.min.js",
   discard.return.value = TRUE
 )
+engine$invokeMethod(
+  "v", 
+  "wordWrap", 
+  "A long sentence to wrap using Voca methods.", 
+  list(width = 20)
+)
+
+## [1] "A long sentence to\nwrap using Voca\nmethods."
 \end{verbatim}
+
+Compiled Groovy and Kotlin libraries are accessed in the same way as Java libraries: simply include the relevant class or JAR files in the class path when you create the script engine.
+
+The section \hyperlink{r-with-ruby}{R with Ruby} includes a detailed example of using Ruby gems (i.e., libraries) in R. Specifically, the example shows how to generate fake entities for demonstration data sets.
+
+The core Python libraries and language features are fully accessible via \pkg{jsr223}. However, compatibility with many Python libraries is limited. Please see \hyperlink{r-with-python}{R with Python} for more information. That section also includes a code example that uses core Python to implements a simple HTTP server. The server uses callbacks into R to generate content.
 
 \hypertarget{installation}{}
 \section{Installation}
@@ -1278,6 +1296,7 @@ replicate(3, engine$invokeFunction("sample"))
 engine$terminate()
 \end{verbatim}
 
+\hypertarget{using-javascript-solutions-voca}{}
 \subsection{Using JavaScript solutions - Voca}
 
 The \pkg{jsr223} package enables developers to access solutions developed in other languages by simply sourcing a script file. For example, \href{https://vocajs.com/}{Voca} is a popular string manipulation library that simplifies many difficult tasks such as word wrapping and diacritic detection (e.g., the “\'{e}” caf\'{e}). Using Voca with \pkg{jsr223} is simply a matter of sourcing a single script file. This sample script loads Voca and demonstrates its functionality.
@@ -1295,8 +1314,13 @@ engine %~% "v.prune('A long string to prune.', 12);"
 
 ## [1] "A long..."
 
+# Methods can be invoked from within R using parameters.
+engine$invokeMethod("v", "prune", "A long string to prune.", 12)
+
+## [1] "A long..."
+
 # Provide a different suffix to 'prune'.
-engine %~% "v.prune('A long string to prune.', 16, ' (more)');"
+engine$invokeMethod("v", "prune", "A long string to prune.", 12, "(more)")
 
 ## [1] "A long (more)"
 
@@ -1310,7 +1334,7 @@ v('Voca chaining example')
 ## [1] "voca"     "chaining" "example"
 
 # Split graphemes.
-engine %~% "v.graphemes('cafe\u0301');"
+engine$invokeMethod("v", "graphemes", "cafe\u0301")
 
 ## [1] "c" "a" "f" "é"
 
@@ -1319,17 +1343,24 @@ engine %~% "v.wordWrap('A long string to wrap', {width: 10});"
 
 ## [1] "A long\nstring to\nwrap"
 
+# Notice above, the second method parameter is a JavaScript object. We can still
+# use invokeMethod as follows.
+engine$invokeMethod(
+  "v", 
+  "wordWrap", 
+  "A long sentence to wrap using Voca methods.", 
+  list(width = 20)
+)
+
+## [1] "A long\nstring to\nwrap"
+
 # Word wrapping with custom delimiters.
-engine %~% "
-v.wordWrap(
-  'A long string to wrap',
-  {
-    width: 10,
-    newLine: '<br/>',
-    indent: '__'
-  }
-);
-"
+engine$invokeMethod(
+  "v", 
+  "wordWrap", 
+  "A long sentence to wrap using Voca methods.", 
+  list(width = 20, newLine = "<br>", indent="__")
+)
 
 ## [1] "__A long<br/>__string to<br/>__wrap"
 \end{verbatim}
