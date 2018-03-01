@@ -126,15 +126,13 @@ The \pkg{jsr223} package features extensive, configurable data exchange between 
 
 Other distinguishing features of the \pkg{jsr223} package include a simple callback interface to access the R environment from embedded scripts, script compiling, and string interpolation. In all, \pkg{jsr223} lowers the barrier to using sophisticated Java solutions from within R.
 
-Package script engine installation instructions and complete feature documentation are available in the \pkg{jsr223} package vignette. All code examples related to this document are available on \href{https://github.com/floidgilbert/jsr223/tree/master/examples}{GitHub} at \url{https://github.com/floidgilbert/jsr223/tree/master/examples}.%///link? notice how that one document expanded their links. Hm.
-
 \subsection{The \pkg{jsr223} package implementation}
 
 The \pkg{jsr223} package is built on \CRANpkg{rJava}. The design of \pkg{jsr223} follows cues from \pkg{rJava}, \CRANpkg{rscala} \citep{rscala}, and \CRANpkg{V8} \citep{v8pkg}.
 
 The \pkg{jsr223} package uses the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec}. The JSR-223 specification includes two crucial elements: an interface for Java applications to execute code written in scripting languages, and a guide for scripting languages to create Java objects in their own syntax. Hence, the JSR-223 specification is the basis for our integration.
 
-Many programming language projects have implemented JSR-223. Our \pkg{jsr223} package officially supports most of them. Technically, any JSR-223 implementation will work with \pkg{jsr223}, but we may not officially support some languages for various reasons. The most notable exclusion is \href{https://www.scala-lang.org/}{Scala}; we don't support it simply because the JSR-223 implementation is incomplete. (For a very thorough Scala integration for R, consider the \CRANpkg{rscala} package.) We also exclude languages that are no longer being actively developed, like \href{http://www.beanshell.org/}{BeanShell}.
+Our \pkg{jsr223} package supports most of the programming languages that have implemented JSR-223. Technically, any JSR-223 implementation will work with our package, but we may not officially support some languages for various reasons. The most notable exclusion is \href{https://www.scala-lang.org/}{Scala}; we don't support it simply because the JSR-223 implementation is incomplete. (For a very thorough Scala integration for R, consider the \CRANpkg{rscala} package.) We also exclude languages that are no longer being actively developed, like \href{http://www.beanshell.org/}{BeanShell}.
 
 %///cite \pkg{jdx}
 Data exchange for \pkg{jsr223} is provided by \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but we broke it out into a separate package to simplify maintenance and to make its features available to other developers. For more information, see \hyperlink{data-exchange-details}{Data exchange details}.
@@ -142,9 +140,10 @@ Data exchange for \pkg{jsr223} is provided by \CRANpkg{jdx}: Java Data Exchange 
 Callbacks allow embedded scripts to call back into the same R session. In \pkg{jsr223}, callbacks are implemented via multi-threading and a custom messaging protocol. This implementation is lightweight, does not require any special configuration, and supports infinite recursion between R and the script engine (limited only by stack space).
 
 \subsection{Document organization}
-%///rewrite
-This is how it's going to go...
-%In \hyperlink{typical-use-cases}{Typical use cases}, we provide brief examples that demonstrate core \pkg{jsr223} functionality. \hyperlink{the-jsr223-package-implementation}{The \pkg{jsr223} package implementation} section contains a brief description of the \pkg{jsr223} software internals. The sections \hyperlink{helpful-terminology-and-concepts}{Helpful terminology and concepts}, \hyperlink{package-installation}{Package installation}, \hyperlink{script-engine-installation}{Script engine installation and instantiation}, and \hyperlink{quick-start-guide}{Quick start guide} provide the details necessary to install \pkg{jsr223} and become familiar with all of its features. If you are primarily interested in using \pkg{jsr223} with a specific programming language, jump to \hyperlink{r-with-groovy}{R with Groovy}, \hyperlink{r-with-javascript}{R with JavaScript}, \hyperlink{r-with-python}{R with Python}, \hyperlink{r-with-ruby}{R with Ruby}, or \hyperlink{r-with-kotlin}{R with Kotlin}. The section \hyperlink{software-review}{Software review} includes a discussion that puts the \pkg{jsr223} project in context with other relevant software solutions.
+
+We begin with \hyperlink{helpful-terminology-and-concepts}{Helpful terminology and concepts} to clarify some key ideas. Then, we provide \hyperlink{typical-use-cases}{Typical use cases} that highlight \pkg{jsr223}'s core functionality. The sections \hyperlink{installation}{Installation} and \hyperlink{feature-documentation}{Feature documentation} provide the necessary details to install \pkg{jsr223} and become familiar with all of its features. If you are primarily interested in using \pkg{jsr223} with a specific programming language, jump to \hyperlink{r-with-groovy}{R with Groovy}, \hyperlink{r-with-javascript}{R with JavaScript}, \hyperlink{r-with-python}{R with Python}, \hyperlink{r-with-ruby}{R with Ruby}, or \hyperlink{r-with-kotlin}{R with Kotlin}. The section \hyperlink{software-review}{Software review} is a discussion that puts the \pkg{jsr223} project in context with other relevant software solutions.
+
+All code examples related to this document are available at GitHub: \url{https://github.com/floidgilbert/jsr223}.
 
 \hypertarget{helpful-terminology-and-concepts}{}
 \section{Helpful terminology and concepts}
@@ -296,6 +295,7 @@ engine$source(
 )
 \end{verbatim}
 
+\hypertarget{installation}{}
 \section{Installation}
 
 \hypertarget{package-installation}{}
@@ -1932,19 +1932,12 @@ The \pkg{rJython} package is similar to \pkg{jsr223} in that it employs Jython. 
 \end{itemize}
 In all, \pkg{jsr223} provides a more complete integration for Jython than \pkg{rJython}.
 
-\subsection{Renjin and FastR software review}
+\subsection{Renjin software review}
 
 %///citations
-%Renjin and FastR are 
-%Renjin is R on the JVM. Can use Java objects directly.
-%Presumeably, so can FastR.
-%
-%The main advantage, \pkg{jsr223} makes Java accessible via the reference implementation. All packages available to R. Many R packages are not available to JVM because of native libraries.
-%
-%There are others. See this article.
-%https://4dpiecharts.com/2013/10/13/fearsome-engines-part-3-which-one-should-you-use/
-%https://dynamicecology.wordpress.com/2014/01/14/r-isnt-just-r-anymore/
-%https://github.com/oracle/fastr
+\href{http://www.renjin.org/}{Renjin} is an ambitious project whose goal is to migrate the R language to the Java platform. Renjin can use public Java classes directly in R-like syntax. Renjin has two important limitations that we are aware of: (i) it does not support graphical methods; (ii) it can't use R packages developed for the reference distribution of R (i.e., GNU R) that contain native code like C libraries. The \pkg{jsr223} package, on the other hand, is designed for GNU R; hence, it can be used in concert with any R package.
+
+Renjin can be used as a library in GNU R. Their package cannot be installed from CRAN; instead, find the installation instructions at their web site \url{http://www.renjin.org/}. The Renjin R package has a single method that evaluates an R expression. It is designed to improve execution performance for GNU R expressions. It does allow Java classes to be used in R script. Hence, it the Renjin package is not Java platform integration for R.
 
 \section{Conclusion}
 
@@ -1966,13 +1959,17 @@ In all, \pkg{jsr223} provides a more complete integration for Jython than \pkg{r
 %hsavoy.github.io/anchoredDistr.}
 %
 
-\section{Package version history}
-
-///
-
 \section{Document version history}
 
-///
+\begin{description}
+\item[2016-03-06] Initial release.
+\end{description}
+
+\section{Package version history}
+
+\begin{description}
+\item[2016-03-06] Initial release.
+\end{description}
 
 
 \renewcommand{\refname}{References} % For modifying the bibliography heading
