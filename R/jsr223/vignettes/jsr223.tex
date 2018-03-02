@@ -170,7 +170,6 @@ This introductory example shows how so-called ``glue'' code can be embedded in R
 
 %///probably put some of the writing about data exchange somewhere in this document.
 
-%///review every word and code item very closely. put this together after writing it first with groovy. changed the wording. make it very apparent that we can convert JS objects to R.
 %///cite stanford
 %This example demonstrates using Java libraries from R and converting Java data structures to R objects. 
 We use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) Java libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}.
@@ -320,7 +319,7 @@ for (int i = 0; i < proposalVariances.length; i++)
 Finally, we create a \code{"Sampler"} instance and assign it to the variable \code{mh}. The last line runs the sampler. Notice that all of the method arguments have not been defined in the Groovy script; rather, they will be supplied by the R script.
 \begin{verbatim}
 Sampler mh = new Sampler(alpha, beta, theta, kappa, data);
-mh.sample(startingValues, pd, iterations, threads)
+mh.sample(startingValues, pd, iterations, threads);
 \end{verbatim}
 
 %///cite if first ref to apache
@@ -347,55 +346,65 @@ starting.values <- rbind(
 )
 \end{verbatim}
 
-Now we create a named list of values that will be passed to the Groovy engine when the script is executed. In technical terms, the list's contents will become the bindings (i.e., variable name/value pairs) in the script engine's global scope. Because the list member names become variable names in the target environment, we must ensure that they are valid identifiers in the target language. The first four members are the parameter values for the prior densities; the \code{data} member contains the count data; \code{proposalVariances} is an array of variances for the Gaussian proposal distributions; \code{startingValues} contains the initial ($\pi$, $\lambda$) parameter values for the MCMC chains; \code{iterations} is the number of MCMC draws per chain; and \code{threads} defines the number of threads to use for parallel processing of the MCMC chains.
+Now we set the global variables used by the Groovy script. One way to do this is using list-like assignment syntax as illustrated below. The first four assignments (alpha, beta, theta, kappa) correspond to the parameter values for the prior densities; the \code{data} variable contains the count data; \code{proposalVariances} is an array of variances for the Gaussian proposal distributions; \code{startingValues} contains the initial ($\pi$, $\lambda$) parameter values for the MCMC chains; \code{iterations} is the number of MCMC draws per chain; and \code{threads} defines the size of the parallel processing thread pool.
 
 \begin{verbatim}
-bindings <- list(
-  alpha = 1,
-  beta = 1,
-  theta = 2,
-  kappa = 1,
-  data = as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5)),
-  proposalVariances = c(0.5^2, 1.2^2),
-  startingValues = starting.values,
-  iterations = 10000L,
-  threads = parallel::detectCores()
-)
+engine$alpha <- 1
+engine$beta <- 1
+engine$theta <- 2
+engine$kappa <- 1
+engine$data <- as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5))
+engine$proposalVariances <- c(0.3^2, 1.2^2)
+engine$startingValues <- starting.values
+engine$iterations <- 10000L
+engine$threads <- parallel::detectCores()
 \end{verbatim}
 
-
-The first line that follows following code 
-Here we compile the Groovy script file and 
-Finally, we This line reads and compiles the Groovy script file. The \code{cs} variable is a \code{"CompiledScript"} object.
+Next, we compile and evaluate the Groovy script. The first line compiles the script and assigns the resulting \code{"CompiledScript"} instance to the variable \code{cs}. Compiling the script is optional; we could have evaluated the code in one step using the \pkg{jsr223} \code{source} method. However, we intend to execute the script more than once, so we compile it for efficiency. The second line executes the compiled code.
 
 \begin{verbatim}
 cs <- engine$compileSource("metropolis-hastings.groovy")
-r <- cs$eval(bindings = bindings)
+r <- cs$eval()
 \end{verbatim}
 
+The result is stored in the variable \code{r}. It is an R list containing four named lists; one each for the four random walks. The named lists contain the parameter chains and some runtime statistics. For example, here we output the acceptance ratios for all four walks.
 
-///unstructured code
-///it is possible to use Groovy closures or anonymous classes to do the same thing with less code (no need to extend a class...pass the method as a function to sample, but it's twice as slow in our tests). so far, formally extending an anonymous class is the fastest under these circumstances.
-With four threads using Intel i7-5500U @
-%# 2.40Ghz, 8GB RAM, our timings averaged 68 milliseconds per call.
+\begin{verbatim}
+getAcceptanceRatios <- function(r, names) {
+  acc <- sapply(r, function(mcmc) mcmc[["acceptance-ratios"]])
+  rownames(acc) <- names
+  acc
+}
+getAcceptanceRatios(r, c("pi", "lambda"))
 
-The first step: create a \pkg{jsr223} \code{ScriptEngine} object that can dynamically execute source code. We create the object by using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{ScriptEngine} object instance is assigned to the variable \code{engine}.
+##          [,1]   [,2]   [,3]   [,4]
+## pi     0.3594 0.3599 0.3699 0.3658
+## lambda 0.3178 0.3234 0.3172 0.3135
+\end{verbatim}
 
-Mention performance and how all data was transformed back in less than a second.
+For the sake of demonstration, let's say that we find the acceptance ratios to be too high. We need to widen the variances for the proposal distributions and re-run the sampler. This is easily done: simply update the bindings and execute the compiled script again as follows. We output the acceptance ratios again for comparison.
 
-Metropolis sampler
+\begin{verbatim}
+bindings$proposalVariances <- c(0.5^2, 1.5^2)
+r <- cs$eval()
+getAcceptanceRatios(r, c("pi", "lambda"))
 
-This example uses a generic java class with dynamic bits provided by javascript. maybe other languages.
+##          [,1]   [,2]   [,3]   [,4]
+## pi     0.2352 0.2297 0.2307 0.2351
+## lambda 0.2659 0.2562 0.2659 0.2592
+\end{verbatim}
 
-Markov chain Monte Carlo 
-///implementing interfaces
-///returning data fast
-///performance
+Table \ref{tab:mcmcx} contains a summary of the MCMC results for each parameter and chain. The code used to summarize the results can be found in the R script posted on \href{https://github.com/floidgilbert/jsr223/tree/master/examples/Groovy}{GitHub}.
+
+%///cite microbenchmark
+So far we have shown that we can implement dynamic Java solutions from within R using a combination of compiled Java libraries and Groovy script. But, is the performance acceptable? We timed the execution expression \code{r <- cs\$eval()} as in the preceding example using the \CRANpkg{microbenchmark} package. The tests were run on a laptop with an Intel i7-5500U, 2.40Ghz processor and 8GB RAM. Four threads were used to run the four chains for the two parameters, $\pi$ and $\lambda$, simultaneously. The median total execution time for the expression over 50 iterations was 68 milliseconds. This processing time includes converting the Java results to nested R lists that point to four $10,000 \times 2$ matrices and several runtime statistics. In total, 80,032 values are returned to R. If we increase the MCMC iterations to 100,000, the median total runtime is 624 milliseconds. Increasing the iterations again to 1 million produces a median total runtime of 7.7 seconds. Hence, the performance is roughly linear within these parameters. We find this performance acceptable, especially considering that the implementation was scripted.
+
+This is only one approach to this implementation. For example, the total runtime could be reduced further by summarizing or simplifying the data on the Java side. However, summarizing data is a strength of the R language. Therefore, we transfer the total data to R in this example because we believe it represents the most typical use case.
 
 \begin{table}[h]
 \centering
-\label{tab:mcmc}
-\caption{Results of MCMC. Quantiles, acceptance ratio, and effective sample size (ESS).}  %///
+\caption{Results for the Metropolis-Hastings sampler. Each parameter and chain is listed, with quantiles, acceptance ratio, and effective sample size (ESS).}
+\label{tab:mcmcx}
 \begin{tabular}{lrrrrrrrr}
 \hline
 Parm & Chain & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & Acc. Ratio & ESS \\ 
@@ -410,11 +419,10 @@ $\lambda$ &    3 & 0.939 & 1.321 & 1.560 & 1.808 & 2.395 & 0.264 & 1119 \\
 $\lambda$ &    4 & 0.953 & 1.325 & 1.546 & 1.823 & 2.359 & 0.268 & 1187 \\ 
 \hline
 \end{tabular}
+\label{tab:mcmcx}
 \end{table}
 
-conclusion. Compiled code offers significant performance benefits. Yet, dynamic behavior can still be implemented. Changing the behavior of an existing usually is done through passing functions as parameters or 
-
-\subsection{Using other language libraries}
+\subsection{Using other language libraries} %///extend this example for the paper...if it isn't already too long.
 
 In addition to using Java libraries, \pkg{jsr223} can easily take advantage of solutions written in other languages. In some cases, integration is as simple as sourcing a script file. For example, many common JavaScript libraries like \href{http://underscorejs.org/}{Underscore} and \href{https://vocajs.com/}{Voca} can be sourced using a URL. The following script sources Voca and parses a string. See \hyperlink{using-javascript-solutions-voca}{Using JavaScript Solutions - Voca} for a more in-depth example.
 
@@ -2128,19 +2136,18 @@ Java is one of the most popular development platforms of all time, and it contin
 \nocite{*}
 \bibliography{jsr223} % The file containing the bibliography
 
-%///
-%\address{Floid R. Gilbert\\
-%    Department of Statistics\\
-%    Brigham Young University\\
-%    Provo, UT 84602\\
-%    USA\\}
-%\email{floid.r.gilbert@gmail.com}
-%
-%\address{David B. Dahl\\
-%    Department of Statistics\\
-%    Brigham Young University\\
-%    Provo, UT 84602\\
-%    USA\\}
-%\email{dahl@stat.byu.edu}
+\address{Floid R. Gilbert\\
+    Department of Statistics\\
+    Brigham Young University\\
+    Provo, UT 84602\\
+    USA\\}
+\email{floid.r.gilbert@gmail.com}
+
+\address{David B. Dahl\\
+    Department of Statistics\\
+    Brigham Young University\\
+    Provo, UT 84602\\
+    USA\\}
+\email{dahl@stat.byu.edu}
 
 \end{document}

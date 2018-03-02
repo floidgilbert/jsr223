@@ -61,7 +61,7 @@ public abstract class MhSamplerUnivariateProposal {
 						proposal[j] = state[j];
 					}
 				}
-				chains[i] = state.clone(); // IMPORTANT: clone() is a shallow copy. Works for one-dimensional native arrays.
+				chains[i] = state.clone(); // IMPORTANT: clone() is a shallow copy. But, for one-dimensional native arrays, it is the same as a deep copy.
 			}
 			
 			/*

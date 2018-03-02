@@ -17,7 +17,7 @@
 # See comments in this script and 'metropolis-hastings.groovy' for more
 # information.
 #
-# The Metropolis-Hasting sampler classes are located in
+# The Java Metropolis-Hasting sampler classes are located in
 # examples/Java/org.fgilbert.jsr223.examples.
 
 #  ------------------------------------------------------------------------
@@ -41,7 +41,7 @@ starting.values <- rbind(
   c(0.999, 30)
 )
 
-# These bindings will be accessed as global variables in the Groovy environment.
+# Set global variables in the Groovy environment.
 #
 # `alpha`, `beta`, `theta`, and `kappa` are parameters for the Beta and Gamma
 # priors, respectively. The are used to define the posterior function.
@@ -57,18 +57,16 @@ starting.values <- rbind(
 #
 # `threads` the number of threads to use. Chains are allocated to threads. If
 # there are more chains than threads, the threads will be recycled.
-#
-bindings <- list(
-  alpha = 1,
-  beta = 1,
-  theta = 2,
-  kappa = 1,
-  data = as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5)),
-  proposalVariances = c(0.5^2, 1.2^2),
-  startingValues = starting.values,
-  iterations = 10000L,
-  threads = parallel::detectCores()
-)
+
+engine$alpha <- 1
+engine$beta <- 1
+engine$theta <- 2
+engine$kappa <- 1
+engine$data <- as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5))
+engine$proposalVariances <- c(0.3^2, 1.2^2)
+engine$startingValues <- starting.values
+engine$iterations <- 10000L
+engine$threads <- parallel::detectCores()
 
 # Compile the Groovy script to Java byte code. This approach is recommended only
 # for unstructured code (i.e., code not encapsulated in methods or functions).
@@ -76,28 +74,38 @@ bindings <- list(
 # engine$invokeFunction.
 cs <- engine$compileSource("metropolis-hastings.groovy")
 
-# Execute the compiled code, passing in the bindings as a list. The bindings
-# are accessable as global variables in the script.
-r <- cs$eval(bindings = bindings)
+# Execute the compiled code.
+r <- cs$eval()
 
-# We can change the bindings and execute the compiled code again with different
-# parameters. We do not need to recompile the script. It is very similar to
-# calling a function. Here, we adjust the variance for the second proposal
-# function.
-bindings$proposalVariances[2] <- 1.5^2
-r <- cs$eval(bindings = bindings)
+# Review the acceptance rates for each chain.
+getAcceptanceRatios <- function(r, names) {
+  acc <- sapply(r, function(mcmc) mcmc[["acceptance-ratios"]])
+  rownames(acc) <- names
+  acc
+}
+getAcceptanceRatios(r, c("pi", "lambda"))
+
+# Let's say that we find the acceptance ratios to be a little too high. We need
+# to widen the variance for the proposal distributions. We simply update the
+# corresponding variable and execute the compiled code again. We do not need to
+# recompile the script.
+engine$proposalVariances <- c(0.5^2, 1.5^2)
+r <- cs$eval()
+
+# Review the acceptance rates for each chain again.
+getAcceptanceRatios(r, c("pi", "lambda"))
 
 # Benchmark ---------------------------------------------------------------
 
 # Display the timings for evaluation.
-microbenchmark::microbenchmark(cs$eval(bindings = bindings), times = 20L)
+microbenchmark::microbenchmark(cs$eval(), times = 20L)
 
 # Display the timings for evaluation when return value is discarded. This shows
 # about how much time is required to convert the Java data strucutures to R
 # objects.
-microbenchmark::microbenchmark(cs$eval(bindings = bindings, discard.return.value = TRUE), times = 20L)
+microbenchmark::microbenchmark(cs$eval(discard.return.value = TRUE), times = 20L)
 
-# Summarize MCMC Results --------------------------------------------------
+# Summarize MCMC Results in a table ---------------------------------------
 
 parameter.names <- c("pi", "lambda")
 parameter.count <- length(parameter.names)
@@ -127,3 +135,4 @@ df
 xt <- xtable::xtable(df, label = "tab:abc", digits = 3, display = c("d", "s", "d", "f", "f", "f", "f", "f", "f", "d"))
 xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
 
+engine$terminate()

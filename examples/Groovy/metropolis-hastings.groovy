@@ -67,4 +67,4 @@ for (int i = 0; i < proposalVariances.length; i++)
  * constructor are the bindings dynamically passed in from the R script.
  */
 Sampler mh = new Sampler(alpha, beta, theta, kappa, data);
-mh.sample(startingValues, pd, iterations, threads)
+mh.sample(startingValues, pd, iterations, threads);
