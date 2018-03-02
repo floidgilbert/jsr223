@@ -247,7 +247,7 @@ In this example, we effectively leveraged Stanford's CoreNLP library with a mini
 
 \subsection{Dynamic behavior for existing solutions}
 
-One of the most powerful features in modern programming is the ability to modify the behavior of existing solutions by defining custom methods or classes. In this example, we define a custom density function for a multi-threaded Metropolis-Hastings sampler. We do so by extending (i.e., subclassing) a Java abstract class. We could have implemented this solution using anonymous classes, lambda functions, or closures. These approaches usually require less code, and they are supported within the various languages supported by \pkg{jsr223}. However, these approaches did not execute as quickly in this application. We wish to optimize performance for this MCMC sampler.
+One of the most powerful features in modern programming is the ability to modify the behavior of existing solutions by defining custom methods or classes. In this example, we define a custom density function for a multi-threaded Metropolis-Hastings sampler. We do so by extending (i.e., subclassing) a Java abstract class. We could have implemented this solution using anonymous classes, lambda functions, or closures. These approaches usually require less code, and they are supported within the various languages supported by \pkg{jsr223}. However, these approaches did not execute as quickly for this application. We wish to optimize performance for the sampler.
 
 The Groovy scripting language follows the Java programming language very closely; hence, it is a natural choice for Java integrations. We use Groovy for this example to demonstrate how advanced Java solutions can be implemented in R using Java-like code. As such, those familiar with Groovy may notice that our code is unnecessarily strict.
 
@@ -262,9 +262,10 @@ We choose independent priors $\pi \sim \text{Beta}(\alpha,\beta)$, $\lambda \sim
 
 Our analysis employs two scripts: (i) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results; and (ii) a Groovy script to extend and execute the Metropolis-Hastings sampler class.
 
-We describe the Groovy script first. Though the script is presented here in parts, it must be executed as one complete script. Download the complete scripts from the \pkg{jsr223} GitHub page.
+\paragraph{The Groovy script} %///change this to a paragraph style or something in the R journal.
+We describe the Groovy script first. Though the script is presented here in parts, it must be executed as one complete script. Download the complete script from \href{https://github.com/floidgilbert/jsr223}{GitHub}.
 
-First, we import the necessary classes:
+To begin, we import the necessary classes. The first line imports all of the static methods of the \code{"Math"} class. The second line imports the abstract class that implements the Metropolis-Hastings sampler. The last line imports a univariate normal implementation of the proposal distribution interface \code{"MhSamplerUnivariateProposal"}.
 
 \begin{verbatim}
 import static java.lang.Math.*;
@@ -272,20 +273,14 @@ import org.fgilbert.jsr223.examples.MhSamplerUnivariateProposal;
 import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
 \end{verbatim}
 
-\begin{itemize}
-\item \code{import static java.lang.Math.*} imports all of the static methods of the \code{"Math"} class.
-\item \code{"MhSamplerUnivariateProposal"} is the abstract class that implements the Metropolis-Hastings sampler.
-\item \code{"ProposalDistributionUnivariateNormal"} is a univariate normal implementation of the proposal distribution interface \code{"MhSamplerUnivariateProposal"}.
-\end{itemize}
-
-The Groovy code below defines a class \code{\"Sampler\"} that extends \code{\"MhSamplerUnivariateProposal\"}. The constructor method takes values for the prior and computes sufficient statistics for the posterior function. These values are stored as local variables. The method 
+The code that follows contains the feature of the example; it implements the behavior of a class using script. Specifically, we define a class named \code{"Sampler"} that extends \code{"MhSamplerUnivariateProposal"}. The constructor takes values for the prior parameter and computes sufficient statistics for the posterior function. These values are stored as local variables. The \code{logPosterior} abstract method is implemented as the log posterior function for our Bayesian analysis.
 
 \begin{verbatim}
 public class Sampler extends MhSamplerUnivariateProposal {
   private double alpha, beta, theta, kappa;
   private double dataLength, dataSum, dataZeroCount, dataPositiveCount;
 
-  // Constructor for our subclass.
+  // Constructor method.
   public Sampler(double alpha, double beta, double theta, double kappa, int[] data) {
     this.alpha = alpha;
     this.beta = beta;
@@ -317,9 +312,22 @@ public class Sampler extends MhSamplerUnivariateProposal {
 }
 \end{verbatim}
 
-%///citations, links.
-As in the previous example, we create an instance of \code{"ScriptEngine"} by providing the script language name and the necessary class paths. In this case, the class paths include the Groovy script engine, our JAR file that contains the Metropolis-Hastings sampler, and the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library}. These JAR files are available in our GitHub examples (\url{https://github.com/floidgilbert/jsr223/tree/master/examples}).
+This code initializes an array of normal proposal distribution objects that will be used by the sampler. Each distribution object is initialized with a variance from the array \code{proposalVariances}. The \code{proposalVariances} array values will be supplied by the R script.
+\begin{verbatim}
+ProposalDistributionUnivariateNormal[] pd =
+  new ProposalDistributionUnivariateNormal[proposalVariances.length];
+for (int i = 0; i < proposalVariances.length; i++)
+  pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
+\end{verbatim}
 
+Finally, we create a \code{"Sampler"} object and assign it to the variable \code{mh}. The last line runs the sampler. Notice that all of the method arguments have not been defined yet; they will be supplied by the R script.
+\begin{verbatim}
+Sampler mh = new Sampler(alpha, beta, theta, kappa, data);
+mh.sample(startingValues, pd, iterations, threads)
+\end{verbatim}
+
+%///cite if first ref to apache
+\paragraph{The R script} First, we instantiate a Groovy script engine. We include paths to all of the required Java libraries in \code{class.path}. The first file contains the Groovy script engine; the second file contains the Metropolis-Hastings sampler, and the last file contains the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library}.
 \begin{verbatim}
 library("jsr223")
 

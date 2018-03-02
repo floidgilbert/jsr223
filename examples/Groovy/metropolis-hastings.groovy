@@ -58,7 +58,7 @@ public class Sampler extends MhSamplerUnivariateProposal {
  * proposal distributions.
  */
 ProposalDistributionUnivariateNormal[] pd =
-    new ProposalDistributionUnivariateNormal[proposalVariances.length];
+  new ProposalDistributionUnivariateNormal[proposalVariances.length];
 for (int i = 0; i < proposalVariances.length; i++)
   pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
 
