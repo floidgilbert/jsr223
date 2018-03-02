@@ -119,7 +119,7 @@ The R package \CRANpkg{jsr223} is a high-level integration for the Java platform
 
 \section{Introduction}
 
-About the same time Ross Ihaka and Robert Gentleman began developing R at the University of Auckland in the early 1990s, James Gosling and the so-called Green Project Team was working on a new programming language at Sun Microsystems in California. The Green Team didn't set out to make a new language; rather, they were trying to move platform-independent, distributed computing into the consumer electronics marketplace. As Gosling explained, ``All along, the language was a tool, not the end'' \citep{javainsidestory}. Unexpectedly, the programming language outlived the Green Project and flourished into one of the most popular development platforms in computing history. That platform, Java, now powers applications ranging from the enterprise (\href{https://www.google.com/gmail/about/}{GMail}), to games (\href{https://minecraft.net}{Minecraft}), to interactive media (\href{https://en.wikipedia.org/wiki/Blu-ray}{Blu-ray}), to mobile devices (\href{https://www.android.com/}{Android}).
+About the same time Ross Ihaka and Robert Gentleman began developing R at the University of Auckland in the early 1990s, James Gosling and the so-called Green Project Team was working on a new programming language at Sun Microsystems in California. The Green Team did not set out to make a new language; rather, they were trying to move platform-independent, distributed computing into the consumer electronics marketplace. As Gosling explained, ``All along, the language was a tool, not the end'' \citep{javainsidestory}. Unexpectedly, the programming language outlived the Green Project and flourished into one of the most popular development platforms in computing history. That platform, Java, now powers applications ranging from the enterprise (\href{https://www.google.com/gmail/about/}{GMail}), to games (\href{https://minecraft.net}{Minecraft}), to interactive media (\href{https://en.wikipedia.org/wiki/Blu-ray}{Blu-ray}), to mobile devices (\href{https://www.android.com/}{Android}).
 
 In 2003, Simon Urbanek released \CRANpkg{rJava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \href{http://rdocumentation.org}{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that it gives the user granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. Another advantage of using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding source code directly within R script.
 
@@ -136,10 +136,10 @@ The \pkg{jsr223} package is built on \CRANpkg{rJava}. The design of \pkg{jsr223}
 
 The \pkg{jsr223} package uses the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec}. The JSR-223 specification includes two crucial elements: an interface for Java applications to execute code written in scripting languages, and a guide for scripting languages to create Java objects in their own syntax. Hence, the JSR-223 specification is the basis for our integration.
 
-Our \pkg{jsr223} package supports most of the programming languages that have implemented JSR-223. Technically, any JSR-223 implementation will work with our package, but we may not officially support some languages for various reasons. The most notable exclusion is \href{https://www.scala-lang.org/}{Scala}; we don't support it simply because the JSR-223 implementation is incomplete. (For a very thorough Scala integration for R, consider the \CRANpkg{rscala} package.) We also exclude languages that are no longer being actively developed, like \href{http://www.beanshell.org/}{BeanShell}.
+Our \pkg{jsr223} package supports most of the programming languages that have implemented JSR-223. Technically, any JSR-223 implementation will work with our package, but we may not officially support some languages for various reasons. The most notable exclusion is \href{https://www.scala-lang.org/}{Scala}; we don't support it simply because the JSR-223 implementation is incomplete. (Consider, instead, the \CRANpkg{rscala} package for a Scala/R integration.) We also exclude languages that are no longer being actively developed, such as \href{http://www.beanshell.org/}{BeanShell}.
 
 %///cite \pkg{jdx}
-Data exchange for \pkg{jsr223} is provided by \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but we broke it out into a separate package to simplify maintenance and to make its features available to other developers. For more information, see \hyperlink{data-exchange-details}{Data exchange details}.
+Data exchange for \pkg{jsr223} is provided by the R package \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but we broke it out into a separate package to simplify maintenance and to make its features available to other developers. For more information, see \hyperlink{data-exchange-details}{Data exchange details}.
 
 Callbacks allow embedded scripts to call back into the same R session. In \pkg{jsr223}, callbacks are implemented via multi-threading and a custom messaging protocol. This implementation is lightweight, does not require any special configuration, and supports infinite recursion between R and the script engine (limited only by stack space).
 
@@ -242,7 +242,7 @@ engine$invokeFunction(
 ## 5        .       .           72         73
 \end{verbatim}
 
-In this example, we effectively leveraged Stanford's CoreNLP library with a minimum amount of code. This same functionality can be easily replicated in any of the \pkg{jsr223} supported programming languages.
+In this example, we effectively leveraged Stanford's CoreNLP library with a minimum amount of code. This same functionality can be easily replicated in any of the \pkg{jsr223}-supported programming languages.
 
 \subsection{Dynamic behavior for existing solutions}
 
@@ -709,7 +709,7 @@ engine$myValue2
 
 All data structures in Java-based languages are backed by Java objects. Hence, \pkg{jsr223} can usually convert what appears to be a native language construct to an appropriate R object (e.g. JavaScript objects and Python tuples). Discover the Java class for any global variable using  \code{engine\$getJavaClassName("identifier")} where \code{identifier} is the variable's name.
 
-Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but it was broken out into a separate package to simplify maintenance and to make its features available to other developers.
+Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by the R package \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but it was broken out into a separate package to simplify maintenance and to make its features available to other developers.
 
 The \pkg{jdx} package (and hence \pkg{jsr223}) supports converting R vectors, factors, n-dimensional arrays, data frames, named lists, unnamed lists, nested lists (i.e., lists containing lists), and environments to generic Java objects. Row-major and column-major ordering options are available for arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported.
 
@@ -776,7 +776,11 @@ The \code{setArrayOrder} script engine method controls ordering for arrays conve
 
 Before describing the ordering schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. 
 
-Now we describe the each of the \textit{array order} settings.
+Now we describe the each of the \textit{array order} settings. We use the notation
+\begin{verbatim}
+[row][column][matrix]...[n]
+\end{verbatim}
+to mean that, for a given array, the row index (within a column) comes first, followed by the column index (within a matrix), followed by the matrix index (within a cube), etc.
 
 \begin{itemize}
 \item \code{'row-major'} -- The data of the resulting Java n-dimensional array are ordered \newline \code{[row][column][matrix]...[n]}. The \pkg{jsr223} package defaults to \code{'row-major'} because R syntax uses this indexing scheme (though R stores the array in memory using column-major order). This row-major scheme is not intuitive for Java programmers when n > 2 because Java n-dimensional arrays are constructed as high-order objects containing low-order objects.
@@ -1923,7 +1927,7 @@ b <- .jnew("java/awt/Button", "OK")
 .jcall(f, , "dispose")
 \end{verbatim}
 
-The snippet below reproduces the \pkg{rJava} example using JavaScript. In comparison, the JavaScript code is more natural for most programmers to write and maintain. The fine details of method lookups and invocation are handled automatically: no explicit class names or type casts are required. This same example can be reproduced in any of the five other \pkg{jsr223}-supported programming languages.
+The snippet below reproduces the \pkg{rJava} example above using JavaScript. In comparison, the JavaScript code is more natural for most programmers to write and maintain. The fine details of method lookups and invocation are handled automatically: no explicit class names or type casts are required. This same example can be reproduced in any of the five other \pkg{jsr223}-supported programming languages.
 
 \begin{verbatim}
 var f = new java.awt.Frame('Hello');
@@ -1935,7 +1939,7 @@ f.setVisible(true);
 f.dispose();
 \end{verbatim}
 
-Using \pkg{jsr223}, the preceding code snippet can be embedded in an R script. The first step is to create an instance of a script engine. A JavaScript engine is created as follows:
+Using \pkg{jsr223}, the preceding code snippet can be embedded in an R script. The first step is to create an instance of a script engine. A JavaScript engine is created as follows.
 
 \begin{verbatim}
 library(jsr223)
@@ -2068,7 +2072,7 @@ identical(engine$pi, pi)
 ## [1] TRUE
 \end{verbatim}
 
-The third significant difference between \pkg{V8} and \pkg{jsr223} is code validation. \pkg{V8} includes an interface to validate JavaScript code. The Java Scripting API does not provide an interface for code validation, hence, \pkg{jsr223} does not provide this feature. We have investigated other avenues to validate code, but none are uniformly reliable across all of the \pkg{jsr223} supported languages. Moreover, this feature is generally not critical for most integration applications; code validation is most useful for interactive code entry.
+The third significant difference between \pkg{V8} and \pkg{jsr223} is code validation. \pkg{V8} includes an interface to validate JavaScript code. The Java Scripting API does not provide an interface for code validation, hence, \pkg{jsr223} does not provide this feature. We have investigated other avenues to validate code, but none are uniformly reliable across all of the \pkg{jsr223}-supported languages. Moreover, this feature is generally not critical for most integration applications; code validation is most useful for interactive code entry.
 
 \hypertarget{python-integrations}{}
 \subsection{Python integrations software review}
