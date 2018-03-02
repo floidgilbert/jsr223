@@ -244,9 +244,9 @@ engine$invokeFunction(
 
 In this example, we effectively leveraged Stanford's CoreNLP library with a minimum amount of code. This same functionality can be easily replicated in any of the \pkg{jsr223}-supported programming languages.
 
-\subsection{Dynamic behavior for existing solutions}
+\subsection{Implementing dynamic behavior for Java solutions}
 
-One of the most powerful features in modern programming is the ability to modify the behavior of existing solutions by defining custom methods or classes. In this example, we define a custom density function for a multi-threaded Metropolis-Hastings sampler. We do so by extending (i.e., subclassing) a Java abstract class. We could have implemented this solution using anonymous classes, lambda functions, or closures. These approaches usually require less code, and they are supported within the various languages supported by \pkg{jsr223}. However, these approaches did not execute as quickly for this application. We wish to optimize performance for the sampler.
+One of the most powerful features in modern programming is the ability to modify the behavior of existing solutions by defining custom methods or classes. In this example, we define a custom density function for a multi-threaded Metropolis-Hastings sampler. We do so by extending (i.e., subclassing) a Java abstract class. We could have implemented this solution using anonymous classes, lambda functions, or closures. These approaches usually require less code, and they are supported within the various languages supported by \pkg{jsr223}. However, these approaches did not execute as quickly for this application.
 
 The Groovy scripting language follows the Java programming language very closely; hence, it is a natural choice for Java integrations. We use Groovy for this example to demonstrate how advanced Java solutions can be implemented in R using Java-like code. As such, those familiar with Groovy may notice that our code is unnecessarily strict.
 
@@ -776,6 +776,7 @@ The \code{setArrayOrder} script engine method controls ordering for arrays conve
 
 Before describing the ordering schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. 
 
+%///put this in \pkg{jdx} documentation
 Now we describe the each of the \textit{array order} settings. We use the notation
 \begin{verbatim}
 [row][column][matrix]...[n]
