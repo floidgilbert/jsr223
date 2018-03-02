@@ -25,9 +25,9 @@ ScriptEngine
 }
 
 \details{
-The complete \pkg{jsr223} documentation is in the \href{../doc/jsr223.pdf}{vignette}. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed easily in the R documentation.
+The complete \pkg{jsr223} documentation can be found in the \href{../doc/jsr223.pdf}{vignette}. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed as easily in the R documentation.
 
-In this document, the section \strong{Script Engine Settings} describes class methods pertaining to configurable options. The section \strong{Methods} lists the rest of the class methods. The section \strong{Callbacks} provides an overview of the functionality allowing code in the script engine to access data and execute code in the R environment. Finally, \strong{Script Engines} includes links to the supported script engine providers.
+In this document, the section \strong{Constructor Method} details the options required to create a \code{\link{ScriptEngine}} instance. The section \strong{Script Engine Settings} describes class methods pertaining to configurable options. The section \strong{Methods} lists the rest of the class methods. The section \strong{Callbacks} provides an overview of the functionality allowing code in the script engine to access data and execute code in the R environment. Finally, \strong{Script Engines} includes links to the supported script engine providers.
 
 The bridge between R and the script engine is not thread-safe; multiple R threads should not simultaneously access the same engine.
 }
