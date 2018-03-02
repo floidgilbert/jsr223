@@ -91,17 +91,17 @@ pdfproducer={LaTeX with hyperref and ClassicThesis} % PDF producer
 
 \hyphenation{Fortran hy-phen-ation} % Specify custom hyphenation points in words with dashes where you would like hyphenation to occur, or alternatively, don't put any dashes in a word to stop hyphenation altogether
 
-\title{\normalfont jsr223: A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby, Jython, and Kotlin}
-\author{Floid R. Gilbert \& David B. Dahl}
-\date{}
-
-\begin{document}
-
 \renewcommand{\sectionmark}[1]{\markright{#1}} % The header for all pages (oneside) or for even pages (twoside)
 %\renewcommand{\subsectionmark}[1]{\markright{\thesubsection~#1}} % Uncomment when using the twoside option - this modifies the header on odd pages
 \lehead{\mbox{\llap{\small\thepage\kern1em\color{halfgray} \vline}\color{halfgray}\hspace{0.5em}\rightmark\hfil}} % The header style
 
 \pagestyle{scrheadings}
+
+\title{\normalfont jsr223: A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby, Jython, and Kotlin}
+\author{Floid R. Gilbert \& David B. Dahl}
+\date{}
+
+\begin{document}
 
 \maketitle
 
@@ -162,7 +162,7 @@ A \dfn{scripting engine} (usually shortened to \dfn{script engine}) is software 
 
 \section{Typical use cases}
 
-This section includes introductory examples that demonstrate the core functionality of the \pkg{jsr223} package. For a complete overview of \pkg{jsr223} features, see the \hyperlink{feature-documentation}{Feature documentation}. Following that section, we include specific documentation for each of the supported languages.
+This section includes introductory examples that demonstrate the core functionality of the \pkg{jsr223} package. For a complete overview of \pkg{jsr223} features, see the \hyperlink{feature-documentation}{Feature documentation}. Following that section, we provide specific documentation for each of the supported languages.
 
 \subsection{Using Java libraries}
 
@@ -174,7 +174,7 @@ This introductory example shows how so-called ``glue'' code can be embedded in R
 %This example demonstrates using Java libraries from R and converting Java data structures to R objects. 
 We use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) Java libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}.
 
-The first step: create a \pkg{jsr223} \code{"ScriptEngine"} instance that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. The method takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{"ScriptEngine"} object instance is assigned to the variable \code{engine}.
+The first step: create a \pkg{jsr223} \code{"ScriptEngine"} instance that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. It takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{"ScriptEngine"} object instance is assigned to the variable \code{engine}.
 
 \begin{verbatim}
 class.path <- c(
@@ -186,12 +186,12 @@ class.path <- c(
 library("jsr223")
 engine <- ScriptEngine$new("JavaScript", class.path)
 \end{verbatim}
-Now we can execute JavaScript source code. The \pkg{jsr223} interface provides several methods to execute code. In this example, we use the \code{\%@\%} operator; it  executes a code snippet and discards the return value, if any. The snippet in the following code example is supplied as a character constant. It imports the Stanford NLP \code{"Document"} class. This syntax is peculiar to the JavaScript dialect. The resulting object, \code{DocumentClass}, can be used to instantiate objects or access static methods.
+Now we can execute JavaScript source code. The \pkg{jsr223} interface provides several methods to do this. In this example, we use the \code{\%@\%} operator; it  executes a code snippet and discards the return value, if any. The JavaScript snippet in the following code example is supplied as a character constant. It imports the Stanford NLP \code{"Document"} class. This syntax is peculiar to the JavaScript dialect. The result, \code{DocumentClass}, is used to instantiate objects or access static methods.
 
 \begin{verbatim}
 engine %@% 'var DocumentClass = Java.type("edu.stanford.nlp.simple.Document");'
 \end{verbatim}
-The next code sample defines a JavaScript function named \code{getPartsOfSpeech}. It tags each element in a text with a grammatical part of speech (e.g., noun, adjective, verb). The text is parsed by a new instance of the \code{"Document"} class using the \code{DocumentClass} object we created in the script above. The result is a list of JavaScript objects. Each JavaScript object contains the information for a single sentence.
+The next code sample defines a JavaScript function named \code{getPartsOfSpeech}. It tags each element in a text with a grammatical part of speech (e.g., noun, adjective, verb). The text is parsed by a new instance of the \code{"Document"} class. The parsing results are transferred to a list of JavaScript objects. Each JavaScript object contains the parsing information for a single sentence.
 
 \begin{verbatim}
 engine %@% '
@@ -212,7 +212,7 @@ engine %@% '
   }
 '
 \end{verbatim}
-We use \code{engine\$invokeFunction} to call \code{getPartsOfSpeech} from R. The \code{invokeFunction} method takes the name of the function as the first parameter and any number of function parameters. The \pkg{jsr223} package automatically converts the function's return value to R objects. In this case, it intuitively converts the list of JavaScript objects to a list of R data frames. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
+We use \code{engine\$invokeFunction} to call the JavaScript function \code{getPartsOfSpeech} from R. The \code{invokeFunction} method takes the name of the function as the first parameter; the remaining arguments are passed to the JavaScript function. The \pkg{jsr223} package automatically converts the function's return value to R objects. In this case, it intuitively converts the list of JavaScript objects to a list of R data frames. The output is printed below. The parts of speech abbreviations are defined by the \href{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}{Penn Treebank Project}. %///cite
 
 \begin{verbatim}
 engine$invokeFunction(
@@ -244,24 +244,24 @@ engine$invokeFunction(
 
 In this example, we effectively leveraged Stanford's CoreNLP library with a minimal amount of code. This same functionality can be easily replicated in any of the \pkg{jsr223}-supported programming languages.
 
-\subsection{Implementing dynamic behavior for Java solutions}
+\subsection{Implementing dynamic behavior with Java solutions}
 
-One of the most powerful features in modern programming is the ability to modify the behavior of existing solutions by defining custom methods or classes. In this example, we define a custom density function for a multi-threaded Metropolis-Hastings sampler. We do so by extending (i.e., subclassing) a Java abstract class. We could have implemented this solution using anonymous classes, lambda functions, or closures. These approaches usually require less code, and they are supported within the various languages supported by \pkg{jsr223}. However, these approaches did not execute as quickly for this application.
+Many well-designed libraries accept user-defined code to implement custom logic or behavior. We illustrate one such solution in the context of a Bayesian analysis. The library at hand is a generic, multi-threaded Metropolis-Hastings sampler. We define a custom density function for the sampler by extending (i.e., subclassing) a Java abstract class. We could have implemented this solution using anonymous classes, lambda functions, or closures. These approaches usually require less code, and they are supported within the various \pkg{jsr223}-compatible programming languages. However, we found that these approaches did not execute as quickly for this application.
 
-The Groovy scripting language follows the Java programming language very closely; hence, it is a natural choice for Java integrations. We use Groovy for this example to demonstrate how advanced Java solutions can be implemented in R using Java-like code. As such, those familiar with Groovy may notice that our code is unnecessarily strict.
+We use the Groovy scripting language in this example. Groovy follows the Java programming language syntax very closely; hence, it is a natural choice for Java integrations. Those familiar with Groovy will notice that our code is unnecessarily verbose. We chose to the follow Java language conventions to make the code familiar to Java programmers.
 
-For this example, we consider a Bayesian analysis for count data $y_1,\dots,y_n$. We believe the data to be independently and identically distributed according to a zero-inflated Poisson sampling model where $0 < \pi < 1$ and $\lambda > 0$:
+The Bayesian analysis involves count data $y_1,\dots,y_n$. We believe the data to be independently and identically distributed according to a zero-inflated Poisson sampling model where $0 < \pi < 1$ and $\lambda > 0$:
 
 \begin{align*}
 \text{Pr}(y_i = 0 \mid \pi, \lambda) &= \pi + (1-\pi) \exp(-\lambda) \\
 \text{Pr}(y_i = k \mid \pi, \lambda) &= (1  -\pi) \frac{\lambda^k \exp(-\lambda)}{k!}, \quad \text{for } k = 1, 2, \ldots
 \end{align*}
 
-We choose independent priors $\pi \sim \text{Beta}(\alpha,\beta)$, $\lambda \sim \text{Gamma}(\theta,\kappa)$. In our analysis, we use a Metropolis-Hastings sampler with separate Gaussian proposal densities for $\pi$ and $\lambda$.
+We choose independent priors $\pi \sim \text{Beta}(\alpha,\beta)$, $\lambda \sim \text{Gamma}(\theta,\kappa)$. In our analysis, we use a Metropolis-Hastings sampler with independent Gaussian proposal densities for $\pi$ and $\lambda$.
 
-Our analysis employs two scripts: (i) a Groovy script to extend and execute the Metropolis-Hastings sampler class; and (ii) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results. The scripts, named \file{metropolis-hastings.groovy} and \file{metropolis-hastings.R}, are located at \url{https://github.com/floidgilbert/jsr223/tree/master/examples/Groovy}. The required Java files can be downloaded from the parent folder. We discuss the scripts in parts here, but the Groovy script must be executed in its entirety.
+Our analysis employs two scripts: (i) a Groovy script to extend and execute the Metropolis-Hastings sampler class; and (ii) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results. The scripts, named \file{metropolis-hastings.groovy} and \file{metropolis-hastings.R}, are located at \url{https://github.com/floidgilbert/jsr223/tree/master/examples/Groovy}. The required Java files can be downloaded from the parent folder.
 
-\paragraph{The Groovy script} To begin, we import the necessary classes. The first line imports all of the static methods of the \code{"Math"} class. The second line imports the abstract class that implements the Metropolis-Hastings sampler. The last line imports a univariate normal implementation of the proposal distribution interface \code{"MhSamplerUnivariateProposal"}.
+\paragraph{The Groovy script} To begin, we import the necessary classes. The first line imports all of the static methods of the \code{"Math"} class. The second line imports the abstract class that implements the Metropolis-Hastings sampler. The last line imports a univariate normal proposal class. (This latter class implements the interface \code{"ProposalDistributionUnivariate"}. If we wanted to use a custom proposal distribution, we could do so by creating a class that implements this interface in script.)
 
 \begin{verbatim}
 import static java.lang.Math.*;
@@ -269,7 +269,7 @@ import org.fgilbert.jsr223.examples.MhSamplerUnivariateProposal;
 import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
 \end{verbatim}
 
-The code that follows contains the feature of the example; it implements the behavior of a class using script. Specifically, we define a class named \code{"Sampler"} that extends \code{"MhSamplerUnivariateProposal"}. The constructor takes values for the prior parameter and computes sufficient statistics for the posterior function. These values are stored as local variables. The \code{logPosterior} abstract method is implemented as the log posterior function for our Bayesian analysis.
+The code that follows is the key element in this example; it implements the behavior of a Java class using Groovy script. Specifically, we define a class named \code{"Sampler"} that extends \code{"MhSamplerUnivariateProposal"}. The constructor takes values for the prior parameter and computes sufficient statistics for the posterior function. The \code{logPosterior} method implements the log posterior function that will be called by the sampler.
 
 \begin{verbatim}
 public class Sampler extends MhSamplerUnivariateProposal {
@@ -308,7 +308,7 @@ public class Sampler extends MhSamplerUnivariateProposal {
 }
 \end{verbatim}
 
-The next lines initialize an array of normal proposal distribution objects that will be used by the sampler. Each distribution object is initialized with a variance from the array \code{proposalVariances}. The \code{proposalVariances} array values will be supplied by the R script.
+This code initializes an array of normal proposal distribution objects that will be used by the sampler. Each distribution object is initialized with a variance. The \code{proposalVariances} variable is not defined; it will be supplied by the R script.
 \begin{verbatim}
 ProposalDistributionUnivariateNormal[] pd =
   new ProposalDistributionUnivariateNormal[proposalVariances.length];
@@ -316,7 +316,7 @@ for (int i = 0; i < proposalVariances.length; i++)
   pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
 \end{verbatim}
 
-Finally, we create a \code{"Sampler"} instance and assign it to the variable \code{mh}. The last line runs the sampler. Notice that all of the method arguments have not been defined in the Groovy script; rather, they will be supplied by the R script.
+Finally, we create a \code{"Sampler"} instance and assign it to the variable \code{mh}. The last line runs the sampler. Many of the variables passed as method arguments have not yet been defined. They will be created in the R script.
 \begin{verbatim}
 Sampler mh = new Sampler(alpha, beta, theta, kappa, data);
 mh.sample(startingValues, pd, iterations, threads);
@@ -346,7 +346,7 @@ starting.values <- rbind(
 )
 \end{verbatim}
 
-Now we set the global variables used by the Groovy script. One way to do this is using list-like assignment syntax as illustrated below. The first four assignments (alpha, beta, theta, kappa) correspond to the parameter values for the prior densities; the \code{data} variable contains the count data; \code{proposalVariances} is an array of variances for the Gaussian proposal distributions; \code{startingValues} contains the initial ($\pi$, $\lambda$) parameter values for the MCMC chains; \code{iterations} is the number of MCMC draws per chain; and \code{threads} defines the size of the parallel processing thread pool.
+Now we set the global variables used by the Groovy script. One way to do this is using list-like assignment syntax as illustrated below. The first four assignments (alpha, beta, theta, kappa) correspond to the parameter values for the prior densities; \code{data} contains the counts $y_1,\dots,y_n$; \code{proposalVariances} is an array of variances for the Gaussian proposal distributions; \code{startingValues} contains the initial ($\pi$, $\lambda$) parameter values for the MCMC chains; \code{iterations} indicates the number of MCMC iterations per chain; and \code{threads} defines the size of the parallel processing thread pool.
 
 \begin{verbatim}
 engine$alpha <- 1
@@ -397,11 +397,11 @@ getAcceptanceRatios(r, c("pi", "lambda"))
 Table \ref{tab:mcmcx} contains a summary of the MCMC results for each parameter and chain. The code used to summarize the results can be found in the R script posted on \href{https://github.com/floidgilbert/jsr223/tree/master/examples/Groovy}{GitHub}.
 
 %///cite microbenchmark
-So far we have shown that we can implement dynamic Java solutions from within R using a combination of compiled Java libraries and Groovy script. But, is the performance acceptable? We timed the execution expression \code{r <- cs\$eval()} as in the preceding example using the \CRANpkg{microbenchmark} package. The performance benchmarks were run on a laptop with an Intel i7-5500U, 2.40Ghz processor and 8GB RAM. Four threads were used to run the four chains for the two parameters, $\pi$ and $\lambda$, simultaneously. The median total execution time for the expression over 50 iterations was 68 milliseconds. This processing time includes converting the Java results to nested R lists. The lists contain four $10,000 \times 2$ matrices and several runtime statistics. In total, 80,032 values are returned to R. If we increase the MCMC iterations to 100,000, the median total runtime is 624 milliseconds. Increasing the iterations again to 1 million produces a median total runtime of 7.7 seconds. Hence, the performance is roughly linear. We find the execution time acceptable, especially considering that the implementation was scripted.
+So far we have shown that we can implement dynamic Java solutions from within R using a combination of compiled Java libraries and Groovy script. But, is the performance acceptable? We report some simple performance benchmarks here. The scripts were run on a laptop with an Intel i7-5500U, 2.40Ghz processor and 8GB RAM. The processor can execute four threads in parallel. We used all four threads to run four chains simultaneously. We executed the expression \code{r <- cs\$eval()} 50 times using the \CRANpkg{microbenchmark} package. It reported that the median total execution time for the expression was 68 milliseconds for 10,000 MCMC iterations. If we increase the MCMC iterations to 100,000, the median total runtime is 624 milliseconds. Increasing the iterations again to 1 million produces a median total runtime of 7.7 seconds. Hence, the performance is roughly linear. The processing time includes converting the Java results to R objects. In this case, we have an R list containing four named lists, each with several runtime statistics and a matrix of MCMC draws. When 1 million MCMC iterations are requested, 8,000,032 values are returned to R. Overall, we find this execution time acceptable, especially considering that the implementation was scripted.
 
-This is only one approach to this implementation. For example, the total runtime could be reduced further by summarizing or simplifying the data on the Java side. However, summarizing data is a strength of the R language. Therefore, we transfer the total data to R in this example because we believe it represents the most typical use case.
+This is only one approach to this implementation. For example, the total runtime could be reduced further by summarizing or simplifying the data on the Java side. However, summarizing data is an R language strength. We chose to transfer the unsummarized results to R in this example because we believe it represents the most typical use case.
 
-%///conclusion. In this example, we ///.
+We believe this example illustrates how \pkg{jsr223} makes advanced Java solutions more accessible to the R computing environment. Blending Groovy script with R leads to faster, and more flexible application development compared to developing Java wrapper packages.
 
 \begin{table}[h]
 \centering
@@ -426,7 +426,7 @@ $\lambda$ &    4 & 0.953 & 1.325 & 1.546 & 1.823 & 2.359 & 0.268 & 1187 \\
 
 \subsection{Using other language libraries} %///extend this example for the paper...if it isn't already too long.
 
-In addition to using Java libraries, \pkg{jsr223} can easily take advantage of solutions written in other languages. In some cases, integration is as simple as sourcing a script file. For example, many common JavaScript libraries like \href{http://underscorejs.org/}{Underscore} and \href{https://vocajs.com/}{Voca} can be sourced using a URL. The following script sources Voca and parses a string. See \hyperlink{using-javascript-solutions-voca}{Using JavaScript Solutions - Voca} for a more in-depth example.
+In addition to using Java libraries, \pkg{jsr223} can easily take advantage of solutions written in other languages. In some cases, integration is as simple as sourcing a script file. For example, many common JavaScript libraries like \href{http://underscorejs.org/}{Underscore} and \href{https://vocajs.com/}{Voca} can be sourced using a URL. The following example sources Voca and parses a string. See \hyperlink{using-javascript-solutions-voca}{Using JavaScript Solutions - Voca} for a more in-depth example.
 
 \begin{verbatim}
 engine$source(
@@ -445,9 +445,9 @@ engine$invokeMethod(
 
 Compiled Groovy and Kotlin libraries are accessed in the same way as Java libraries: simply include the relevant class or JAR files in the class path when you create the script engine.
 
-The section \hyperlink{r-with-ruby}{R with Ruby} includes a detailed example of using Ruby gems (i.e., libraries) in R. Specifically, the example shows how to generate fake entities for demonstration data sets.
+The section \hyperlink{r-with-ruby}{R with Ruby} includes detailed instructions for using Ruby gems (i.e., libraries) in R. Specifically, the example shows how to generate fake entities for demonstration data sets.
 
-The core Python language features are fully accessible via \pkg{jsr223}. However, compatibility with many common Python libraries is limited. Please see \hyperlink{r-with-python}{R with Python} for more information. That section also includes a code example that uses core Python to implements a simple HTTP server. The server uses callbacks into R to generate content.
+The core Python language features are fully accessible via \pkg{jsr223}. However, compatibility with many common Python libraries is limited. Please see \hyperlink{r-with-python}{R with Python} for more information. That section also includes a code example that uses core Python to implement a simple HTTP server. The server uses R callbacks to generate content.
 
 \hypertarget{installation}{}
 \section{Installation}
@@ -715,7 +715,7 @@ Behind the scenes, \pkg{jsr223}'s simplified data exchange is provided by the R 
 
 The \pkg{jdx} package (and hence \pkg{jsr223}) supports converting R vectors, factors, n-dimensional arrays, data frames, named lists, unnamed lists, nested lists (i.e., lists containing lists), and environments to generic Java objects. Row-major and column-major ordering options are available for arrays and data frames. R data types numeric, integer, character, raw, and logical are supported. Complex types and date/time classes are not supported.
 
-Java scalars, n-dimensional arrays, collections, and maps can be converted to standard objects in the R environment. These structures cover all of the primary data types in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform. This includes most scripting language-specific structures such as Python dictionaries and native JavaScript objects.
+Java scalars, n-dimensional arrays, collections, and maps can be converted to standard objects in the R environment. These structures cover all of the primary data types in the supported scripting languages. Moreover, collections and maps are ubiquitous in Java APIs; providing support for these structures gives R developers easy access to a vast number of data structures available on the Java platform. This includes most scripting language structures such as Python dictionaries and native JavaScript objects.
 
 All \pkg{jdx} data conversion options are mirrored by settings in \pkg{jsr223}. The most pertinent details are discussed in the following sections. For a more thorough discussion, see the vignette included with the \pkg{jdx} package.
 

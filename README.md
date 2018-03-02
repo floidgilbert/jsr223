@@ -1,4 +1,4 @@
 # jsr223
 A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby (Ruby), Jython (Python), and Kotlin
 
-The **jsr223** package provides a high-level integration for Java that makes Java objects easy to use from within R and simplifies bi-directional data exchange for a wide variety of objects. Furthermore, **jsr223** employs the Java Scripting API (an implementation of JSR-223) to bring five scripting languages to the R software environment: JavaScript, Ruby, Python, Groovy, and Kotlin.
+The R package **jsr223** is a high-level integration for the Java platform. It makes Java objects easy to use from within R; it provides a unified interface to integrate R with several programming languages; and it features extensive data exchange between R and Java. In all, **jsr223** significantly extends the computing capabilities of the R software environment.
