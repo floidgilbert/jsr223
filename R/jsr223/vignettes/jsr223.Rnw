@@ -161,6 +161,7 @@ A \dfn{scripting engine} (usually shortened to \dfn{script engine}) is software 
 
 \dfn{Bindings} refers to the name/value pairs associated with variables in a given scope. Conceptually, a variable's name is bound to its value. The variable names and values in R's global environment are examples of bindings.
 
+\hypertarget{typical-use-cases}{}
 \section{Typical use cases}
 
 This section includes introductory examples that demonstrate the core functionality of the \pkg{jsr223} package. For a complete overview of \pkg{jsr223} features, see the \hyperlink{feature-documentation}{Feature documentation}. Following that section, we provide specific documentation for each of the supported languages.
@@ -172,7 +173,7 @@ This introductory example shows how so-called ``glue'' code can be embedded in R
 %///probably put some of the writing about data exchange somewhere in this document.
 
 %///cite stanford
-%This example demonstrates using Java libraries from R and converting Java data structures to R objects. 
+%This example demonstrates using Java libraries from R and converting Java data structures to R objects.
 We use \href{https://nlp.stanford.edu/}{Stanford's Natural Language Processing} (NLP) Java libraries to identify grammatical parts of speech in a text. NLP is a key component in statistical text analysis and artificial intelligence. The NLP Java libraries required for this example can be obtained from the \href{https://stanfordnlp.github.io/CoreNLP/index.html}{Stanford CoreNLP}.
 
 The first step: create a \pkg{jsr223} \code{"ScriptEngine"} instance that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. It takes two arguments: the scripting language name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{"ScriptEngine"} object instance is assigned to the variable \code{engine}.
@@ -233,7 +234,7 @@ engine$invokeFunction(
 ## 8       to      TO           43         45
 ## 9      use      VB           46         49
 ## 10       .       .           49         50
-## 
+##
 ## [[2]]
 ##      words pos.tag offset.begin offset.end
 ## 1 Download      VB           51         59
@@ -278,8 +279,8 @@ public class Sampler extends MhSamplerUnivariateProposal {
   private double dataLength, dataSum, dataZeroCount, dataPositiveCount;
 
   // Constructor method.
-  public Sampler(double alpha, double beta, 
-                 double theta, double kappa, 
+  public Sampler(double alpha, double beta,
+                 double theta, double kappa,
                  int[] data)
   {
     this.alpha = alpha;
@@ -412,16 +413,16 @@ We believe this example illustrates how \pkg{jsr223} makes advanced Java solutio
 \caption{Results for the Metropolis-Hastings sampler. Each parameter and chain is listed, with quantiles, acceptance ratio, and effective sample size (ESS).}
 \begin{tabular}{lrrrrrrrr}
 \hline
-Parm & Chain & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & Acc. Ratio & ESS \\ 
+Parm & Chain & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & Acc. Ratio & ESS \\
 \hline
-$\pi$ &    1 & 0.294 & 0.463 & 0.543 & 0.611 & 0.714 & 0.235 & 1006 \\ 
-$\pi$ &    2 & 0.292 & 0.461 & 0.536 & 0.607 & 0.715 & 0.229 &  805 \\ 
-$\pi$ &    3 & 0.294 & 0.459 & 0.534 & 0.603 & 0.710 & 0.232 &  929 \\ 
-$\pi$ &    4 & 0.311 & 0.458 & 0.532 & 0.598 & 0.714 & 0.242 &  987 \\ 
-$\lambda$ &    1 & 0.955 & 1.331 & 1.571 & 1.843 & 2.422 & 0.264 & 1007 \\ 
-$\lambda$ &    2 & 0.937 & 1.340 & 1.563 & 1.820 & 2.409 & 0.265 & 1068 \\ 
-$\lambda$ &    3 & 0.939 & 1.321 & 1.560 & 1.808 & 2.395 & 0.264 & 1119 \\ 
-$\lambda$ &    4 & 0.953 & 1.325 & 1.546 & 1.823 & 2.359 & 0.268 & 1187 \\ 
+$\pi$ &    1 & 0.294 & 0.463 & 0.543 & 0.611 & 0.714 & 0.235 & 1006 \\
+$\pi$ &    2 & 0.292 & 0.461 & 0.536 & 0.607 & 0.715 & 0.229 &  805 \\
+$\pi$ &    3 & 0.294 & 0.459 & 0.534 & 0.603 & 0.710 & 0.232 &  929 \\
+$\pi$ &    4 & 0.311 & 0.458 & 0.532 & 0.598 & 0.714 & 0.242 &  987 \\
+$\lambda$ &    1 & 0.955 & 1.331 & 1.571 & 1.843 & 2.422 & 0.264 & 1007 \\
+$\lambda$ &    2 & 0.937 & 1.340 & 1.563 & 1.820 & 2.409 & 0.265 & 1068 \\
+$\lambda$ &    3 & 0.939 & 1.321 & 1.560 & 1.808 & 2.395 & 0.264 & 1119 \\
+$\lambda$ &    4 & 0.953 & 1.325 & 1.546 & 1.823 & 2.359 & 0.268 & 1187 \\
 \hline
 \end{tabular}
 \label{tab:mcmcx}
@@ -437,9 +438,9 @@ engine$source(
   discard.return.value = TRUE
 )
 engine$invokeMethod(
-  "v", 
-  "wordWrap", 
-  "A long sentence to wrap using Voca methods.", 
+  "v",
+  "wordWrap",
+  "A long sentence to wrap using Voca methods.",
   list(width = 20)
 )
 
@@ -782,7 +783,7 @@ engine %~% "m[0][1]"
 
 The \code{setArrayOrder} script engine method controls ordering for arrays converted from R to Java, and vice versa. Three array index ordering schemes are available: \code{'row-major'}, \code{'column-major'}, and \code{'column-minor'}. These settings control how the destination Java array is constructed.
 
-Before describing the ordering schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth. 
+Before describing the ordering schemes, it is helpful to think of n-dimensional arrays as collections of smaller structures. A one-dimensional array (a vector) is a collection of scalars. A two-dimensional array (a matrix) is a collection of one-dimensional arrays representing either rows or columns of the matrix. A three-dimensional array (a rectangular prism or cube) is a collection of matrices. A four-dimensional array is a collection of cubes, and so forth.
 
 %///put this in \pkg{jdx} documentation
 Now we describe the each of the \textit{array order} settings. We use the notation
@@ -1287,7 +1288,7 @@ Top-level (i.e., global) variables created in Groovy script will be discarded af
 
 \subsection{Groovy and Java classes}
 
-If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e., made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor when creating the script engine. 
+If you already know Java, using Java classes in Groovy will be very familiar. Java package members are imported (i.e., made accessible to the script) using the \code{import} statement. Groovy automatically imports many common Java packages by default such as \code{java.io.*}, \code{java.lang.*}, \code{java.net.*}, and \code{java.util.*}. If the package is not part of the JRE, add the package's JAR file to the \code{class.path} parameter of the \code{ScriptEngine\$new} constructor when creating the script engine.
 
 \strong{Tip:} Supply class paths as separate elements of a vector instead of concatenating the paths with the usual path delimiters (“;” for Windows, and “:” for all others). This will make your code platform-independent and easier to read.
 
@@ -1349,10 +1350,10 @@ engine$person
 
 ## $`fname`
 ## [1] "Jim"
-## 
+##
 ## $lname
 ## [1] "Hyatt"
-## 
+##
 ## $title
 ## [1] "Principal"
 \end{verbatim}
@@ -1497,9 +1498,9 @@ engine %~% "v.wordWrap('A long string to wrap', {width: 10});"
 # Notice above, the second method parameter is a JavaScript object. We can still
 # use invokeMethod as follows.
 engine$invokeMethod(
-  "v", 
-  "wordWrap", 
-  "A long sentence to wrap using Voca methods.", 
+  "v",
+  "wordWrap",
+  "A long sentence to wrap using Voca methods.",
   list(width = 20)
 )
 
@@ -1507,9 +1508,9 @@ engine$invokeMethod(
 
 # Word wrapping with custom delimiters.
 engine$invokeMethod(
-  "v", 
-  "wordWrap", 
-  "A long sentence to wrap using Voca methods.", 
+  "v",
+  "wordWrap",
+  "A long sentence to wrap using Voca methods.",
   list(width = 20, newLine = "<br>", indent="__")
 )
 
@@ -1649,9 +1650,9 @@ runServer <- function(server.runtime = 60) {
   # not be used in a production scenario.
   engine %@% "server = MyServer('localhost', 8080, 2)"
 
-  # Handle requests for 'server.runtime' seconds before shutting down. The 
-  # 'handle_request' method waits for the timeout specified in the 'MyServer' 
-  # constructor before returning to the event loop to allow interruptions. In a 
+  # Handle requests for 'server.runtime' seconds before shutting down. The
+  # 'handle_request' method waits for the timeout specified in the 'MyServer'
+  # constructor before returning to the event loop to allow interruptions. In a
   # true web service, the R side would not be involved in monitoring requests.
   # See Python's 'SocketServer.serve_forever()' for more information.
   started <- as.numeric(Sys.time())
@@ -1820,7 +1821,7 @@ engine$terminate()
 \hypertarget{r-with-kotlin}{}
 \section{R with Kotlin}
 
-\href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language that supports both functional and object-oriented programming paradigms. Kotlin is concise and pragmatic; in many cases, it requires less code than Java to accomplish the same task. Kotlin version 1.0 was released in 2016 \citep{kotlin-release} making it the newest of the \pkg{jsr223}-supported languages. 
+\href{https://kotlinlang.org/}{Kotlin} is a statically typed programming language that supports both functional and object-oriented programming paradigms. Kotlin is concise and pragmatic; in many cases, it requires less code than Java to accomplish the same task. Kotlin version 1.0 was released in 2016 \citep{kotlin-release} making it the newest of the \pkg{jsr223}-supported languages.
 
 Kotlin's JSR-223 implementation is progressing quickly though it is not complete. We will not list the deficiencies here as they will probably be resolved soon. See the \href{https://github.com/floidgilbert/jsr223/issues}{\pkg{jsr223} issue tracker} to review pending issues and workarounds. In the issue tracker search dialog, select the ``Kotlin issues'' label and include both open and closed issues.
 
@@ -1975,7 +1976,7 @@ engine %@% "
 # Close the window
 engine %@% "f.dispose();"
 \end{verbatim}
-To execute source code in a file, use the script engine object's \code{source} method: 
+To execute source code in a file, use the script engine object's \code{source} method:
 \newline \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local file path or a URL. Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward. The ability to embed source code in R facilitates prototyping and promotes rapid application development.
 
 In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} does include a high-level interface for invoking object methods. It uses the Java reflection API to automatically locate the correct method signature. This is an impressive feature, but according to the \pkg{rJava} web site, its high-level interface is experimental and does not work correctly for all scenarios. There are no such limitations for the \pkg{jsr223} scripting languages.
@@ -2151,7 +2152,7 @@ Java is one of the most popular development platforms of all time, and it contin
 
 \renewcommand{\refname}{References} % For modifying the bibliography heading
 
-\bibliographystyle{unsrt}
+%\bibliographystyle{unsrt}
 
 \nocite{*}
 \bibliography{jsr223} % The file containing the bibliography
