@@ -35,10 +35,10 @@ engine <- ScriptEngine$new("Groovy", class.path)
 # separate thread. The parameters are pi (0 <= pi <= 1) and lambda (0 =>
 # lambda).
 starting.values <- rbind(
-  c(0.999, 0.001)
-  , c(0.001, 0.001)
-  , c(0.001, 30)
-  , c(0.999, 30)
+  c(0.999, 0.001),
+  c(0.001, 0.001),
+  c(0.001, 30),
+  c(0.999, 30)
 )
 
 # These bindings will be accessed as global variables in the Groovy environment.

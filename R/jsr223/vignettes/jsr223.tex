@@ -260,12 +260,9 @@ For this example, we consider a Bayesian analysis for count data $y_1,\dots,y_n$
 
 We choose independent priors $\pi \sim \text{Beta}(\alpha,\beta)$, $\lambda \sim \text{Gamma}(\theta,\kappa)$. In our analysis, we use a Metropolis-Hastings sampler with separate Gaussian proposal densities for $\pi$ and $\lambda$.
 
-Our analysis employs two scripts: (i) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results; and (ii) a Groovy script to extend and execute the Metropolis-Hastings sampler class.
+Our analysis employs two scripts: (i) a Groovy script to extend and execute the Metropolis-Hastings sampler class; and (ii) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results. The scripts, named \file{metropolis-hastings.groovy} and \file{metropolis-hastings.R}, are located at \url{https://github.com/floidgilbert/jsr223/tree/master/examples/Groovy}. The required Java files can be downloaded from the parent folder. We discuss the scripts in parts here, but the Groovy script must be executed in its entirety.
 
-\paragraph{The Groovy script} %///change this to a paragraph style or something in the R journal.
-We describe the Groovy script first. Though the script is presented here in parts, it must be executed as one complete script. Download the complete script from \href{https://github.com/floidgilbert/jsr223}{GitHub}.
-
-To begin, we import the necessary classes. The first line imports all of the static methods of the \code{"Math"} class. The second line imports the abstract class that implements the Metropolis-Hastings sampler. The last line imports a univariate normal implementation of the proposal distribution interface \code{"MhSamplerUnivariateProposal"}.
+\paragraph{The Groovy script} To begin, we import the necessary classes. The first line imports all of the static methods of the \code{"Math"} class. The second line imports the abstract class that implements the Metropolis-Hastings sampler. The last line imports a univariate normal implementation of the proposal distribution interface \code{"MhSamplerUnivariateProposal"}.
 
 \begin{verbatim}
 import static java.lang.Math.*;
@@ -312,7 +309,7 @@ public class Sampler extends MhSamplerUnivariateProposal {
 }
 \end{verbatim}
 
-This code initializes an array of normal proposal distribution objects that will be used by the sampler. Each distribution object is initialized with a variance from the array \code{proposalVariances}. The \code{proposalVariances} array values will be supplied by the R script.
+The next lines initialize an array of normal proposal distribution objects that will be used by the sampler. Each distribution object is initialized with a variance from the array \code{proposalVariances}. The \code{proposalVariances} array values will be supplied by the R script.
 \begin{verbatim}
 ProposalDistributionUnivariateNormal[] pd =
   new ProposalDistributionUnivariateNormal[proposalVariances.length];
@@ -320,14 +317,14 @@ for (int i = 0; i < proposalVariances.length; i++)
   pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
 \end{verbatim}
 
-Finally, we create a \code{"Sampler"} object and assign it to the variable \code{mh}. The last line runs the sampler. Notice that all of the method arguments have not been defined yet; they will be supplied by the R script.
+Finally, we create a \code{"Sampler"} instance and assign it to the variable \code{mh}. The last line runs the sampler. Notice that all of the method arguments have not been defined in the Groovy script; rather, they will be supplied by the R script.
 \begin{verbatim}
 Sampler mh = new Sampler(alpha, beta, theta, kappa, data);
 mh.sample(startingValues, pd, iterations, threads)
 \end{verbatim}
 
 %///cite if first ref to apache
-\paragraph{The R script} First, we instantiate a Groovy script engine. We include paths to all of the required Java libraries in \code{class.path}. The first file contains the Groovy script engine; the second file contains the Metropolis-Hastings sampler, and the last file contains the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library}.
+\paragraph{The R script} First, we instantiate a Groovy script engine. The paths to the required Java libraries are defined in \code{class.path}. The first file is the Groovy script engine; the second file contains the Metropolis-Hastings sampler, and the last file is the \href{http://commons.apache.org/proper/commons-math/}{Apache Commons Mathematics Library}.
 \begin{verbatim}
 library("jsr223")
 
@@ -336,12 +333,48 @@ class.path <- c(
   "~/org.fgilbert.jsr223.examples-0.3.0.jar",
   "~/commons-math3-3.6.1.jar"
 )
-
 engine <- ScriptEngine$new("Groovy", class.path)
 \end{verbatim}
 
+The matrix \code{starting.values} defined here contains initial values for the Metropolis-Hastings sampler. Each row is a ($\pi$, $\lambda$) pair that will be used for a single chain. Hence, we will have four MCMC chains for each parameter.
+
+\begin{verbatim}
+starting.values <- rbind(
+  c(0.999, 0.001),
+  c(0.001, 0.001),
+  c(0.001, 30),
+  c(0.999, 30)
+)
+\end{verbatim}
+
+Now we create a named list of values that will be passed to the Groovy engine when the script is executed. In technical terms, the list's contents will become the bindings (i.e., variable name/value pairs) in the script engine's global scope. Because the list member names become variable names in the target environment, we must ensure that they are valid identifiers in the target language. The first four members are the parameter values for the prior densities; the \code{data} member contains the count data; \code{proposalVariances} is an array of variances for the Gaussian proposal distributions; \code{startingValues} contains the initial ($\pi$, $\lambda$) parameter values for the MCMC chains; \code{iterations} is the number of MCMC draws per chain; and \code{threads} defines the number of threads to use for parallel processing of the MCMC chains.
+
+\begin{verbatim}
+bindings <- list(
+  alpha = 1,
+  beta = 1,
+  theta = 2,
+  kappa = 1,
+  data = as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5)),
+  proposalVariances = c(0.5^2, 1.2^2),
+  startingValues = starting.values,
+  iterations = 10000L,
+  threads = parallel::detectCores()
+)
+\end{verbatim}
 
 
+The first line that follows following code 
+Here we compile the Groovy script file and 
+Finally, we This line reads and compiles the Groovy script file. The \code{cs} variable is a \code{"CompiledScript"} object.
+
+\begin{verbatim}
+cs <- engine$compileSource("metropolis-hastings.groovy")
+r <- cs$eval(bindings = bindings)
+\end{verbatim}
+
+
+///unstructured code
 ///it is possible to use Groovy closures or anonymous classes to do the same thing with less code (no need to extend a class...pass the method as a function to sample, but it's twice as slow in our tests). so far, formally extending an anonymous class is the fastest under these circumstances.
 With four threads using Intel i7-5500U @
 %# 2.40Ghz, 8GB RAM, our timings averaged 68 milliseconds per call.
