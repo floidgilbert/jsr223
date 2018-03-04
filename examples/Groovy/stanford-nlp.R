@@ -1,11 +1,12 @@
 # Demonstrate the use of Stanford Natural Language Processor via Groovy.
-# Download Stanford CoreNLP from https://stanfordnlp.github.io/CoreNLP/
+# The last three files in `class.path` can be downloaded from
+# Stanford CoreNLP from https://stanfordnlp.github.io/CoreNLP/
 
 class.path <- c(
-  "./groovy-all-2.4.7.jar",
-  "./protobuf.jar",
-  "./stanford-corenlp-3.9.0.jar",
-  "./stanford-corenlp-3.9.0-models.jar"
+  "lib/groovy-all-2.4.7.jar",
+  "protobuf.jar",
+  "stanford-corenlp-3.9.0.jar",
+  "stanford-corenlp-3.9.0-models.jar"
 )
 
 library("jsr223")

@@ -9,8 +9,8 @@ library("jsr223")
 engine <- ScriptEngine$new(
   engine.name = "groovy"
   , class.path = c(
-    "~/my-path/groovy-all.jar",
-    "~/my-path/commons-math3-3.6.1.jar"
+    "lib/groovy-all-2.4.7.jar",
+    "lib/commons-math3-3.6.1.jar"
   )
 )
 

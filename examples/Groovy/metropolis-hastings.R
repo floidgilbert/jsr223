@@ -24,9 +24,9 @@
 library("jsr223")
 
 class.path <- c(
-  "~/groovy-all-2.4.7.jar",
-  "~/org.fgilbert.jsr223.examples-0.3.0.jar",
-  "~/commons-math3-3.6.1.jar"
+  "lib/groovy-all-2.4.7.jar",
+  "lib/org.fgilbert.jsr223.examples-0.3.0.jar",
+  "lib/commons-math3-3.6.1.jar"
 )
 
 engine <- ScriptEngine$new("Groovy", class.path)
@@ -95,22 +95,12 @@ r <- cs$eval()
 # Review the acceptance rates for each chain again.
 getAcceptanceRatios(r, c("pi", "lambda"))
 
-# Benchmark ---------------------------------------------------------------
-
-# Display the timings for evaluation.
-microbenchmark::microbenchmark(cs$eval(), times = 20L)
-
-# Display the timings for evaluation when return value is discarded. This shows
-# about how much time is required to convert the Java data strucutures to R
-# objects.
-microbenchmark::microbenchmark(cs$eval(discard.return.value = TRUE), times = 20L)
-
 # Summarize MCMC Results in a table ---------------------------------------
 
 parameter.names <- c("pi", "lambda")
 parameter.count <- length(parameter.names)
 chain.count <- length(r)
-keep <- (bindings$iterations * 0.20 + 1):bindings$iterations
+keep <- (engine$iterations * 0.20 + 1):engine$iterations
 
 table <- matrix(0, parameter.count * chain.count, 8)
 table.row <- 0
@@ -135,4 +125,36 @@ df
 xt <- xtable::xtable(df, label = "tab:abc", digits = 3, display = c("d", "s", "d", "f", "f", "f", "f", "f", "f", "d"))
 xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
 
+# Benchmarks --------------------------------------------------------------
+
+benchmark.iterations <- 20L
+benchmark.warmup <- 4
+benchmark.control <- list(warmup = benchmark.warmup)
+mcmc.iterations <- c(10000L, 100000L, 1000000L)
+
+f <- function(iterations) {
+  engine$iterations <- iterations
+  micro <- microbenchmark::microbenchmark(cs$eval(), times = benchmark.iterations, control = benchmark.control)
+  median(micro$time) / 1000000
+}
+
+(median.time <- sapply(mcmc.iterations, f))
+
+f <- function(iterations) {
+  engine$iterations <- iterations
+  micro <- microbenchmark::microbenchmark(cs$eval(discard.return.value = TRUE), times = benchmark.iterations, control = benchmark.control)
+  median(micro$time) / 1000000
+}
+
+(median.time.no.value <- sapply(mcmc.iterations, f))
+
+m <- cbind(mcmc.iterations, median.time, median.time.no.value)
+colnames(m) <- c("Iterations", "Run time 1", "Run time 2")
+
+xt <- xtable::xtable(m, label = "tab:abc", digits = 3, display = c("d", "d", "f", "f"))
+xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
+
+# Done --------------------------------------------------------------------
+
 engine$terminate()
+
