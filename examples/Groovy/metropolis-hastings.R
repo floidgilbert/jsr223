@@ -75,44 +75,48 @@ engine$threads <- parallel::detectCores()
 cs <- engine$compileSource("metropolis-hastings.groovy")
 
 # Execute the compiled code.
+engine$setArrayOrder("column-minor")
 r <- cs$eval()
 
+# Show the dimensions of the chains
+dim(r$chains)
+
+# Show the head of the first random walk
+dimnames(r$chains) <- list(NULL, parameter.names, NULL)
+head(r$chains[, , 1])
+
 # Review the acceptance rates for each chain.
-getAcceptanceRatios <- function(r, names) {
-  acc <- sapply(r, function(mcmc) mcmc[["acceptance-ratios"]])
-  rownames(acc) <- names
-  acc
-}
-getAcceptanceRatios(r, c("pi", "lambda"))
+parameter.names <- c("pi", "lambda")
+colnames(r$acceptance_ratios) <- parameter.names
+r$acceptance_ratios
 
 # Let's say that we find the acceptance ratios to be a little too high. We need
 # to widen the variance for the proposal distributions. We simply update the
 # corresponding variable and execute the compiled code again. We do not need to
 # recompile the script.
-engine$proposalVariances <- c(0.5^2, 1.5^2)
+engine$proposalVariances <- c(0.5^2, 1.7^2)
 r <- cs$eval()
 
 # Review the acceptance rates for each chain again.
-getAcceptanceRatios(r, c("pi", "lambda"))
+colnames(r$acceptance_ratios) <- parameter.names
+r$acceptance_ratios
 
 # Summarize MCMC Results in a table ---------------------------------------
 
-parameter.names <- c("pi", "lambda")
 parameter.count <- length(parameter.names)
-chain.count <- length(r)
-keep <- (engine$iterations * 0.20 + 1):engine$iterations
+chain.count <- dim(r$chains)[3]
+chains <- r$chains[(engine$iterations * 0.20 + 1):engine$iterations, , ]
 
 table <- matrix(0, parameter.count * chain.count, 8)
 table.row <- 0
 for (parm.idx in 1:parameter.count) {
   for (chain.idx in 1:chain.count) {
-    s <- r[[chain.idx]]
-    chain <- s$chains[keep, parm.idx]
+    chain <- chains[ , parm.idx, chain.idx]
     table.row <- table.row + 1
     table[table.row, ] <- cbind(
       chain.idx,
       t(quantile(chain, c(0.025, 0.25, 0.50, 0.75, 0.975))),
-      s$`acceptance-ratios`[parm.idx],
+      r$acceptance_ratios[chain.idx, parm.idx],
       coda::effectiveSize(chain)
     )
   }
@@ -148,10 +152,10 @@ f <- function(iterations) {
 
 (median.time.no.value <- sapply(mcmc.iterations, f))
 
-m <- cbind(mcmc.iterations, median.time, median.time.no.value)
-colnames(m) <- c("Iterations", "Run time 1", "Run time 2")
+m <- cbind(mcmc.iterations, median.time, median.time.no.value, median.time - median.time.no.value)
+colnames(m) <- c("Iterations", "Run time 1", "Run time 2", "Difference")
 
-xt <- xtable::xtable(m, label = "tab:abc", digits = 3, display = c("d", "d", "f", "f"))
+xt <- xtable::xtable(m, label = "tab:abc", digits = 3, display = c("d", "d", "f", "f", "f"))
 xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
 
 # Done --------------------------------------------------------------------

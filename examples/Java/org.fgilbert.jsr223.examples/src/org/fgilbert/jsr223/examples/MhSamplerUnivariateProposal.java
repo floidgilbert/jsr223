@@ -1,29 +1,28 @@
 package org.fgilbert.jsr223.examples;
 
 import static java.lang.Math.*;
-import java.util.ArrayList;
+
 import java.util.LinkedHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.distribution.UniformRealDistribution;
-import java.time.Duration;
-import java.time.Instant;
 
 public abstract class MhSamplerUnivariateProposal {
 
 	public abstract double logPosterior(double[] values);
 	
-	private class Chain implements Runnable {
+	private class MCMC implements Runnable {
 		private int iterations;
 		private int parameterCount;
 		private ProposalDistributionUnivariate[] proposalDistributions;
 		private double[] startingValues;
 		
-		public LinkedHashMap<String, Object> result = null; 
+		public double[] acceptanceRatios; 
+		public double[][] chains; 
 		
-		public Chain(double[] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations) {
+		public MCMC(double[] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations) {
 			this.startingValues = startingValues;
 			this.proposalDistributions = proposalDistributions;
 			this.iterations = iterations;
@@ -32,12 +31,11 @@ public abstract class MhSamplerUnivariateProposal {
 
 		@Override
 		public void run() {
-			Instant start = Instant.now();
 			/*
 			 * Initialize data structures.
 			 */
 			UniformRealDistribution unif = new UniformRealDistribution();
-			double[][] chains = new double[iterations][parameterCount];
+			chains = new double[iterations][parameterCount];
 			int[] proposalsAccepted = new int[parameterCount];
 			double[] state = null;
 			double[] proposal = null;
@@ -67,21 +65,14 @@ public abstract class MhSamplerUnivariateProposal {
 			/*
 			 * Return results.
 			 */
-			double[] acceptanceRatios = new double[parameterCount];
+			acceptanceRatios = new double[parameterCount];
 			for (int j = 0; j < parameterCount; j++)
 				acceptanceRatios[j] = (double) proposalsAccepted[j] / iterations;
-			result = new LinkedHashMap<String, Object>();
-			result.put("accepted", proposalsAccepted);
-			result.put("acceptance-ratios", acceptanceRatios);
-			result.put("chains", chains);
-			result.put("iterations", iterations);
-			result.put("milliseconds", Duration.between(start, Instant.now()).toMillis());
-			result.put("starting-values", startingValues);
 		}
 		
 	}
 	
-	public ArrayList<LinkedHashMap<String, Object>> sample(double[][] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations, int threads) throws InterruptedException {
+	public LinkedHashMap<String, Object> sample(double[][] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations, int threads) throws InterruptedException {
 		
 		/*
 		 * Validate parameters. 
@@ -99,18 +90,24 @@ public abstract class MhSamplerUnivariateProposal {
 		/*
 		 * Run chains
 		 */
-		Chain[] chains = new Chain[startingValues.length];
+		MCMC[] mcmc = new MCMC[startingValues.length];
 		ExecutorService ex = Executors.newFixedThreadPool(threads);
 		for (int i = 0; i < startingValues.length; i++) {
-			chains[i] = new Chain(startingValues[i], proposalDistributions, iterations); 
-			ex.submit(chains[i]);
+			mcmc[i] = new MCMC(startingValues[i], proposalDistributions, iterations); 
+			ex.submit(mcmc[i]);
 		}
 		ex.shutdown();
 		ex.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-		ArrayList<LinkedHashMap<String, Object>> a = new ArrayList<LinkedHashMap<String, Object>>(chains.length);
-		for (int i = 0; i < startingValues.length; i++)
-			a.add(chains[i].result); 
-		return a;
+		double[][] acceptanceRatios = new double[mcmc.length][];
+		double[][][] chains = new double[mcmc.length][][];
+		for (int i = 0; i < mcmc.length; i++) {
+			acceptanceRatios[i] = mcmc[i].acceptanceRatios;
+			chains[i] = mcmc[i].chains;
+		}
+		LinkedHashMap<String, Object> m = new LinkedHashMap<String, Object>(2);
+		m.put("acceptance_ratios", acceptanceRatios);
+		m.put("chains", chains);
+		return m;
 	}
 	
 }
