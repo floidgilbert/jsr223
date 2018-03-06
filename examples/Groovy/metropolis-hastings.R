@@ -51,9 +51,9 @@ starting.values <- rbind(
 # `proposalVariances` are the variance parameters for the proposal distributions
 # (both Gaussian).
 #
-# `startingValues` are the starting values for each chain.
+# `startingValues` are the starting values for each random walk.
 #
-# `iterations` are the number of iterations for each chain.
+# `iterations` are the number of iterations for each random walk.
 #
 # `threads` the number of threads to use. Chains are allocated to threads. If
 # there are more chains than threads, the threads will be recycled.
@@ -68,20 +68,20 @@ engine$startingValues <- starting.values
 engine$iterations <- 10000L
 engine$threads <- parallel::detectCores()
 
+# Set the array order to get the results in the form we like. See the
+# documentation for more information on array order settings.
+engine$setArrayOrder("column-minor")
+
 # Compile the Groovy script to Java byte code. This approach is recommended only
 # for unstructured code (i.e., code not encapsulated in methods or functions).
 # Otherwise, define functions/methods and call them with engine$invokeMethod or
 # engine$invokeFunction.
 cs <- engine$compileSource("metropolis-hastings.groovy")
 
-# Set the array order to get the results in the form we like. See the
-# documentation for more information on array order settings.
-engine$setArrayOrder("column-minor")
-
 # Execute the compiled code.
 r <- cs$eval()
 
-# Dimensions of the chains - iteration, parameter, walk
+# View dimensions of the chains - iteration, parameter, walk
 dim(r$chains)
 
 # Show the head of the first random walk
@@ -134,8 +134,10 @@ xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
 
 # Benchmarks --------------------------------------------------------------
 
+engine$setArrayOrder("column-major")
+
 benchmark.iterations <- 20L
-benchmark.warmup <- 4
+benchmark.warmup <- 2
 benchmark.control <- list(warmup = benchmark.warmup)
 mcmc.iterations <- c(10000L, 100000L, 1000000L)
 
