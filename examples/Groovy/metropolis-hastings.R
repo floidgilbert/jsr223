@@ -74,19 +74,22 @@ engine$threads <- parallel::detectCores()
 # engine$invokeFunction.
 cs <- engine$compileSource("metropolis-hastings.groovy")
 
-# Execute the compiled code.
+# Set the array order to get the results in the form we like. See the
+# documentation for more information on array order settings.
 engine$setArrayOrder("column-minor")
+
+# Execute the compiled code.
 r <- cs$eval()
 
-# Show the dimensions of the chains
+# Dimensions of the chains - iteration, parameter, walk
 dim(r$chains)
 
 # Show the head of the first random walk
+parameter.names <- c("pi", "lambda")
 dimnames(r$chains) <- list(NULL, parameter.names, NULL)
 head(r$chains[, , 1])
 
 # Review the acceptance rates for each chain.
-parameter.names <- c("pi", "lambda")
 colnames(r$acceptance_ratios) <- parameter.names
 r$acceptance_ratios
 
