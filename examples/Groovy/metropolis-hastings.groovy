@@ -33,7 +33,7 @@ public class Sampler extends MhSamplerUnivariateProposal {
       if (data[i] == 0)
         dataZeroCount++;
     }
-    dataPositiveCount = dataLength - dataZeroCount
+    dataPositiveCount = dataLength - dataZeroCount;
   }
 
   // Implement the abstract method logPosterior.

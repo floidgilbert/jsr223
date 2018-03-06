@@ -134,34 +134,53 @@ xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
 
 # Benchmarks --------------------------------------------------------------
 
-engine$setArrayOrder("column-major")
+doBenchmarks <- function(cs) {
+  benchmark.iterations <- 20L
+  benchmark.warmup <- 4L
+  benchmark.control <- list(warmup = benchmark.warmup)
+  mcmc.iterations <- c(10000L, 100000L, 1000000L)
 
-benchmark.iterations <- 20L
-benchmark.warmup <- 2
-benchmark.control <- list(warmup = benchmark.warmup)
-mcmc.iterations <- c(10000L, 100000L, 1000000L)
+  f1 <- function(iterations, discard.return.value) {
+    engine$iterations <- iterations
+    micro <- microbenchmark::microbenchmark(cs$eval(discard.return.value), times = benchmark.iterations, control = benchmark.control)
+    median(micro$time) / 1000000
+  }
 
-f <- function(iterations) {
-  engine$iterations <- iterations
-  micro <- microbenchmark::microbenchmark(cs$eval(), times = benchmark.iterations, control = benchmark.control)
-  median(micro$time) / 1000000
+  median.time.with.return.values <- sapply(mcmc.iterations, f1, FALSE)
+
+  median.time.without.return.values <- sapply(mcmc.iterations, f1, TRUE)
+
+  m <- cbind(
+    mcmc.iterations,
+    median.time.with.return.values,
+    median.time.without.return.values,
+    median.time.with.return.values - median.time.without.return.values)
+  colnames(m) <- c("Iterations", "Run time 1", "Run time 2", "Difference")
+
+  xt <- xtable::xtable(m, label = "tab:abc", digits = 3, display = c("d", "d", "f", "f", "f"))
+  xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
+
+  m
 }
 
-(median.time <- sapply(mcmc.iterations, f))
+(b1 <- doBenchmarks(cs))
 
-f <- function(iterations) {
-  engine$iterations <- iterations
-  micro <- microbenchmark::microbenchmark(cs$eval(discard.return.value = TRUE), times = benchmark.iterations, control = benchmark.control)
-  median(micro$time) / 1000000
+{
+  script <- "
+  import org.fgilbert.jsr223.examples.MhSamplerZeroInflatedPoisson;
+  import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
+
+  ProposalDistributionUnivariateNormal[] pd =
+  new ProposalDistributionUnivariateNormal[proposalVariances.length];
+  for (int i = 0; i < proposalVariances.length; i++)
+  pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
+
+  MhSamplerZeroInflatedPoisson mh = new MhSamplerZeroInflatedPoisson(alpha, beta, theta, kappa, data);
+  mh.sample(startingValues, pd, iterations, threads);
+  "
 }
 
-(median.time.no.value <- sapply(mcmc.iterations, f))
-
-m <- cbind(mcmc.iterations, median.time, median.time.no.value, median.time - median.time.no.value)
-colnames(m) <- c("Iterations", "Run time 1", "Run time 2", "Difference")
-
-xt <- xtable::xtable(m, label = "tab:abc", digits = 3, display = c("d", "d", "f", "f", "f"))
-xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
+(b2 <- doBenchmarks(engine$compile(script)))
 
 # Done --------------------------------------------------------------------
 
