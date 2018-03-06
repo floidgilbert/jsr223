@@ -142,7 +142,7 @@ Data exchange for \pkg{jsr223} is provided by the R package \CRANpkg{jdx}: Java 
 
 Callbacks allow embedded scripts to call back into the same R session. In \pkg{jsr223}, callbacks are implemented via multi-threading and a custom messaging protocol. This implementation is lightweight, does not require any special configuration, and supports infinite recursion between R and the script engine (limited only by stack space).
 
-\subsection{Document organization} %RJ - Modify
+\subsection{Document organization} %RJ - Modify. Include reference to the full documentation and what it includes.
 
 We begin with \hyperlink{helpful-terminology-and-concepts}{Helpful terminology and concepts} to clarify some key ideas and define relevant jargon. Next, we provide \hyperlink{typical-use-cases}{Typical use cases} that highlight \pkg{jsr223}'s core functionality. The sections \hyperlink{installation}{Installation} and \hyperlink{feature-documentation}{Feature documentation} provide the necessary details to install \pkg{jsr223} and become familiar with all of its features. If you are primarily interested in using \pkg{jsr223} with a specific programming language, jump to \hyperlink{r-with-groovy}{R with Groovy}, \hyperlink{r-with-javascript}{R with JavaScript}, \hyperlink{r-with-python}{R with Python}, \hyperlink{r-with-ruby}{R with Ruby}, or \hyperlink{r-with-kotlin}{R with Kotlin}. The section \hyperlink{software-review}{Software review} is a discussion that puts the \pkg{jsr223} project in context with other relevant software solutions.
 
@@ -467,7 +467,7 @@ Iterations & \multicolumn{1}{c}{Yes} & \multicolumn{1}{c}{No} & & Difference \\
 
 \subsection{Using other language libraries} %///extend this example for the paper...if it isn't already too long.
 
-In addition to using Java libraries, \pkg{jsr223} can easily take advantage of solutions written in other languages. In some cases, integration is as simple as sourcing a script file. For example, many common JavaScript libraries like \href{http://underscorejs.org/}{Underscore} and \href{https://vocajs.com/}{Voca} can be sourced using a URL. The following example sources Voca and parses a string. See \hyperlink{using-javascript-solutions-voca}{Using JavaScript Solutions - Voca} for a more in-depth example.
+In addition to using Java libraries, \pkg{jsr223} can easily take advantage of solutions written in other languages. In some cases, integration is as simple as sourcing a script file. For example, many common JavaScript libraries like Underscore (\url{http://underscorejs.org/}) and Voca (\url{https://vocajs.com/}) can be sourced using a URL. The following example sources Voca and parses a string. See \hyperlink{using-javascript-solutions-voca}{Using JavaScript Solutions - Voca} for a more in-depth example.
 
 \begin{verbatim}
 engine$source(
@@ -484,7 +484,7 @@ engine$invokeMethod(
 ## [1] "A long sentence to\nwrap using Voca\nmethods."
 \end{verbatim}
 
-Compiled Groovy and Kotlin libraries are accessed in the same way as Java libraries: simply include the relevant class or JAR files in the class path when you create the script engine.
+Compiled Groovy and Kotlin libraries are accessed in the same way as Java libraries: simply include the relevant class or JAR files when instantiating a script engine.
 
 The section \hyperlink{r-with-ruby}{R with Ruby} includes detailed instructions for using Ruby gems (i.e., libraries) in R. Specifically, the example shows how to generate fake entities for demonstration data sets.
 
@@ -1953,9 +1953,9 @@ engine$terminate()
 \hypertarget{software-review}{}
 \section{Software review}
 
-There are many integrations that combine the strengths of R with other programming languages. These language integrations can generally be classified as either \dfn{R-major} or \dfn{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \pkg{rJava} is an R-major integration that allows Java objects to be used within an R session. The Java/R Interface (\CRANpkg{JRI}), in contrast, is an R-minor integration that enables Java applications to embed R.
+There are many integrations that combine the strengths of R with other programming languages. These language integrations can generally be classified as either \dfn{R-major} or \dfn{R-minor}. R-major integrations use R as the primary environment to control some other embedded language environment. R-minor integrations are the inverse of R-major integrations. For example, \pkg{rJava} is an R-major integration that allows Java objects to be used within an R session. The Java/R Interface (\pkg{JRI}), in contrast, is an R-minor integration that enables Java applications to embed R.
 
-The \pkg{jsr223} package provides an R-major integration for the Java platform and the \pkg{jsr223} programming languages. In this software review, we provide context for the \pkg{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \CRANpkg{Rserve} \citep{rserve} and \CRANpkg{OpenCPU} \citep{opencpu} are not included in this discussion because their objectives and features do not necessarily align with those of \pkg{jsr223}. We do, however, include a brief discussion of R language implementations for the JVM.
+The \pkg{jsr223} package provides an R-major integration for the Java platform and several programming languages. In this software review, we provide context for the \pkg{jsr223} project through comparisons with other R-major integrations. Popular R-minor language integrations such as \CRANpkg{Rserve} \citep{rserve} and \CRANpkg{opencpu} \citep{opencpu} are not included in this discussion because their objectives and features do not necessarily align with those of \pkg{jsr223}. We do, however, include a brief discussion of an R language implementation for the JVM.
 
 Before we compare \pkg{jsr223} to other R packages, we point out one unique feature that contrasts \pkg{jsr223} with all other integrations in this discussion: \pkg{jsr223} is the only package that provides a standard interface to integrate R with multiple programming languages. This key feature enables developers to take advantage of solutions and features in several languages without the need to learn multiple integration packages.
 
@@ -1964,9 +1964,9 @@ Our software review does not include integrations for Ruby and Kotlin because \p
 \hypertarget{rjava-software-review}{}
 \subsection{\pkg{rJava} software review}
 
-As noted in the introduction, \pkg{rJava} is the preeminent Java integration for R. It provides a low-level interface to compiled Java classes via the JNI. The \pkg{jsr223} package uses \pkg{rJava} together with the Java Scripting API to create a simple, multi-language integration for R and the Java platform.
+As noted in the introduction, \pkg{rJava} is the preeminent Java integration for R. It provides a low-level interface to compiled Java classes via the JNI. The \pkg{jsr223} package uses \pkg{rJava} together with the Java Scripting API to create a user-friendly, multi-language integration for R and the Java platform.
 
-The following code example is taken from \pkg{rJava}'s web site \citep{rjavaweb}. It demonstrates the essential functions of the \textbf{rJava} API with code to create and display a window with a single button. The first two lines are required to initialize \pkg{rJava}. The next lines use the \code{.jnew} function to create two Java objects: a GUI frame and a button. The associated class names are denoted in JNI syntax. Of particular note is the first invocation of \code{.jcall}, the function used to call object methods. In this case, the \code{add} method of the frame object is invoked. For \pkg{rJava} to identify the appropriate method, an explicit return type must be specified in JNI notation as the second parameter to \code{.jcall} (unless the return value is \code{void}). The last parameter to \code{.jcall} specifies the object to be added to the frame object. It must be explicitly cast to the correct interface for the call to be successful.
+The following code example is taken from \pkg{rJava}'s web site \url{http://www.rforge.net/rJava}. It demonstrates the essential functions of the \textbf{rJava} API by way of creating and displaying a GUI window with a single button. The first two lines are required to initialize \pkg{rJava}. The next lines use the \code{.jnew} function to create two Java objects: a GUI frame and a button. The associated class names are denoted in JNI syntax. Of particular note is the first invocation of \code{.jcall}, the function used to call object methods. In this case, the \code{add} method of the frame object is invoked. For \pkg{rJava} to identify the appropriate method, an explicit return type must be specified in JNI notation as the second parameter to \code{.jcall} (unless the return value is \code{void}). The last parameter to \code{.jcall} specifies the object to be added to the frame object. It must be explicitly cast to the correct interface for the call to be successful.
 
 \begin{verbatim}
 library("rJava")
@@ -2014,11 +2014,11 @@ engine %@% "
 engine %@% "f.dispose();"
 \end{verbatim}
 To execute source code in a file, use the script engine object's \code{source} method:
-\newline \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local file path or a URL. Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward. The ability to embed source code in R facilitates prototyping and promotes rapid application development.
+\newline \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local file path or a URL. Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward.
 
-In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} does include a high-level interface for invoking object methods. It uses the Java reflection API to automatically locate the correct method signature. This is an impressive feature, but according to the \pkg{rJava} web site, its high-level interface is experimental and does not work correctly for all scenarios. There are no such limitations for the \pkg{jsr223} scripting languages.
+In comparison to \pkg{rJava}'s low-level interface, \pkg{jsr223} allows developers to use Java objects without knowing the details of JNI and method lookups. However, it is important to note that \pkg{rJava} does include a high-level interface for invoking object methods. It uses the Java reflection API to automatically locate the correct method signature. This is an impressive feature, but according to the \pkg{rJava} web site, its high-level interface is much slower than the low-level interface and it does not work correctly for all scenarios.
 
-The \pkg{jsr223} languages also feature support for advanced object-oriented constructs. For example, classes can be extended and interfaces can be implemented using any language. These features allow developers to quickly implement sophisticated solutions in R without developing, compiling, and distributing custom Java classes. This can speed the development and distribution cycle significantly.
+The \pkg{jsr223}-compatible programming languages also feature support for advanced object-oriented constructs. For example, classes can be extended and interfaces can be implemented using any language. These features allow developers to quickly implement sophisticated solutions in R without developing, compiling, and distributing custom Java classes. This can speed development and deployment significantly.
 
 The \pkg{rJava} package supports exchanging scalars, arrays, and matrices between R and Java. The following R code demonstrates converting an R matrix to a Java object, and vice versa, using \pkg{rJava}.
 
@@ -2049,7 +2049,7 @@ In conclusion, \pkg{jsr223} provides an alternative integration for the Java pla
 \hypertarget{groovy-integrations}{}
 \subsection{Groovy integrations software review}
 
-The only other Groovy language integration on CRAN is \CRANpkg{rGroovy}. It is a simple integration that uses \pkg{rJava} to instantiate \code{groovy.lang.GroovyShell} and pass code snippets to its \code{evaluate} method. We outline the typical integration approach using \pkg{rGroovy}.
+Besides \pkg{jsr223}, the only other Groovy language integration available on CRAN is \CRANpkg{rGroovy} \citep{rgroovy}. It is a simple integration that uses \pkg{rJava} to instantiate \code{groovy.lang.GroovyShell} and pass code snippets to its \code{evaluate} method. We outline the typical integration approach using \pkg{rGroovy}.
 
 To create a Groovy script engine, the necessary Groovy JAR files must be specified in a class path. Furthermore, if a solution requires additional external Java libraries, these must also be included in the class path. Using \pkg{rGroovy}, the class path must be specified as an unnamed list in the global R option \code{GROOVY\_JARS} \textit{before} loading the \pkg{rGroovy} package. The class path cannot be modified after the package is loaded.
 
@@ -2169,11 +2169,11 @@ Overall, Renjin is a promising Java solution for R, but it is not fully develope
 
 \section{Limitations and issues}
 
-All limitations and issues are managed via the GitHub issue tracker at \url{https://github.com/floidgilbert/jsr223/issues}. Be default, the tracker lists only open issues.
+All limitations and issues are managed via the GitHub issue tracker at \url{https://github.com/floidgilbert/jsr223/issues}. Be default, the tracker lists only open issues. Modify the search parameters to see limitations and workarounds deemed as closed issues.
 
 \section{Summary}
 
-Java is one of the most popular development platforms of all time, and it continues to grow in popularity as more languages, tools, and technologies employ the JVM. The \pkg{jsr223} package is a high-level, user-friendly interface that enables R developers to more easily tap into Java solutions. The unified integration interface with Groovy, JavaScript, Python, Ruby, and Kotlin also facilitates access to solutions developed in these languages. In all, \pkg{jsr223} significantly extends the computing capabilities of the R software environment.
+Java is one of the most popular development platforms in computing history, and it continues to grow in popularity as more languages, tools, and technologies employ the JVM. The \pkg{jsr223} package is a high-level, user-friendly interface that enables R developers to take advantage of Java solutions. The unified integration interface with Groovy, JavaScript, Python, Ruby, and Kotlin also facilitates access to solutions developed in these languages. In all, \pkg{jsr223} significantly extends the computing capabilities of the R software environment.
 
 \section{Document version history}
 
