@@ -17,7 +17,7 @@ ScriptEngine Class
 }
 
 \description{
-The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \code{\link{ScriptEngine}} instance is used to execute arbitrary code and pass data back and forth between the script engine environment and R. The script engine environment contains a global object named \code{R} that facilitates callbacks into the R environment. Complete documentation is located in the \pkg{jsr223} \href{../doc/jsr223.pdf}{vignette}.
+The \code{\link{ScriptEngine}} class represents a Java-based script engine. A \code{\link{ScriptEngine}} instance is used to execute arbitrary code and pass data back and forth between the script engine environment and R. The script engine environment contains a global object named \code{R} that facilitates callbacks into the R environment. Complete documentation is located in the \href{../doc/jsr223.pdf}{\pkg{jsr223} User Manual}.
 }
 
 \usage{
@@ -25,7 +25,7 @@ ScriptEngine
 }
 
 \details{
-The complete \pkg{jsr223} documentation can be found in the \href{../doc/jsr223.pdf}{vignette}. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed as easily in the R documentation.
+The complete \pkg{jsr223} documentation can be found in the \href{../doc/jsr223.pdf}{User Manual}. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed as easily in the R documentation.
 
 In this document, the section \strong{Constructor Method} details the options required to create a \code{\link{ScriptEngine}} instance. The section \strong{Script Engine Settings} describes class methods pertaining to configurable options. The section \strong{Methods} lists the rest of the class methods. The section \strong{Callbacks} provides an overview of the functionality allowing code in the script engine to access data and execute code in the R environment. Finally, \strong{Script Engines} includes links to the supported script engine providers.
 
@@ -56,7 +56,7 @@ Returns a length-one character vector containing the current array order scheme.
 }
 
 \item{\code{setArrayOrder(value)}}{
-Sets the current array ordering scheme used for all n-dimensional arrays (such as matrices) converted to and from the script engine. Valid values are \code{'row-major'} (the default), \code{'column-major'}, and \code{'column-minor'}. These indexing schemes are described in the \href{../doc/jsr223.pdf}{vignette}. This method returns the previous setting invisibly.
+Sets the current array ordering scheme used for all n-dimensional arrays (such as matrices) converted to and from the script engine. Valid values are \code{'row-major'} (the default), \code{'column-major'}, and \code{'column-minor'}. These indexing schemes are described in the \href{../doc/jsr223.pdf}{User Manual}. This method returns the previous setting invisibly.
 }
 
 \item{\code{getCoerceFactors()}}{
@@ -72,7 +72,7 @@ Returns a length-one logical vector indicating whether the \var{data frame row m
 }
 
 \item{\code{setDataFrameRowMajor(value)}}{
-Enables or disables the \var{data frame row major} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, data frames are converted to Java objects in row-major fashion. When disabled, column-major ordering is used. See the \href{../doc/jsr223.pdf}{vignette} for details. This method returns the previous setting invisibly.
+Enables or disables the \var{data frame row major} setting. Valid values are \code{TRUE} (the default) and \code{FALSE}. When enabled, data frames are converted to Java objects in row-major fashion. When disabled, column-major ordering is used. See the \href{../doc/jsr223.pdf}{User Manual} for details. This method returns the previous setting invisibly.
 }
 
 \item{\code{getInterpolate()}}{
@@ -234,7 +234,7 @@ Finally, to evaluate R code, use
 }
 
 \section{Script Engines}{
-The \pkg{jsr223} package supports the following Java-based languages. Follow a link below to visit the language's supporting web site and to download script engine JAR files. Detailed instructions are found in the \href{../doc/jsr223.pdf}{vignette}.
+The \pkg{jsr223} package supports the following Java-based languages. Follow a link below to visit the language's supporting web site and to download script engine JAR files. Detailed instructions are found in the \href{../doc/jsr223.pdf}{User Manual}.
 
 \href{http://groovy-lang.org}{Groovy} -- A Java-like language enhanced with modern dynamic programming features.
 

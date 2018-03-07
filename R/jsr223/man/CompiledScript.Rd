@@ -17,7 +17,7 @@ CompiledScript
 \details{
 CompiledScript does not have a public constructor. Create an instance of this class with the \code{\link{ScriptEngine}} methods \code{compile} and \code{compileSource}.
 
-The complete \pkg{jsr223} documentation can be found in the \href{../doc/jsr223.pdf}{vignette}.
+The complete \pkg{jsr223} documentation can be found in the \href{../doc/jsr223.pdf}{User Manual}.
 }
 
 \value{

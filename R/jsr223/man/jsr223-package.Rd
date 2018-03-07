@@ -13,7 +13,7 @@ The \CRANpkg{jsr223} package provides a high-level integration for Java that mak
 }
 
 \details{
-The complete \pkg{jsr223} documentation is in the \href{../doc/jsr223.pdf}{vignette}. It includes more in-depth code examples and it covers details, such as data exchange, that cannot be addressed easily in the R documentation.
+The complete documentation is in the \href{../doc/jsr223.pdf}{\pkg{jsr223} User Manual}. It includes in-depth code examples and it covers details, such as data exchange, that cannot be addressed easily in the R documentation.
 }
 
 \author{
