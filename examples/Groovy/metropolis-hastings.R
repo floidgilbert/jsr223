@@ -90,10 +90,10 @@ dimnames(r$chains) <- list(NULL, parameter.names, NULL)
 head(r$chains[, , 1])
 
 # Review the acceptance rates for each chain.
-colnames(r$acceptance_ratios) <- parameter.names
-r$acceptance_ratios
+colnames(r$acceptance_rates) <- parameter.names
+r$acceptance_rates
 
-# Let's say that we find the acceptance ratios to be a little too high. We need
+# Let's say that we find the acceptance rates to be a little too high. We need
 # to widen the variance for the proposal distributions. We simply update the
 # corresponding variable and execute the compiled code again. We do not need to
 # recompile the script.
@@ -101,8 +101,8 @@ engine$proposalVariances <- c(0.5^2, 1.7^2)
 r <- cs$eval()
 
 # Review the acceptance rates for each chain again.
-colnames(r$acceptance_ratios) <- parameter.names
-r$acceptance_ratios
+colnames(r$acceptance_rates) <- parameter.names
+r$acceptance_rates
 
 # Summarize MCMC Results in a table ---------------------------------------
 
@@ -119,14 +119,14 @@ for (parm.idx in 1:parameter.count) {
     table[table.row, ] <- cbind(
       chain.idx,
       t(quantile(chain, c(0.025, 0.25, 0.50, 0.75, 0.975))),
-      r$acceptance_ratios[chain.idx, parm.idx],
+      r$acceptance_rates[chain.idx, parm.idx],
       coda::effectiveSize(chain)
     )
   }
 }
 
 df <- data.frame(rep(parameter.names, each = chain.count), table)
-colnames(df) <- c("Parameter", "Chain", "2.5%", "25%", "50%", "75%", "97.5%", "Acc. Ratio", "ESS")
+colnames(df) <- c("Parameter", "Chain", "2.5%", "25%", "50%", "75%", "97.5%", "Acc. Rate", "ESS")
 df
 
 xt <- xtable::xtable(df, label = "tab:abc", digits = 3, display = c("d", "s", "d", "f", "f", "f", "f", "f", "f", "d"))

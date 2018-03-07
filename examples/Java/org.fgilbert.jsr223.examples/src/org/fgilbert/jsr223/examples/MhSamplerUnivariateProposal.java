@@ -19,7 +19,7 @@ public abstract class MhSamplerUnivariateProposal {
 		private ProposalDistributionUnivariate[] proposalDistributions;
 		private double[] startingValues;
 		
-		public double[] acceptanceRatios; 
+		public double[] acceptanceRates; 
 		public double[][] chains; 
 		
 		public MCMC(double[] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations) {
@@ -65,9 +65,9 @@ public abstract class MhSamplerUnivariateProposal {
 			/*
 			 * Return results.
 			 */
-			acceptanceRatios = new double[parameterCount];
+			acceptanceRates = new double[parameterCount];
 			for (int j = 0; j < parameterCount; j++)
-				acceptanceRatios[j] = (double) proposalsAccepted[j] / iterations;
+				acceptanceRates[j] = (double) proposalsAccepted[j] / iterations;
 		}
 		
 	}
@@ -98,14 +98,14 @@ public abstract class MhSamplerUnivariateProposal {
 		}
 		ex.shutdown();
 		ex.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
-		double[][] acceptanceRatios = new double[mcmc.length][];
+		double[][] acceptanceRates = new double[mcmc.length][];
 		double[][][] chains = new double[mcmc.length][][];
 		for (int i = 0; i < mcmc.length; i++) {
-			acceptanceRatios[i] = mcmc[i].acceptanceRatios;
+			acceptanceRates[i] = mcmc[i].acceptanceRates;
 			chains[i] = mcmc[i].chains;
 		}
 		LinkedHashMap<String, Object> m = new LinkedHashMap<String, Object>(2);
-		m.put("acceptance_ratios", acceptanceRatios);
+		m.put("acceptance_rates", acceptanceRates);
 		m.put("chains", chains);
 		return m;
 	}
