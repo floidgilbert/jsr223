@@ -21,7 +21,6 @@ The \pkg{jsr223} package features extensive, configurable data exchange between 
 
 Other distinguishing features of the \pkg{jsr223} package include a simple callback interface to access the R environment from embedded scripts, script compiling, and string interpolation. In all, \pkg{jsr223} lowers the barrier to using sophisticated Java solutions from within R.
 
-%///RJ - This section is specific to this document.
 \subsection{Document organization}
 
 The section \hyperlink{typical-use-cases}{Typical use cases} highlights the \pkg{jsr223} package's core functionality. The \hyperlink{the-jsr223-package-implementation}{\pkg{jsr223} package implementation} contains a brief overview of the package internals. Finally,  \hyperlink{software-review}{Software review} puts the \pkg{jsr223} project in context with comparisons to other relevant software solutions.
@@ -33,7 +32,7 @@ This section includes introductory examples that demonstrate the core functional
 
 \subsection{Using Java libraries}
 
-For this demonstration, we use Stanford's Core Natural Language Processing Java libraries \citep{stanfordcorenlp} to identify grammatical parts of speech in a text. Natural language processing (NLP) is a key component in statistical text analysis and artificial intelligence. This example shows how so-called ``glue'' code can be embedded in R to quickly leverage powerful Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects. To follow along, download the script at \url{https://github.com/floidgilbert/jsr223/tree/master/examples/JavaScript/stanford-nlp.R}.
+For this demonstration, we use Stanford's Core Natural Language Processing Java libraries \citep{stanfordcorenlp} to identify grammatical parts of speech in a text. Natural language processing (NLP) is a key component in statistical text analysis and artificial intelligence. This example shows how so-called ``glue'' code can be embedded in R to quickly leverage the Stanford NLP libraries. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects. Download the full script at \url{https://github.com/floidgilbert/jsr223/tree/master/examples/JavaScript/stanford-nlp.R}.
 
 The first step: create a \pkg{jsr223} \code{"ScriptEngine"} instance that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. This method takes two arguments: a scripting language's name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{"ScriptEngine"} object is assigned to the variable \code{engine}.
 
