@@ -29,11 +29,11 @@ The section \hyperlink{typical-use-cases}{Typical use cases} highlights the \pkg
 \hypertarget{typical-use-cases}{}
 \section{Typical use cases}
 
-This section includes introductory examples that demonstrate the core functionality of the \pkg{jsr223} package. For a complete overview of \pkg{jsr223} features and its supported languages, see the \textit{\pkg{jsr223} User Manual} included in the package vignettes. Code examples related to this document are available on GitHub at \url{https://github.com/floidgilbert/jsr223/tree/master/examples}. %///RJ - modified
+This section includes introductory examples that demonstrate the core functionality of the \pkg{jsr223} package. For a complete overview of \pkg{jsr223} features and its supported languages, see the \textit{\pkg{jsr223} User Manual} included in the package vignettes.
 
 \subsection{Using Java libraries}
 
-For this demonstration, we use Stanford's Core Natural Language Processing Java libraries \citep{stanfordcorenlp} to identify grammatical parts of speech in a text. Natural language processing (NLP) is a key component in statistical text analysis and artificial intelligence. This example shows how so-called ``glue'' code can be embedded in R to quickly leverage powerful Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects. 
+For this demonstration, we use Stanford's Core Natural Language Processing Java libraries \citep{stanfordcorenlp} to identify grammatical parts of speech in a text. Natural language processing (NLP) is a key component in statistical text analysis and artificial intelligence. This example shows how so-called ``glue'' code can be embedded in R to quickly leverage powerful Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects. To follow along, download the script at \url{https://github.com/floidgilbert/jsr223/tree/master/examples/JavaScript/stanford-nlp.R}.
 
 The first step: create a \pkg{jsr223} \code{"ScriptEngine"} instance that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. This method takes two arguments: a scripting language's name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{"ScriptEngine"} object is assigned to the variable \code{engine}.
 
@@ -316,7 +316,7 @@ engine$invokeMethod(
 
 Compiled Groovy and Kotlin libraries are accessed in the same way as Java libraries: simply include the relevant class or JAR files when instantiating a script engine.
 
-Ruby gems (i.e., libraries) can also be accessed using \pkg{jsr223}. Simply provide the paths to the gem libraries and dependencies in the class path. The \pkg{jsr223} documentation provides instructions and a code example.
+Ruby gems (i.e., libraries) can also be accessed using \pkg{jsr223}. Simply provide the paths to the gems and dependencies in the class path. The \textit{\pkg{jsr223} User Manual} provides instructions and a code example.
 
 The core Python language features are fully accessible via \pkg{jsr223}. The \pkg{jsr223} documentation includes a code example that implements a simple HTTP server in Python. The Python server uses R callbacks to generate content. Compatibility with many common Python libraries is limited on the Java platform. Please see \hyperlink{python-integrations}{Python integrations software review} for more information.
 
