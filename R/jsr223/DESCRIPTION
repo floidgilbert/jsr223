@@ -2,7 +2,7 @@ Package: jsr223
 Type: Package
 Title: A 'Java' Platform Integration for 'R' with Programming Languages 'Groovy', 'JavaScript', 'JRuby' ('Ruby'), 'Jython' ('Python'), and 'Kotlin'
 Version: 0.3.0
-Date: 2018-02-16
+Date: 2018-03-07
 Authors@R: c(person(given="Floid R.", family="Gilbert", role=c("aut","cre"), email="floid.r.gilbert@gmail.com"), person(given="David B.", family="Dahl", role=c("aut"), email="dahl@stat.byu.edu"))
 Description: Simplifies using R with Java and several scripting languages.
 License: GPL (>= 2) | BSD_3_clause + file LICENSE

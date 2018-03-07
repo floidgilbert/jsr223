@@ -169,7 +169,7 @@ This section includes introductory examples that demonstrate the core functional
 
 \subsection{Using Java libraries}
 
-For this demonstration, we use Stanford's Core Natural Language Processing Java libraries \citep{stanfordcorenlp} to identify grammatical parts of speech in a text. Natural language processing (NLP) is a key component in statistical text analysis and artificial intelligence. This example shows how so-called ``glue'' code can be embedded in R to quickly leverage powerful Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects. 
+For this demonstration, we use Stanford's Core Natural Language Processing Java libraries \citep{stanfordcorenlp} to identify grammatical parts of speech in a text. Natural language processing (NLP) is a key component in statistical text analysis and artificial intelligence. This example shows how so-called ``glue'' code can be embedded in R to quickly leverage powerful Java solutions. It also demonstrates how easily \pkg{jsr223} converts Java data structures to R objects.
 
 The first step: create a \pkg{jsr223} \code{"ScriptEngine"} instance that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. This method takes two arguments: a scripting language's name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{"ScriptEngine"} object is assigned to the variable \code{engine}.
 
@@ -437,13 +437,13 @@ This is only one approach to this implementation. The total runtime could be red
 \begin{tabular}{ccrrrrrrr}
 \toprule
 Parameter & Chain & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & Acc. Ratio & ESS \\ \midrule
-$\pi$ &    1 & 0.288 & 0.460 & 0.537 & 0.606 & 0.724 & 0.236 &  764 \\ 
-$\pi$ &    2 & 0.288 & 0.467 & 0.540 & 0.604 & 0.724 & 0.235 &  864 \\ 
-$\pi$ &    3 & 0.298 & 0.459 & 0.529 & 0.603 & 0.722 & 0.234 &  989 \\ 
-$\pi$ &    4 & 0.268 & 0.456 & 0.528 & 0.598 & 0.713 & 0.242 &  702 \\ 
-$\lambda$ &    1 & 0.933 & 1.313 & 1.563 & 1.814 & 2.377 & 0.238 & 1023 \\ 
-$\lambda$ &    2 & 0.968 & 1.324 & 1.563 & 1.839 & 2.412 & 0.238 &  805 \\ 
-$\lambda$ &    3 & 0.935 & 1.356 & 1.579 & 1.816 & 2.344 & 0.231 &  785 \\ 
+$\pi$ &    1 & 0.288 & 0.460 & 0.537 & 0.606 & 0.724 & 0.236 &  764 \\
+$\pi$ &    2 & 0.288 & 0.467 & 0.540 & 0.604 & 0.724 & 0.235 &  864 \\
+$\pi$ &    3 & 0.298 & 0.459 & 0.529 & 0.603 & 0.722 & 0.234 &  989 \\
+$\pi$ &    4 & 0.268 & 0.456 & 0.528 & 0.598 & 0.713 & 0.242 &  702 \\
+$\lambda$ &    1 & 0.933 & 1.313 & 1.563 & 1.814 & 2.377 & 0.238 & 1023 \\
+$\lambda$ &    2 & 0.968 & 1.324 & 1.563 & 1.839 & 2.412 & 0.238 &  805 \\
+$\lambda$ &    3 & 0.935 & 1.356 & 1.579 & 1.816 & 2.344 & 0.231 &  785 \\
 $\lambda$ &    4 & 0.875 & 1.303 & 1.532 & 1.803 & 2.364 & 0.230 &  813 \\ \bottomrule
 \end{tabular}
 \label{tab:mcmcx}
@@ -2118,7 +2118,7 @@ The most prominent JavaScript integration for R is Jeroen Ooms' \CRANpkg{V8} pac
 
 First, the JavaScript engine included with \pkg{V8} provides only essential ECMAscript functionality. For example, \pkg{V8} does not include even basic file and network operations. In contrast, \pkg{jsr223} provides access to the entire JVM which includes a vast array of libraries and computing functionality.
 
-Second, all data exchanged between \pkg{V8} and R is serialized using JSON via the \CRANpkg{jsonlite} package \citep{jsonlite}. JSON is very flexible; it can represent virtually any data structure. However, JSON converts all values to/from string representations which adds overhead and imposes round-off error for floating point values. The \pkg{jsr223} package handles all data using native values which reduces overhead and preserves maximum precision. In many applications, the loss of precision is not critical as far as the final numeric results are concerned, but it does require defensive programming when checking for equality. For example, an application using \pkg{V8} must round two values to a given decimal place before checking if they are equal. 
+Second, all data exchanged between \pkg{V8} and R is serialized using JSON via the \CRANpkg{jsonlite} package \citep{jsonlite}. JSON is very flexible; it can represent virtually any data structure. However, JSON converts all values to/from string representations which adds overhead and imposes round-off error for floating point values. The \pkg{jsr223} package handles all data using native values which reduces overhead and preserves maximum precision. In many applications, the loss of precision is not critical as far as the final numeric results are concerned, but it does require defensive programming when checking for equality. For example, an application using \pkg{V8} must round two values to a given decimal place before checking if they are equal.
 
 The following code example demonstrates the precision issue using the R constant \code{pi}. The JSON conversion is handled via \pkg{jsonlite}, just as in the \pkg{V8} package. We see that after JSON conversion the value of \code{pi} is not identical to the original value. In contrast, the \pkg{jsr223} conversion result is identical to the original value.
 
@@ -2185,13 +2185,13 @@ Java is one of the most successful development platforms in computing history, a
 \section{Document version history}
 
 \begin{description}
-\item[2016-03-06] Initial release.
+\item[2016-03-07] Initial release.
 \end{description}
 
 \section{Package version history}
 
 \begin{description}
-\item[2016-03-06] Initial release.
+\item[2016-03-07] Initial release.
 \end{description}
 
 \renewcommand{\refname}{References} % For modifying the bibliography heading
