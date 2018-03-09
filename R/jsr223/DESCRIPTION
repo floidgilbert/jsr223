@@ -4,7 +4,7 @@ Title: A 'Java' Platform Integration for 'R' with Programming Languages 'Groovy'
 Version: 0.3.0
 Date: 2018-03-07
 Authors@R: c(person(given="Floid R.", family="Gilbert", role=c("aut","cre"), email="floid.r.gilbert@gmail.com"), person(given="David B.", family="Dahl", role=c("aut"), email="dahl@stat.byu.edu"))
-Description: Simplifies using R with Java and several scripting languages.
+Description: Provides a high-level integration for the 'Java' platform that makes 'Java' objects easy to use from within 'R'; provides a unified interface to integrate 'R' with several programming languages; and features extensive data exchange between 'R' and 'Java'. The 'jsr223'-supported programming languages include 'Groovy', 'JavaScript', 'JRuby' ('Ruby'), 'Jython' ('Python'), and 'Kotlin'. All of these languages can use and extend 'Java' objects in natural syntax. Futhermore, solutions developed in any of the 'jsr223'-supported languages are immediately accessible to 'R' developers. The 'jsr223' package also features callbacks, script compiling, and string interpolation. In all, 'jsr223' significantly extends the computing capabilities of the 'R' software environment.
 License: GPL (>= 2) | BSD_3_clause + file LICENSE
 Imports: jdx (>= 0.1.0), rJava (>= 0.9-8), R6 (>= 2.2.0), utils (>= 3.3.0), curl (>= 3.0.0)
 SystemRequirements: Java Runtime Environment (>= 8)
