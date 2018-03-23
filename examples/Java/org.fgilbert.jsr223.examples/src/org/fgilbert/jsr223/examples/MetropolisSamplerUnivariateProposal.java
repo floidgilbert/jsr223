@@ -52,7 +52,9 @@ public abstract class MetropolisSamplerUnivariateProposal implements Sampler {
 			 */
 			state = startingValues.clone();
 			proposal = startingValues.clone();
-			for (int i = 0; i < iterations; i++) {
+			if (discard == 0)
+				chains[0] = startingValues.clone();
+			for (int i = 1; i < iterations; i++) {
 				for (int j = 0; j < parameterCount; j++) {
 					proposal[j] = proposalDistributions[j].sample(state[j]);
 					probabilityRatio = logPosterior(proposal) -	logPosterior(state);

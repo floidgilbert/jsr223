@@ -21,6 +21,10 @@ public class ProposalDistributionUnivariateNormal implements ProposalDistributio
 		return 1 / sqrt(2 * PI * variance) * exp(-pow((x - given), 2) / (2 * variance));
 	}
 
+	public double logDensity(double x, double given) {
+		return -log(sqrt(2 * PI * variance)) -pow((x - given), 2) / (2 * variance);
+	}
+
 	public double sample(double state) {
 		return state + standardDeviation * sqrt(-2 * log(unif.sample())) * cos(2 * PI * unif.sample());
 	}

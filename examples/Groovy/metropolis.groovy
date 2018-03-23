@@ -1,5 +1,5 @@
 /*
- * This script is sourced by 'metropolis-hastings.R' See that script for an
+ * This script is sourced by 'metropolis.R' See that script for an
  * overview. We follow Java syntax very formally in this script.
  */
 

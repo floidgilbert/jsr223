@@ -1,10 +1,11 @@
-# This script requires 'metropolis-hastings.groovy' which can be located in the
+# This script requires 'metropolis.groovy' which can be located in the
 # same folder. The required JAR files can be found in the root of the examples
 # folder.
 #
-# The example demonstrates dynamic code behavior by extending an abstract Java
-# class, MhSamplerUnivariateProposal. The class defines an abstract method,
-# logPosterior, that can be implemented in script (Groovy, in this case).
+# The example demonstrates dynamic code behavior by extending an abstract Java 
+# class, MetropolisSamplerUnivariateProposal. The class defines an abstract
+# method, logPosterior, that can be implemented in script (Groovy, in this
+# case).
 #
 # This example also demonstrates script compiling and dynamic bindings.
 #
@@ -12,12 +13,12 @@
 # Poisson model with Beta and Gamma priors. The parameters of interest are pi
 # and lambda. We wish to draw samples from the posterior using a
 # high-performance, multi-threaded Java class that implements the
-# Metropolis-Hasting algorithm.
+# Metropolis and Metropolis-Hastings algorithms.
 #
-# See comments in this script and 'metropolis-hastings.groovy' for more
+# See comments in this script and 'metropolis.groovy' for more
 # information.
 #
-# The Java Metropolis-Hasting sampler classes are located in
+# The Java sampler classes are located in
 # examples/Java/org.fgilbert.jsr223.examples.
 
 #  ------------------------------------------------------------------------
@@ -67,7 +68,6 @@ engine$proposalVariances <- c(0.3^2, 1.2^2)
 engine$startingValues <- starting.values
 engine$iterations <- 10000L
 engine$discard <- as.integer(engine$iterations * 0.20)
-engine$discard <- 0L #///
 engine$threads <- parallel::detectCores()
 
 # Set the array order to get the results in the form we like. See the
@@ -78,7 +78,7 @@ engine$setArrayOrder("column-minor")
 # for unstructured code (i.e., code not encapsulated in methods or functions).
 # Otherwise, define functions/methods and call them with engine$invokeMethod or
 # engine$invokeFunction.
-cs <- engine$compileSource("metropolis-hastings.groovy")
+cs <- engine$compileSource("metropolis.groovy")
 
 # Execute the compiled code.
 r <- cs$eval()
@@ -140,7 +140,6 @@ doBenchmarks <- function(cs) {
   benchmark.warmup <- 4L
   benchmark.control <- list(warmup = benchmark.warmup)
   mcmc.iterations <- c(10000L, 100000L, 1000000L)
-  mcmc.iterations <- c(10000L, 100000L)
 
   f1 <- function(iterations, discard.return.value) {
     engine$iterations <- iterations
@@ -169,16 +168,16 @@ doBenchmarks <- function(cs) {
 
 {
   script <- "
-  import org.fgilbert.jsr223.examples.MetropolisSamplerZeroInflatedPoisson;
-  import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
-
-  ProposalDistributionUnivariateNormal[] pd =
-  new ProposalDistributionUnivariateNormal[proposalVariances.length];
-  for (int i = 0; i < proposalVariances.length; i++)
-  pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
-
-  MhSamplerZeroInflatedPoisson mh = new MhSamplerZeroInflatedPoisson(alpha, beta, theta, kappa, data);
-  mh.sample(startingValues, pd, iterations, threads);
+    import org.fgilbert.jsr223.examples.MetropolisSamplerZeroInflatedPoisson;
+    import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
+  
+    ProposalDistributionUnivariateNormal[] pd =
+      new ProposalDistributionUnivariateNormal[proposalVariances.length];
+    for (int i = 0; i < proposalVariances.length; i++)
+      pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
+  
+    MetropolisSamplerZeroInflatedPoisson sampler = new MetropolisSamplerZeroInflatedPoisson(alpha, beta, theta, kappa, data);
+    sampler.sample(startingValues, pd, iterations, discard, threads);
   "
 }
 
