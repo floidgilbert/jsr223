@@ -5,7 +5,7 @@ import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.commons.math3.random.SynchronizedRandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
 
-public class ProposalDistributionUnivariateNormal extends ProposalDistributionUnivariate {
+public class ProposalDistributionUnivariateNormal implements ProposalDistributionUnivariate {
 
 	private double standardDeviation;
 	private double variance;
@@ -17,12 +17,10 @@ public class ProposalDistributionUnivariateNormal extends ProposalDistributionUn
 		this.standardDeviation = sqrt(variance);
 	}
 	
-	@Override
 	public double density(double x, double given) {
 		return 1 / sqrt(2 * PI * variance) * exp(-pow((x - given), 2) / (2 * variance));
 	}
 
-	@Override
 	public double sample(double state) {
 		return state + standardDeviation * sqrt(-2 * log(unif.sample())) * cos(2 * PI * unif.sample());
 	}

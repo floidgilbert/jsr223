@@ -114,7 +114,7 @@ pdfproducer={LaTeX with hyperref and ClassicThesis} % PDF producer
 
 \pagestyle{scrheadings}
 
-\title{\normalfont jsr223: A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby, Jython, and Kotlin}
+\title{\normalfont jsr223: A Java Platform Integration for R with Programming Languages Groovy, JavaScript, JRuby (Ruby), Jython (Python), and Kotlin}
 \author{Floid R. Gilbert \& David B. Dahl}
 \date{}
 

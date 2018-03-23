@@ -1,5 +1,9 @@
 package org.fgilbert.jsr223.examples;
 
+/* 
+ * Generic Metropolis-Hastings sampler with univariate proposal densities 
+ */
+
 import static java.lang.Math.*;
 
 import java.util.LinkedHashMap;
@@ -9,11 +13,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 
-public abstract class MhSamplerUnivariateProposal {
+public abstract class MetropolisHastingsSamplerUnivariateProposal implements Sampler {
 
 	public abstract double logPosterior(double[] values);
 	
 	private class MCMC implements Runnable {
+		private int discard;
 		private int iterations;
 		private int parameterCount;
 		private ProposalDistributionUnivariate[] proposalDistributions;
@@ -22,10 +27,11 @@ public abstract class MhSamplerUnivariateProposal {
 		public double[] acceptanceRates; 
 		public double[][] chains; 
 		
-		public MCMC(double[] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations) {
+		public MCMC(double[] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations, int discard) {
 			this.startingValues = startingValues;
 			this.proposalDistributions = proposalDistributions;
 			this.iterations = iterations;
+			this.discard = discard;
 			this.parameterCount = proposalDistributions.length;
 		}
 
@@ -35,7 +41,7 @@ public abstract class MhSamplerUnivariateProposal {
 			 * Initialize data structures.
 			 */
 			UniformRealDistribution unif = new UniformRealDistribution();
-			chains = new double[iterations][parameterCount];
+			chains = new double[iterations - discard][parameterCount];
 			int[] proposalsAccepted = new int[parameterCount];
 			double[] state = null;
 			double[] proposal = null;
@@ -44,10 +50,9 @@ public abstract class MhSamplerUnivariateProposal {
 			/*
 			 * Run MCMC.
 			 */
-			chains[0] = startingValues.clone();
-			for (int i = 1; i < iterations; i++) {
-				state = chains[i - 1].clone();
-				proposal = state.clone();
+			state = startingValues.clone();
+			proposal = startingValues.clone();
+			for (int i = 0; i < iterations; i++) {
 				for (int j = 0; j < parameterCount; j++) {
 					proposal[j] = proposalDistributions[j].sample(state[j]);
 					probabilityRatio = (logPosterior(proposal) - proposalDistributions[j].density(proposal[j], state[j])) -
@@ -59,7 +64,8 @@ public abstract class MhSamplerUnivariateProposal {
 						proposal[j] = state[j];
 					}
 				}
-				chains[i] = state.clone(); // IMPORTANT: clone() is a shallow copy. But, for one-dimensional native arrays, it is the same as a deep copy.
+				if (i >= discard)
+					chains[i - discard] = state.clone(); // IMPORTANT: clone() is a shallow copy. But, for one-dimensional native arrays, it is the same as a deep copy.
 			}
 			
 			/*
@@ -72,7 +78,7 @@ public abstract class MhSamplerUnivariateProposal {
 		
 	}
 	
-	public LinkedHashMap<String, Object> sample(double[][] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations, int threads) throws InterruptedException {
+	public LinkedHashMap<String, Object> sample(double[][] startingValues, ProposalDistributionUnivariate[] proposalDistributions, int iterations, int discard, int threads) {
 		
 		/*
 		 * Validate parameters. 
@@ -84,6 +90,8 @@ public abstract class MhSamplerUnivariateProposal {
 			throw new RuntimeException("This statement must be true 'startingValues[x].length == proposalDistributions.length'. That is, there must be a proposal distribution for each parameter.");
 		if (iterations < 1)
 			throw new RuntimeException("The value 'iterations' must be greater than zero.");
+		if (discard < 0 || discard >= iterations)
+			throw new RuntimeException("The value 'discard' must be zero or greater and less than 'iterations'.");
 		if (threads < 1)
 			throw new RuntimeException("The value 'threads' must be greater than zero.");
 
@@ -93,11 +101,16 @@ public abstract class MhSamplerUnivariateProposal {
 		MCMC[] mcmc = new MCMC[startingValues.length];
 		ExecutorService ex = Executors.newFixedThreadPool(threads);
 		for (int i = 0; i < startingValues.length; i++) {
-			mcmc[i] = new MCMC(startingValues[i], proposalDistributions, iterations); 
+			// Pass the arguments to each MCMC object to keep this.sample() thread-safe.
+			mcmc[i] = new MCMC(startingValues[i], proposalDistributions, iterations, discard); 
 			ex.submit(mcmc[i]);
 		}
 		ex.shutdown();
-		ex.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		try {
+			ex.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
 		double[][] acceptanceRates = new double[mcmc.length][];
 		double[][][] chains = new double[mcmc.length][][];
 		for (int i = 0; i < mcmc.length; i++) {

@@ -4,19 +4,19 @@
  */
 
 import static java.lang.Math.*;
-import org.fgilbert.jsr223.examples.MhSamplerUnivariateProposal;
+import org.fgilbert.jsr223.examples.MetropolisSamplerUnivariateProposal;
 import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
 
 /*
- * Extend the abstract class MhSamplerUnivariateProposal. While it is possible
- * to achieve this same functionality with anonymous classes or closures (a
- * Groovy construct similar to Java lambdas), we found that this implementation
+ * Extend the abstract class MetropolisSamplerUnivariateProposal. While it is 
+ * possible to achieve this same functionality with anonymous classes or closures
+ * (a Groovy construct similar to Java lambdas), we found that this implementation
  * improved performance by more than two times.
  *
- * The abstract class exposes one abstract method: logPosterior, which we must
- * implement.
+ * The abstract class exposes one abstract method: logPosterior, which we 
+ * implement here in script.
  */
-public class Sampler extends MhSamplerUnivariateProposal {
+public class Sampler extends MetropolisSamplerUnivariateProposal {
   private double alpha, beta, theta, kappa;
   private double dataLength, dataSum, dataZeroCount, dataPositiveCount;
 
@@ -66,5 +66,5 @@ for (int i = 0; i < proposalVariances.length; i++)
  * Create a new instance of our subclass. Note that the parameters to the
  * constructor are the bindings dynamically passed in from the R script.
  */
-Sampler mh = new Sampler(alpha, beta, theta, kappa, data);
-mh.sample(startingValues, pd, iterations, threads);
+Sampler sampler = new Sampler(alpha, beta, theta, kappa, data);
+sampler.sample(startingValues, pd, iterations, discard, threads);

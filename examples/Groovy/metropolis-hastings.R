@@ -66,6 +66,8 @@ engine$data <- as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5))
 engine$proposalVariances <- c(0.3^2, 1.2^2)
 engine$startingValues <- starting.values
 engine$iterations <- 10000L
+engine$discard <- as.integer(engine$iterations * 0.20)
+engine$discard <- 0L #///
 engine$threads <- parallel::detectCores()
 
 # Set the array order to get the results in the form we like. See the
@@ -108,13 +110,12 @@ r$acceptance_rates
 
 parameter.count <- length(parameter.names)
 chain.count <- dim(r$chains)[3]
-chains <- r$chains[(engine$iterations * 0.20 + 1):engine$iterations, , ]
 
 table <- matrix(0, parameter.count * chain.count, 8)
 table.row <- 0
 for (parm.idx in 1:parameter.count) {
   for (chain.idx in 1:chain.count) {
-    chain <- chains[ , parm.idx, chain.idx]
+    chain <- r$chains[ , parm.idx, chain.idx]
     table.row <- table.row + 1
     table[table.row, ] <- cbind(
       chain.idx,
@@ -139,6 +140,7 @@ doBenchmarks <- function(cs) {
   benchmark.warmup <- 4L
   benchmark.control <- list(warmup = benchmark.warmup)
   mcmc.iterations <- c(10000L, 100000L, 1000000L)
+  mcmc.iterations <- c(10000L, 100000L)
 
   f1 <- function(iterations, discard.return.value) {
     engine$iterations <- iterations
@@ -167,7 +169,7 @@ doBenchmarks <- function(cs) {
 
 {
   script <- "
-  import org.fgilbert.jsr223.examples.MhSamplerZeroInflatedPoisson;
+  import org.fgilbert.jsr223.examples.MetropolisSamplerZeroInflatedPoisson;
   import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
 
   ProposalDistributionUnivariateNormal[] pd =

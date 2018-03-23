@@ -2,11 +2,11 @@ package org.fgilbert.jsr223.examples;
 
 import static java.lang.Math.*;
 
-public class MhSamplerZeroInflatedPoisson extends MhSamplerUnivariateProposal {
+public class MetropolisSamplerZeroInflatedPoisson extends MetropolisSamplerUnivariateProposal {
 	private double alpha, beta, theta, kappa;
 	private double dataLength, dataSum, dataZeroCount, dataPositiveCount;
 
-	public MhSamplerZeroInflatedPoisson(double alpha, double beta, double theta, double kappa, int[] data) {
+	public MetropolisSamplerZeroInflatedPoisson(double alpha, double beta, double theta, double kappa, int[] data) {
 	    this.alpha = alpha;
 	    this.beta = beta;
 	    this.theta = theta;
