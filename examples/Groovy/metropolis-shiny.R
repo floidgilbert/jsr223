@@ -45,8 +45,8 @@ engine$kappa <- 1
 engine$data <- as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5))
 engine$proposalVariances <- c(0.5^2, 1.7^2)
 engine$startingValues <- starting.values
-engine$iterations <- 20000L
-engine$discard <- as.integer(engine$iterations * 0.10)
+engine$iterations <- 10000L
+engine$discard <- as.integer(engine$iterations * 0.20)
 engine$threads <- parallel::detectCores()
 
 # Set the array order to get the results in the form we like. See the
