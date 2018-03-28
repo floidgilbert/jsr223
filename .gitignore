@@ -1,6 +1,6 @@
 \~\$*
 R/jsr223/.Rproj.user
-R/jsr223.*.tar.gz
+R/jsr223*.tar.gz
 java/archive
 java/org.fgilbert.jsr223/bin
 java/org.fgilbert.jsr223/src/nodist
