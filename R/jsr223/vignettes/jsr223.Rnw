@@ -531,7 +531,7 @@ Java(TM) SE Runtime Environment (build 1.8.0_144-b01)
 Java HotSpot(TM) 64-Bit Server VM (build 25.144-b01, mixed mode)
 \end{verbatim}
 
-The JRE can be obtained from  \href{http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html}{Oracle's web site}. Select the architecture (32 or 64 bit) that matches your R installation.
+The JRE can be obtained from  \href{http://www.oracle.com/technetwork/java/javase/downloads/index.html}{Oracle's web site}. Select the architecture (32 or 64 bit) that matches your R installation.
 
 \pkg{jsr223} runs on a standard installation of R (e.g., the R build option \code{--enable-R-shlib} is not required). \pkg{jsr223} is available on CRAN and can be installed with the usual command:
 

@@ -35,6 +35,10 @@ This document contains build and release instructions for jsr223. Instructions a
 
 --- Build R project source package.
 
---- Move source package into an empty directory and check it using `R CMD check --as-cran jsr223_xxx.tar.gz`
+- Move source package into an empty directory and check it using `R CMD check --as-cran` using Java 8, 9, and 10 (set JAVA_HOME to the appropriate Java folder).
+
+- Copy source package to releases folder.
+
+- Push changes to GitHub.
 
 - Create release tag in GIT repository. https://github.com/floidgilbert/jsr223/releases

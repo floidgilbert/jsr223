@@ -4,6 +4,19 @@
 //                                                                         //
 // // // // // // // // // // // // // // // // // // // // // // // // // //
 
+* * * 2018-03-28 v 0.3.1 * * *
+
+- Changed data exchange tests involving Java bytes and JavaScript Nashorn
+  variables. Nashorn behavior changed in Java 9 and 10 to convert Java
+  Byte objects to Integer objects automatically when set to a JavaScript
+  variable.
+
+  Furthermore, the
+
+- Generalized Java version check during package initialization.
+
+- Minor changes in vignette.
+
 * * * 2018-03-07 v 0.3.0 * * *
 
-- Public release.
+- Initial release.

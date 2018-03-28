@@ -3009,8 +3009,18 @@ testJavaToR("getBooleanMin", FALSE)
 testJavaToR("getBooleanMax", TRUE)
 
 cat("Java Types - Scalars\n")
-testJavaToR("getByteMin", BYTE_MIN)
-testJavaToR("getByteMax", BYTE_MAX)
+
+# Unfortunately, Nashorn's behavior changed with Java 9 and 10. If you set a
+# byte scalar to a variable, Nashorn automatically converts it to an integer.
+# So, we do a simple test for byte scalars without setting the values to
+# variables.
+#
+# testJavaToR("getByteMin", BYTE_MIN)
+# testJavaToR("getByteMax", BYTE_MAX)
+
+assertIdentical(js %~% "TestDataClass.getByteMin();", BYTE_MIN)
+assertIdentical(js %~% "TestDataClass.getByteMax();", BYTE_MAX)
+
 testJavaToR("getCharacterLow", "\u20", parameter = 0x20L)
 # testJavaToR("getCharacterHigh", "\u00", parameter = 0x20L)
 # testJavaToR("getCharacterMin", "\u0000")
@@ -3037,8 +3047,15 @@ testJavaToR("getBigIntegerTen", 10)
 testJavaToR("getBigIntegerZero", 0)
 testJavaToR("getBoxedBooleanMin", FALSE)
 testJavaToR("getBoxedBooleanMax", TRUE)
-testJavaToR("getBoxedByteMin", BYTE_MIN)
-testJavaToR("getBoxedByteMax", BYTE_MAX)
+
+# See notes above for getByteMin for information on these tests.
+#
+# testJavaToR("getBoxedByteMin", BYTE_MIN)
+# testJavaToR("getBoxedByteMax", BYTE_MAX)
+
+assertIdentical(js %~% "TestDataClass.getBoxedByteMin();", BYTE_MIN)
+assertIdentical(js %~% "TestDataClass.getBoxedByteMax();", BYTE_MAX)
+
 testJavaToR("getBoxedCharacterLow", "\u20", parameter = 0x20L)
 # testJavaToR("getBoxedCharacterHigh", "\u00", parameter = 0x20L)
 # testJavaToR("getBoxedCharacterMin", "\u0000")

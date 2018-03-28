@@ -215,6 +215,7 @@ assertMessage(
 )
 
 # Comprehensive tests for data types and callbacks are done elsewhere.
+js$remove("a") # Prevents the next line from setting 'a' as a Double.
 assertIdentical(NULL, js$eval("var a = 1;"))
 assertIdentical(1L, js$eval("a;"))
 assertIdentical(1L, js %~% "a;")
