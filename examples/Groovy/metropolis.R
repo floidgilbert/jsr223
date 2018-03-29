@@ -2,7 +2,7 @@
 # same folder. The required JAR files can be found in the root of the examples
 # folder.
 #
-# The example demonstrates dynamic code behavior by extending an abstract Java 
+# The example demonstrates dynamic code behavior by extending an abstract Java
 # class, MetropolisSamplerUnivariateProposal. The class defines an abstract
 # method, logPosterior, that can be implemented in script (Groovy, in this
 # case).
@@ -143,6 +143,7 @@ doBenchmarks <- function(cs) {
 
   f1 <- function(iterations, discard.return.value) {
     engine$iterations <- iterations
+    engine$discard <- 0L
     micro <- microbenchmark::microbenchmark(cs$eval(discard.return.value), times = benchmark.iterations, control = benchmark.control)
     median(micro$time) / 1000000
   }
@@ -170,12 +171,12 @@ doBenchmarks <- function(cs) {
   script <- "
     import org.fgilbert.jsr223.examples.MetropolisSamplerZeroInflatedPoisson;
     import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
-  
+
     ProposalDistributionUnivariateNormal[] pd =
       new ProposalDistributionUnivariateNormal[proposalVariances.length];
     for (int i = 0; i < proposalVariances.length; i++)
       pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
-  
+
     MetropolisSamplerZeroInflatedPoisson sampler = new MetropolisSamplerZeroInflatedPoisson(alpha, beta, theta, kappa, data);
     sampler.sample(startingValues, pd, iterations, discard, threads);
   "
