@@ -257,7 +257,7 @@ In this example, we effectively used Stanford's Core NLP library with a minimal 
 \hypertarget{extending-existing-java-solutions}{}
 \subsection{Extending existing Java solutions}
 
-Many Java libraries are designed to let the developer define custom behaviors by implementing interfaces or extending classes. We illustrate one such solution here in the context of a Bayesian analysis. The library at hand includes a generic, multi-threaded Metropolis-Hastings sampler \citep{mh}. We define a custom density function for the sampler by extending (i.e., subclassing) an abstract Java class.
+Many Java libraries are designed to let the developer define custom behaviors by implementing interfaces or extending classes. We illustrate one such solution here in the context of a Bayesian analysis. The library at hand includes a generic, multi-threaded Metropolis sampler \citep{metropolis}. We define a custom density function for the sampler by extending (i.e., subclassing) an abstract Java class.
 
 We use the Groovy scripting language for this example. Groovy follows the Java programming language syntax very closely; hence, it is a natural choice for Java integrations. Programmers that know Groovy will notice that our code is unnecessarily verbose. We chose to use strict Java coding conventions to make the implementation more familiar to Java programmers.
 
@@ -270,9 +270,9 @@ The Bayesian analysis involves count data $y_1,\dots,y_n$ that we believe to be 
 
 We choose independent priors $\pi \sim \text{Beta}(\alpha,\beta)$ and $\lambda \sim \text{Gamma}(\theta,\kappa)$. Furthermore, we use independent Gaussian proposal densities for $\pi$ and $\lambda$.
 
-Our analysis involves two scripts: (i) a Groovy script to extend and execute the Metropolis-Hastings sampler class; and (ii) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results. The scripts, named \file{metropolis-hastings.groovy} and \file{metropolis-hastings.R}, are located at \url{https://github.com/floidgilbert/jsr223/tree/master/examples/Groovy}. The required Java files can be downloaded from the \file{lib} subfolder.
+Our analysis involves two scripts: (i) a Groovy script to extend and execute the Metropolis sampler class; and (ii) an R script to prepare the data and parameters, execute the Groovy script, and summarize the results. The scripts, named \file{metropolis.groovy} and \file{metropolis.R}, are located at \url{https://github.com/floidgilbert/jsr223/tree/master/examples/Groovy}. The required Java files can be downloaded from the \file{lib} subfolder.
 
-\paragraph{The Groovy script} To begin, we import the necessary classes. The first line imports all of the static methods of the \code{"Math"} class. The second line imports the abstract class for the Metropolis-Hastings sampler. The last line imports a univariate normal proposal class. (This latter class implements the interface \code{"ProposalDistributionUnivariate"}. If we wanted to use a custom proposal distribution, we could do so by creating a class that implements this interface in script.)
+\paragraph{The Groovy script} To begin, we import the necessary classes. The first line imports all of the static methods of the \code{"Math"} class. The second line imports the abstract class for the Metropolis sampler. The last line imports a univariate normal proposal class. (This latter class implements the interface \code{"ProposalDistributionUnivariate"}. If we wanted to use a custom proposal distribution, we could do so by creating a class that implements this interface in script.)
 
 \begin{verbatim}
 import static java.lang.Math.*;
@@ -330,7 +330,7 @@ mh.sample(startingValues, pd, iterations, threads);
 \end{verbatim}
 
 \clearpage
-\paragraph{The R script} First, we instantiate a Groovy script engine. The paths to the required Java libraries are defined in \code{class.path}. The first file is the Groovy script engine; the second file contains the Metropolis-Hastings sampler; and the last file is the Apache Commons Mathematics Library (\url{http://commons.apache.org/proper/commons-math}).
+\paragraph{The R script} First, we instantiate a Groovy script engine. The paths to the required Java libraries are defined in \code{class.path}. The first file is the Groovy script engine; the second file contains the Metropolis sampler; and the last file is the Apache Commons Mathematics Library (\url{http://commons.apache.org/proper/commons-math}).
 \begin{verbatim}
 library("jsr223")
 
@@ -342,7 +342,7 @@ class.path <- c(
 engine <- ScriptEngine$new("Groovy", class.path)
 \end{verbatim}
 
-The matrix \code{starting.values} defined here contains initial values for the Metropolis-Hastings sampler. Each row is a ($\pi$, $\lambda$) value pair that will be used to initialize a random walk. Hence, we will have four MCMC chains for each parameter.
+The matrix \code{starting.values} defined here contains initial values for the Metropolis sampler. Each row is a ($\pi$, $\lambda$) value pair that will be used to initialize a random walk. Hence, we will have four MCMC chains for each parameter.
 
 \begin{verbatim}
 starting.values <- rbind(
@@ -367,7 +367,7 @@ engine$iterations <- 10000L
 engine$threads <- parallel::detectCores()
 \end{verbatim}
 
-The Metropolis-Hastings sampler will return two multi-dimensional arrays. We prefer the arrays to be structured in a specific order, so we change the default ordering using the code here. For the sake of brevity, we refer the reader to the \textit{\pkg{jsr223} User Manual} for array order details.
+The Metropolis sampler will return two multi-dimensional arrays. We prefer the arrays to be structured in a specific order, so we change the default ordering using the code here. For the sake of brevity, we refer the reader to the \textit{\pkg{jsr223} User Manual} for array order details.
 
 \begin{verbatim}
 engine$setArrayOrder("column-minor")
@@ -376,7 +376,7 @@ engine$setArrayOrder("column-minor")
 Next, we compile and execute the Groovy script. Compiling the script is optional; we could evaluate the code in one step using the \pkg{jsr223} \code{source} method. However, we intend to execute the script more than once, so we compile it for efficiency. The first line below compiles the script and assigns the result to the variable \code{cs}. The second line executes the compiled code and assigns the result to the variable \code{r}. The result is the return value of the last line in the script. In our Groovy script, the last line is a call to the method \code{sample} of the \code{"Sampler"} class.
 
 \begin{verbatim}
-cs <- engine$compileSource("metropolis-hastings.groovy")
+cs <- engine$compileSource("metropolis.groovy")
 r <- cs$eval()
 \end{verbatim}
 
@@ -428,11 +428,11 @@ r$acceptance_rates
 ## [4,] 0.2418 0.2304
 \end{verbatim}
 
-Table \ref{tab:mcmcx} contains a summary for each parameter by individual chain. The code used to summarize the results can be found in the R script \file{metropolis-hastings.R} on GitHub.
+Table \ref{tab:mcmcx} contains a summary for each parameter by individual chain. The code used to summarize the results can be found in the R script \file{metropolis.R} on GitHub.
 
 \paragraph{Performance} So far we have shown that we can extend compiled Java classes from within R. But, is the runtime performance acceptable? We report some basic performance metrics here. The scripts were run on a typical notebook computer with an Intel i7-5500U, 2.40Ghz processor and 8GB RAM. The processor can execute four threads in parallel. We used all four threads to run four random walks simultaneously. We ran the simulation for 10,000, 100,000, and 1,000,000 MCMC iterations per random walk. Timings were recorded using the \CRANpkg{microbenchmark} package \citep{microbenchmark}. We report the median run time over 20 simulations in Table \ref{tab:mcmcgroovy}. The first column contains the number of MCMC iterations per random walk. The second column contains the median run times for the expression \code{cs\$eval()} as in our preceding example. The third column contains the median run times for the expression \code{cs\$eval(discard.return.value = TRUE)}. This expression executes the Groovy script but discards the results instead of converting them to R objects. The last column contains the difference of columns two and three. Essentially, the last column roughly represents the time required to convert the Java results to R. The number of values returned to R for each simulation is $p \times w + iterations \times p \times w$. For example, when 1 million MCMC iterations are requested, a total of 8,000,008 numeric values are returned. The size of the resulting R object is about 61MB (see \code{object.size(r)}).
 
-To put these results in context, we ran another simulation where the Metropolis-Hastings abstract class is extended in a compiled Java class instead of Groovy. Otherwise, the simulation is identical to the foregoing example. Table \ref{tab:mcmcjava} summarizes the results. In the maximum case (1,000,000 MCMC iterations), the difference between the implementations is less than two seconds. We find this performance to be acceptable. It is a good balance of scripting convenience and compiled performance.
+To put these results in context, we ran another simulation where the Metropolis abstract class is extended in a compiled Java class instead of Groovy. Otherwise, the simulation is identical to the foregoing example. Table \ref{tab:mcmcjava} summarizes the results. In the maximum case (1,000,000 MCMC iterations), the difference between the implementations is less than two seconds. We find this performance to be acceptable. It is a good balance of scripting convenience and compiled performance.
 
 What we've shown here is only one approach to this implementation. The total runtime could be reduced by using simpler data structures or summarizing the data on the Java side. However, R is designed for summarizing data. Therefore, we chose to transfer the full results to R in a convenient format because we believe it represents the most typical use case. Furthermore, we could have implemented this solution using anonymous classes, lambda functions, or closures. These constructs usually require less code, and they are supported within the various \pkg{jsr223}-compatible programming languages. However, we found that they did not execute as quickly.
 
@@ -440,7 +440,7 @@ What we've shown here is only one approach to this implementation. The total run
 
 \begin{table}[h!]
 \centering
-\caption{A summary of the MCMC chains generated by the Metropolis-Hastings sampler. Each parameter and chain is listed, with quantiles, acceptance rate, and effective sample size (ESS).}
+\caption{A summary of the MCMC chains generated by the Metropolis sampler. Each parameter and chain is listed, with quantiles, acceptance rate, and effective sample size (ESS).}
 \begin{tabular}{ccrrrrrrr}
 \toprule
 Parameter & Chain & 2.5\% & 25\% & 50\% & 75\% & 97.5\% & Acc. Rate & ESS \\ \midrule
@@ -460,15 +460,15 @@ $\lambda$ &    4 & 0.875 & 1.303 & 1.532 & 1.803 & 2.364 & 0.230 &  813 \\ \bott
 
 \begin{table}[h!]
 \centering
-\caption{Benchmark timings for the Metropolis-Hastings sampler extended in Groovy. All times are in milliseconds. The first column indicates the number of MCMC iterations computed for each of four random walks run in parallel. The second column contains the median runtime for the expression \code{cs\$eval()} over 20 simulations. The third column is the median runtime for \code{cs\$eval(TRUE)} (i.e., the return value is discarded). The last column is the difference between columns two and three; hence, it roughly represents the time required to convert the Java results to R objects.}
+\caption{Benchmark timings for the Metropolis sampler extended in Groovy. All times are in milliseconds. The first column indicates the number of MCMC iterations computed for each of four random walks run in parallel. The second column contains the median runtime for the expression \code{cs\$eval()} over 20 simulations. The third column is the median runtime for \code{cs\$eval(TRUE)} (i.e., the return value is discarded). The last column is the difference between columns two and three; hence, it roughly represents the time required to convert the Java results to R objects.}
 \begin{tabular}{rrrrrr}
 \toprule
 & & \multicolumn{2}{c}{With Return Values} & & \\
 \cline{3-4} \\[-14pt]
 Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \\ \midrule
-10,000 & & 52.1 & 37.7 & & 14.4 \\
-100,000 & & 523.8 & 474.4 & & 49.3 \\
-1,000,000 & & 7,415.2 & 5,090.4 & & 2,324.8 \\ \bottomrule
+10,000 & & 50.0 & 39.8 & & 10.2 \\
+100,000 & & 521.2 & 446.8 & & 74.4 \\
+1,000,000 & & 7,108.4 & 5,116.8 & & 1,991.6 \\ \bottomrule
 \end{tabular}
 \label{tab:mcmcgroovy}
 \end{table}
@@ -477,15 +477,15 @@ Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \
 
 \begin{table}[h!]
 \centering
-\caption{Benchmark timings for the Metropolis-Hastings sampler extended in Java. All times are in milliseconds. The columns are as in Table \ref{tab:mcmcgroovy}.}
+\caption{Benchmark timings for the Metropolis sampler extended in Java. All times are in milliseconds. The columns are as in Table \ref{tab:mcmcgroovy}.}
 \begin{tabular}{rrrrrr}
 \toprule
 & & \multicolumn{2}{c}{With Return Values} & & \\
 \cline{3-4} \\[-14pt]
 Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \\ \midrule
-10,000 & & 35.5 & 24.1 & & 11.4 \\
-100,000 & & 339.5 & 236.7 & & 102.8 \\
-1,000,000 & & 5,838.8 & 3,299.6 & & 2,539.1 \\ \bottomrule
+10,000 & & 30.3 & 20.6 & & 9.7 \\
+100,000 & & 316.9 & 206.4 & & 110.6 \\
+1,000,000 & & 4,795.4 & 2,804.0 & & 1,991.3 \\ \bottomrule
 \end{tabular}
 \label{tab:mcmcjava}
 \end{table}
