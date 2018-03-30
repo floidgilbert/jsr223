@@ -43,15 +43,13 @@ public abstract class MetropolisSamplerUnivariateProposal implements Sampler {
 			UniformRealDistribution unif = new UniformRealDistribution();
 			chains = new double[iterations - discard][parameterCount];
 			int[] proposalsAccepted = new int[parameterCount];
-			double[] state = null;
-			double[] proposal = null;
+			double[] state = startingValues.clone();
+			double[] proposal = startingValues.clone();
 			double probabilityRatio;
 			
 			/*
 			 * Run MCMC.
 			 */
-			state = startingValues.clone();
-			proposal = startingValues.clone();
 			if (discard == 0)
 				chains[0] = startingValues.clone();
 			for (int i = 1; i < iterations; i++) {

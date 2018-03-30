@@ -23,19 +23,20 @@ This document contains build and release instructions for jsr223. Instructions a
 - In R project...
 
 --- Update documentation (man files and vignettes). Use `devtools::install(build_vignettes = TRUE)` to preview vignette
-    build in package.
-    Test all links in the documentation.
+    build in package. Test links in the documentation.
 
 --- Change version numbers and dependencies in DESCRIPTION file. Update versions and release info in NEWS and user manual.
 
 --- Build and test R project on all supported platforms.
     Run standard tests with `devtools::test()`.
-    Run the non-distributed tests in the tests folder above the R project folder (if any). Be sure to read testing instructions in each file carefully.
+    Run the non-distributed tests in the tests folder above the R project folder (if any). Be sure to read testing instructions
+    in each file carefully.
     Run `devtools::check()`.
 
 --- Build R project source package.
 
-- Move source package into an empty directory and check it using `R CMD check --as-cran` using Java 8, 9, and 10 (set JAVA_HOME to the appropriate Java folder).
+- Move source package into an empty directory and check it using `R CMD check --as-cran` using Java 8, 9, and 10 (set
+  JAVA_HOME to the appropriate Java folder).
 
 - Copy source package to releases folder.
 
