@@ -13,13 +13,13 @@ The R package \CRANpkg{jsr223} is a high-level integration for the Java platform
 
 About the same time Ross Ihaka and Robert Gentleman began developing R at the University of Auckland in the early 1990s, James Gosling and the so-called Green Project Team was working on a new programming language at Sun Microsystems in California. The Green Team did not set out to make a new language; rather, they were trying to move platform-independent, distributed computing into the consumer electronics marketplace. As Gosling explained, ``All along, the language was a tool, not the end'' \citep{javainsidestory}. Unexpectedly, the programming language outlived the Green Project and flourished into one of the most popular development platforms in computing history. That platform, Java, now powers applications ranging from the enterprise (\href{https://www.google.com/gmail/about/}{GMail}), to games (\href{https://minecraft.net}{Minecraft}), to interactive media (\href{https://en.wikipedia.org/wiki/Blu-ray}{Blu-ray}), to mobile devices (\href{https://www.android.com/}{Android}).
 
-In 2003, Simon Urbanek released \CRANpkg{rJava} \citeyearpar{rjava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{The \pkg{rJava} package ranks in the $95^{\text{th}}$ percentile for R package downloads according to \url{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call}, the built-in R functions for calling compiled C code. Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that it gives the user granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. A second advantage to using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding source code directly within R script.
+In 2003, Simon Urbanek released \CRANpkg{rJava} \citeyearpar{rjava}, an integration package designed to avail R of the burgeoning development surrounding Java. The package has been very successful to this end. Today, it is one of the top-ranked solutions for R as measured by monthly downloads.\footnote{\pkg{rJava} ranks in the $95^{\text{th}}$ percentile for R package downloads according to \url{http://rdocumentation.org}.} \pkg{rJava} is described by Urbanek as a low-level R to Java interface analogous to \code{.C} and \code{.Call} (the built-in R functions for calling compiled C code). Like R's integration for C, \pkg{rJava} loads compiled code into an R process's memory space where it can be accessed via various R functions. Urbanek achieves this feat using the Java Native Interface (JNI), a standard framework that enables native (i.e. platform-dependent) code to access and use compiled Java code. The \pkg{rJava} API requires users to specify classes and data types in JNI syntax. One advantage to this approach is that it gives the user granular, direct access to Java classes. However, as with any low-level interface, the learning curve is relatively high and implementation requires verbose coding. A second advantage to using JNI is that it avoids the difficult task of dynamically interpreting or compiling source code. Of course, this is also a disadvantage: it limits \pkg{rJava} to using compiled code as opposed to embedding source code directly within R script.
 
-Our \CRANpkg{jsr223} package uses \pkg{rJava} to provide a high-level integration interface that makes Java libraries easier to use from within R. We achieve this by embedding other programming languages in R that use Java objects in natural syntax. As we show in the \hyperlink{rjava-software-review}{``\pkg{rJava} software review''}, this approach is generally simpler and more intuitive than \pkg{rJava}'s low-level JNI interface. To date, \pkg{jsr223} supports embedding five programming languages that target the Java platform: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) Besides providing simplified access to Java libraries, \pkg{jsr223} also makes countless existing solutions in these supported programming languages immediately available to R developers.
+Our \CRANpkg{jsr223} package builds on \pkg{rJava} to provide a high-level integration interface that makes Java libraries easier to use from within R. We accomplish this by embedding other programming languages in R that use Java objects in natural syntax. As we show in the \hyperlink{rjava-software-review}{``\pkg{rJava} software review''}, this approach is generally simpler and more intuitive than \pkg{rJava}'s low-level JNI interface. To date, \pkg{jsr223} supports embedding five programming languages that target the Java platform: Groovy, JavaScript, JRuby, Jython, and Kotlin. (JRuby and Jython are Java implementations of the Ruby and Python languages, respectively.) Besides providing simplified access to Java libraries, \pkg{jsr223} also makes countless existing solutions in these supported programming languages immediately available to R developers.
 
-The \pkg{jsr223} package features extensive, configurable data exchange between R and Java. R vectors, factors, n-dimensional arrays, data frames, lists, and environments are converted to standard Java objects. Java scalars, n-dimensional arrays, maps, and collections are inspected for content and converted to the most appropriate R structure (vectors, n-dimensional arrays, data frames, or lists). The \pkg{jsr223} package also converts data structures from its supported scripting languages (e.g., Python dictionaries). Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. Many language integrations for R provide a comparable feature set by using JSON (JavaScript Object Notation) libraries. In contrast, the \pkg{jsr223} package implements data exchange using custom Java routines to avoid the serialization overhead and loss of floating point precision inherent in JSON data conversion.
+The \pkg{jsr223} package features extensive, configurable data exchange between R and Java. R vectors, factors, n-dimensional arrays, data frames, lists, and environments are converted to standard Java objects. Java scalars, n-dimensional arrays, maps, and collections are inspected for content and converted to the most appropriate R structure (vectors, n-dimensional arrays, data frames, or lists). The \pkg{jsr223} package also converts the most common data structures from Groovy, JavaScript, JRuby, Jython, and Kotlin. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays. Many language integrations for R provide a comparable feature set by using JSON (JavaScript Object Notation) libraries. In contrast, the \pkg{jsr223} package implements data exchange using custom Java routines to avoid the serialization overhead and loss of floating point precision inherent in JSON data conversion.
 
-Other distinguishing features of the \pkg{jsr223} package include a simple callback interface to access the R environment from embedded scripts, script compiling, and string interpolation. In all, \pkg{jsr223} lowers the barrier to using sophisticated Java solutions from within R.
+Other distinguishing features of the \pkg{jsr223} package include a simple callback interface to access the R environment from embedded scripts, script compiling, and string interpolation. In all, \pkg{jsr223} lowers the barrier to using sophisticated Java solutions in R.
 
 \subsection{Document organization}
 
@@ -28,7 +28,7 @@ The section \hyperlink{typical-use-cases}{``Typical use cases''} highlights the 
 \hypertarget{typical-use-cases}{}
 \section{Typical use cases}
 
-This section includes introductory examples that demonstrate typical use cases for the \pkg{jsr223} package. See the \textit{\pkg{jsr223} User Manual} included in the package vignettes for a comprehensive overview of \pkg{jsr223} features and its supported languages.
+This section includes introductory examples that demonstrate typical use cases for the \pkg{jsr223} package. See the \textit{\pkg{jsr223} User Manual} included in the package vignettes for a comprehensive treatment of \pkg{jsr223} features and its supported languages.
 
 \subsection{Using Java libraries}
 
@@ -50,7 +50,7 @@ Now we can execute JavaScript source code. The \pkg{jsr223} interface provides s
 \begin{verbatim}
 engine %@% 'var DocumentClass = Java.type("edu.stanford.nlp.simple.Document");'
 \end{verbatim}
-The next code sample defines a JavaScript function named \code{getPartsOfSpeech}. It tags each element in a text with a grammatical part of speech (e.g., noun, adjective, verb). The text is parsed by a new instance of the \code{"Document"} class. The parsing results are transferred to a list of JavaScript objects. Each JavaScript object contains the parsing information for a single sentence.
+The next code sample defines a JavaScript function named \code{getPartsOfSpeech}. It tags each element in a text with a grammatical part of speech (e.g., noun, adjective, or verb). The function parses the text using a new instance of the \code{"Document"} class. The parsing results are transferred to a list of JavaScript objects. Each JavaScript object contains the parsing information for a single sentence.
 
 \begin{verbatim}
 engine %@% '
@@ -71,7 +71,7 @@ engine %@% '
   }
 '
 \end{verbatim}
-We use \code{engine\$invokeFunction} to call the JavaScript function \code{getPartsOfSpeech} from R. The method \code{invokeFunction} takes the name of the function as the first parameter; any other arguments that follow are automatically converted to Java objects and passed to the JavaScript function. The function's return value is converted to an R object. In this case, it intuitively converts the list of JavaScript objects to a list of R data frames as seen in the output below. The parts of speech abbreviations are defined by the Penn Treebank Project \citep{penntreebankproject}. A quick reference is available at \url{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}.
+We use \code{engine\$invokeFunction} to call the JavaScript function \code{getPartsOfSpeech} from R. The method \code{invokeFunction} takes the name of the function as the first parameter; any other arguments that follow are automatically converted to Java objects and passed to the JavaScript function. The function's return value is converted to an R object. In this case, \pkg{jsr223} intuitively converts the list of JavaScript objects to a list of R data frames as seen in the output below. The parts of speech abbreviations are defined by the Penn Treebank Project \citep{penntreebankproject}. A quick reference is available at \url{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}.
 
 \begin{verbatim}
 engine$invokeFunction(
@@ -129,7 +129,7 @@ import org.fgilbert.jsr223.examples.MetropolisSamplerUnivariateProposal;
 import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
 \end{verbatim}
 
-The code that follows is the key element of this example; it defines the behavior of a Java class in script. Specifically, we define a class named \code{"Sampler"} that extends the abstract class \code{"MetropolisSamplerUnivariateProposal"}. The \code{"Sampler"} class has just two members: the constructor method and the \code{logPosterior} method. The constructor method takes the data, the parameter values for the prior distributions, and computes statistics used in the posterior function. The \code{logPosterior} method implements the log of the posterior function that is called by the sampler.
+The code that follows is the key element of this example; it defines the behavior of a Java class in script. Specifically, we define a class named \code{"Sampler"} that extends the abstract class \code{"MetropolisSamplerUnivariateProposal"}. The \code{"Sampler"} class has just two members: the constructor method and the \code{logPosterior} method. The constructor method takes the parameter values for the prior distributions and computes statistics used in the posterior function. The \code{logPosterior} method implements the log of the posterior function that is called by the sampler.
 
 \begin{verbatim}
 public class Sampler extends MetropolisSamplerUnivariateProposal {
@@ -163,7 +163,7 @@ public class Sampler extends MetropolisSamplerUnivariateProposal {
 }
 \end{verbatim}
 
-The next lines initialize an array of normal proposal distribution objects that will be used by the sampler. Each distribution object is initialized with a variance. The \code{proposalVariances} variable is not defined here; it is supplied by the R script.
+The next lines initialize an array of normal proposal distribution objects that will be used by the sampler. Each distribution object is initialized with a variance. The \code{proposalVariances} array is not defined here; it is supplied by the R script.
 \begin{verbatim}
 ProposalDistributionUnivariateNormal[] pd =
   new ProposalDistributionUnivariateNormal[proposalVariances.length];
@@ -189,7 +189,7 @@ class.path <- c(
 engine <- ScriptEngine$new("Groovy", class.path)
 \end{verbatim}
 
-The matrix \code{starting.values} defined here contains initial values for the Metropolis sampler. Each row is a ($\pi$, $\lambda$) value pair that will be used to initialize a random walk. Hence, we will have four MCMC chains for each parameter. The multivariate sampler computes these chains in parallel.
+The matrix \code{starting.values} defined here contains initial values for the Metropolis sampler. Each row is a ($\pi$, $\lambda$) value pair that will be used to initialize a random walk. Hence, we will have four MCMC chains for each parameter. The multi-threaded sampler computes these chains in parallel.
 
 \begin{verbatim}
 starting.values <- rbind(
@@ -280,7 +280,7 @@ Table \ref{tab:mcmcx} contains a summary for each parameter by individual chain.
 
 \paragraph{Performance} So far we have shown that we can extend compiled Java classes from within R. But, is the runtime performance acceptable? We report some performance metrics here. The scripts were run on a typical notebook computer with an Intel i7-5500U, 2.40Ghz processor and 8GB RAM. The processor can execute four threads in parallel. We allocated all four threads to the Metropolis sampler to execute the four walks in parallel. We ran the simulation for 10,000, 100,000, and 1,000,000 MCMC iterations per random walk. Zero values were discarded. Timings were recorded using the \CRANpkg{microbenchmark} package \citep{microbenchmark}. We report the median run time over 20 simulations in Table \ref{tab:mcmcgroovy}. The first column contains the number of MCMC iterations per random walk. The second column contains the median run times for the expression \code{cs\$eval()} as in our preceding example. The third column contains the median run times for the expression \code{cs\$eval(discard.return.value = TRUE)}. This expression executes the Groovy script but discards the results instead of converting them to R objects. The last column contains the difference of columns two and three. Essentially, the last column roughly represents the time required to convert the Java results to R. The number of values returned to R for each simulation is $p \times w + iterations \times p \times w$. For example, when 1 million MCMC iterations are requested, a total of 8,000,008 numeric values are returned. The size of the resulting R object is about 61MB (see \code{object.size(r)}).
 
-To put these results in context, we ran another simulation where the Metropolis abstract class is extended in a compiled Java class instead of Groovy. Otherwise, the simulation is identical to the foregoing example. Table \ref{tab:mcmcjava} summarizes those results. In the maximum case (1,000,000 MCMC iterations), the difference between the implementations is less than two seconds. We find this performance to be acceptable. Hence, the Groovy solution is a good balance of scripting convenience and compiled performance. These results may vary depending on the scripting language used.
+To put these results in context, we ran another simulation where the Metropolis abstract class is extended in a compiled Java class instead of Groovy. Otherwise, the simulation is identical to the foregoing example. Table \ref{tab:mcmcjava} summarizes those results. In the maximum case (1,000,000 MCMC iterations), the difference between the implementations is roughly two seconds. We find this performance to be acceptable. Hence, the Groovy solution is a good balance of scripting convenience and compiled performance. These results may vary depending on the scripting language used.
 
 What we've shown here is only one approach to this implementation. The total runtime could be reduced by using simpler data structures or summarizing the data on the Java side. However, R is designed for summarizing data. Therefore, we chose to transfer the full results to R in a convenient format because we believe it represents the most typical use case. Furthermore, we could have implemented this solution using anonymous classes, lambda functions, or closures. These constructs usually require less code, and they are supported within the various \pkg{jsr223}-compatible programming languages. However, we found that they did not execute as quickly.
 
@@ -308,7 +308,7 @@ $\lambda$ &    4 & 0.875 & 1.303 & 1.532 & 1.803 & 2.364 & 0.230 &  813 \\ \bott
 
 \begin{table}[h!]
 \centering
-\caption{Benchmark timings for the Metropolis sampler extended in Groovy. All times are in milliseconds. The first column indicates the number of MCMC iterations computed for each of the four random walks run in parallel. The second column contains the median runtime for the expression \code{cs\$eval()} over 20 simulations. The third column is the median runtime for \code{cs\$eval(TRUE)} (i.e., the return value is discarded). The last column is the difference between columns two and three; hence, it roughly represents the time required to convert the Java results to R objects.}
+\caption{Benchmark timings for the Java Metropolis sampler extended in Groovy. All times are in milliseconds. The first column indicates the number of MCMC iterations computed for each of the four random walks run in parallel. The second column contains the median runtime for the expression \code{cs\$eval()} over 20 simulations. The third column is the median runtime for \code{cs\$eval(TRUE)} (i.e., the return value is discarded). The last column is the difference between columns two and three; hence, it roughly represents the time required to convert the Java results to R objects.}
 \begin{tabular}{rrrrrr}
 \toprule
 & & \multicolumn{2}{c}{With Return Values} & & \\
@@ -333,10 +333,25 @@ Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \
 Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \\ \midrule
 10,000 & & 33.0 & 21.7 & & 11.3 \\
 100,000 & & 324.7 & 200.2 & & 124.5 \\
-1,000,000 & & 5,678.7 & 2,7114.6 & & 2,967.1 \\ \bottomrule
+1,000,000 & & 5,678.7 & 2,711.4 & & 2,967.1 \\ \bottomrule
 \end{tabular}
 \label{tab:mcmcjava}
 \end{table}
+
+\begin{table}[h!]
+\centering
+\caption{Performance comparison for the Metropolis samplers. The values are the median run-times over 20 iterations reported in milliseconds.}
+\begin{tabular}{rrrrrrr}
+\toprule
+Iterations & & R        & & Groovy Class & & Java Class \\ \midrule
+10,000     & & 1,246.3  & & 53.0         & & 33.0       \\
+100,000    & & 4,942.2  & & 513.6        & & 324.7      \\
+1,000,000  & & 41,897.5 & & 7,280.7      & & 5,676.7    \\ \bottomrule
+\end{tabular}
+\label{tab:mcmccomparison}
+\end{table}
+
+Finally, how does the performance compare to a base R implementation? We created a generic Metropolis sampler in R that is very similar to the Java sampler (see \file{metropolis-base-r.R} on GitHub). Table \ref{tab:mcmccomparison} reports the median run times over 20 simulations. For comparison, we also list the timings for the implementations featuring the Groovy class and the Java class, respectively. For 10,000 iterations, the Groovy class implementation is 23.5 times faster than the R implementation. The Java class implementation is 37.8 times faster. Part of the performance difference can be attributed to how parallelization is implemented in Java vs. R. The Java sampler uses a thread pool whereas the R approach uses a process pool. The latter requires significantly more overhead. When we consider 1,000,000 iterations, the difference in parallelization implementations becomes insignificant. In this case, the Groovy implementation is only 5.8 times faster than the R implementation. However, the reduction in performance ratio is due, in part, to the conversion of large Java objects to R objects. If we exclude the data conversion time, we have a more direct comparison of code execution times. When the cost of data conversion is excluded, the Groovy implementation executes 8.4 times faster than the R implementation and the Java implementation executes 15.4 times faster. (See tables \ref{tab:mcmcgroovy} and \ref{tab:mcmcjava} for run times excluding data conversion.)
 
 \paragraph{Conclusion} This example illustrated how \pkg{jsr223} facilitates the development of advanced Java solutions. Java interfaces can be implemented and classes extended within script promoting rapid application development and quick execution times.
 
@@ -372,7 +387,7 @@ The \pkg{jsr223} package is built on \pkg{rJava}. The design of \pkg{jsr223} fol
 
 The \pkg{jsr223} package uses the Java Scripting API \citep{jsa} as defined by the specification “JSR-223: Scripting for the Java Platform” \citep{jsr223spec}. The JSR-223 specification includes two crucial elements: an interface for Java applications to execute code written in scripting languages, and a guide for scripting languages to create Java objects in their own syntax. Hence, the JSR-223 specification is the basis for our package.
 
-The \pkg{jsr223} package supports most of the programming languages that have implemented JSR-223. Technically, any JSR-223 implementation will work with our package, but we may not officially support some languages for various reasons. The most notable exclusion is Scala; we don't support it simply because the JSR-223 implementation is incomplete. (Consider, instead, the \pkg{rscala} package for a Scala/R integration.) We also exclude languages that are no longer being actively developed, such as BeanShell.
+The \pkg{jsr223} package supports most of the programming languages that have implemented JSR-223. Technically, any JSR-223 implementation will work with our package, but we may not officially support some languages for various reasons. The most notable exclusion is Scala; we don't support it simply because the JSR-223 implementation is not complete. (Consider, instead, the \pkg{rscala} package for a Scala/R integration.) We also exclude languages that are no longer being actively developed, such as BeanShell.
 
 Data exchange for \pkg{jsr223} is provided by the R package \CRANpkg{jdx}: Java Data Exchange for R and \pkg{rJava} \citep{jdx}. The \pkg{jdx} package's functionality was originally part of \pkg{jsr223}, but we broke it out into a separate package to simplify maintenance and to make its features available to other developers. %///RJ - Modified for this document.
 

@@ -156,7 +156,8 @@ doBenchmarks <- function(cs) {
     mcmc.iterations,
     median.time.with.return.values,
     median.time.without.return.values,
-    median.time.with.return.values - median.time.without.return.values)
+    median.time.with.return.values - median.time.without.return.values
+  )
   colnames(m) <- c("Iterations", "Run time 1", "Run time 2", "Difference")
 
   xt <- xtable::xtable(m, label = "tab:abc", digits = 3, display = c("d", "d", "f", "f", "f"))

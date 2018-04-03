@@ -1,5 +1,6 @@
 # Demonstrate the use of Stanford Natural Language Processor via JavaScript.
 # Download Stanford CoreNLP from https://stanfordnlp.github.io/CoreNLP/
+# Set the script's working directory to the installation folder.
 
 class.path <- c(
   "./protobuf.jar",
@@ -12,7 +13,7 @@ engine <- ScriptEngine$new("JavaScript", class.path)
 {
   engine %@% '
     var DocumentClass = Java.type("edu.stanford.nlp.simple.Document");
-    
+
     function getPartsOfSpeech(text) {
       var doc = new DocumentClass(text);
       var list = [];
