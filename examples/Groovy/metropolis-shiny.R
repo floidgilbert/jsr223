@@ -65,7 +65,7 @@ ani <- animationOptions(300, TRUE)
 
 ui <- fluidPage(
   titlePanel("Sensitivity Analysis"),
-  
+
   sidebarLayout(
     sidebarPanel(
       sliderInput(
@@ -105,7 +105,7 @@ ui <- fluidPage(
         animate = ani
       )
     ),
-      
+
     mainPanel(
       plotOutput("plot", height = "800px"),
       div(tableOutput("table"), style = "font-size:200%")
@@ -139,5 +139,5 @@ server <- function(input, output) {
   )
 }
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)
