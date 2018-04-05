@@ -329,6 +329,8 @@ sampler.sample(startingValues, pd, iterations, discard, threads);
 \end{verbatim}
 
 \paragraph{The R script} First, we instantiate a Groovy script engine. The paths to the required Java libraries are defined in \code{class.path}. The first file is the Groovy script engine; the second file contains the Metropolis sampler; and the last file is the Apache Commons Mathematics Library (\url{http://commons.apache.org/proper/commons-math}).
+
+\clearpage
 \begin{verbatim}
 library("jsr223")
 
@@ -489,6 +491,7 @@ Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \
 \label{tab:mcmcjava}
 \end{table}
 
+\clearpage
 \begin{table}[h!]
 \centering
 \caption{Performance comparison for the Metropolis samplers. The values are the median run-times over 20 iterations reported in milliseconds.}
