@@ -19,3 +19,9 @@ S3method("[[", "ScriptEngine")
 S3method("[[<-", "ScriptEngine")
 
 export("getKotlinScriptEngineJars")
+
+# Attempt to avoid the following NOTE in CRAN checks:
+# Namespaces in Imports field not imported from: ‘R6’ ‘curl’ ‘utils’
+importFrom(curl, curl_download)
+importFrom(utils, loadhistory, savehistory)
+importFrom(R6, R6Class)
