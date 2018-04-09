@@ -11,7 +11,7 @@
   Byte objects to Integer objects automatically when set to a JavaScript
   variable.
 
-- Generalized Java version check during package initialization.
+- Updated Java version check during package initialization.
 
 - Minor changes in vignette.
 
