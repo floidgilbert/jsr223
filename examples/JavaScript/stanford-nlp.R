@@ -1,14 +1,19 @@
 # Demonstrate the use of Stanford Natural Language Processor via JavaScript.
 # Download Stanford CoreNLP from https://stanfordnlp.github.io/CoreNLP/
-# Set the script's working directory to the installation folder.
+# Set the script's working directory to the installation folder or 
+# change the paths in class.path below.
+# 
+# Note: the Stanford Parser takes a moment to load the first time.
 
 class.path <- c(
   "./protobuf.jar",
   "./stanford-corenlp-3.9.0.jar",
   "./stanford-corenlp-3.9.0-models.jar"
 )
-library("jsr223")
+# Using fully-qualified paths is recommended.
+class.path <- normalizePath(class.path, winslash = "/")
 
+library("jsr223")
 engine <- ScriptEngine$new("JavaScript", class.path)
 {
   engine %@% '

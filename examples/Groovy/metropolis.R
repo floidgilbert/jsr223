@@ -1,24 +1,22 @@
-# This script requires 'metropolis.groovy' which can be located in the
-# same folder. The required JAR files can be found in the root of the examples
-# folder.
+# This script requires 'metropolis.groovy' which can be located in the same
+# folder. The required JAR files can be found in the lib subfolder.
 #
 # The example demonstrates dynamic code behavior by extending an abstract Java
 # class, MetropolisSamplerUnivariateProposal. The class defines an abstract
 # method, logPosterior, that can be implemented in script (Groovy, in this
 # case).
 #
-# This example also demonstrates script compiling and dynamic bindings.
+# This example also demonstrates script compiling.
 #
-# The basic idea: We are performing a Bayesian analysis for a zero-inflated
-# Poisson model with Beta and Gamma priors. The parameters of interest are pi
-# and lambda. We wish to draw samples from the posterior using a
-# high-performance, multi-threaded Java class that implements the
-# Metropolis and Metropolis-Hastings algorithms.
+# The basic idea: We are performing a Bayesian analysis for a zero-inflated 
+# Poisson model with pi ~ Beta and lambda ~ Gamma priors. We wish to draw
+# samples from the posterior using a multi-threaded Java class that implements
+# the Metropolis algorithm.
 #
 # See comments in this script and 'metropolis.groovy' for more
 # information.
 #
-# The Java sampler classes are located in
+# The Java sampler classes are located on Github under
 # examples/Java/org.fgilbert.jsr223.examples.
 
 #  ------------------------------------------------------------------------
@@ -29,6 +27,8 @@ class.path <- c(
   "lib/org.fgilbert.jsr223.examples-0.3.0.jar",
   "lib/commons-math3-3.6.1.jar"
 )
+# Using fully-qualified paths is recommended.
+class.path <- normalizePath(class.path, winslash = "/")
 
 engine <- ScriptEngine$new("Groovy", class.path)
 

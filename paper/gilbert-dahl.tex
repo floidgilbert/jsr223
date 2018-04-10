@@ -36,7 +36,7 @@ For this demonstration, we use Stanford's Core Natural Language Processing Java 
 
 The first step: create a \pkg{jsr223} \code{"ScriptEngine"} instance that can dynamically execute source code. In this case, we use a JavaScript engine. The object is created using the \code{ScriptEngine\$new} constructor method. This method takes two arguments: a scripting language's name and a character vector containing paths to the required Java libraries. In the code below, the \code{class.path} variable contains the Java library paths. The new \code{"ScriptEngine"} object is assigned to the variable \code{engine}.
 
-\begin{verbatim}
+\begin{example}
 class.path <- c(
   "./protobuf.jar",
   "./stanford-corenlp-3.9.0.jar",
@@ -44,15 +44,15 @@ class.path <- c(
 )
 library("jsr223")
 engine <- ScriptEngine$new("JavaScript", class.path)
-\end{verbatim}
+\end{example}
 Now we can execute JavaScript source code. The \pkg{jsr223} interface provides several methods to do so. In this example, we use the \code{\%@\%} operator; it executes a code snippet and discards the return value, if any. The code snippet imports the Stanford NLP \code{"Document"} class. This syntax is peculiar to the JavaScript dialect. The result, \code{DocumentClass}, is used to instantiate objects or access static methods.
 
-\begin{verbatim}
+\begin{example}
 engine %@% 'var DocumentClass = Java.type("edu.stanford.nlp.simple.Document");'
-\end{verbatim}
+\end{example}
 The next code sample defines a JavaScript function named \code{getPartsOfSpeech}. It tags each element in a text with a grammatical part of speech (e.g., noun, adjective, or verb). The function parses the text using a new instance of the \code{"Document"} class. The parsing results are transferred to a list of JavaScript objects. Each JavaScript object contains the parsing information for a single sentence.
 
-\begin{verbatim}
+\begin{example}
 engine %@% '
   function getPartsOfSpeech(text) {
     var doc = new DocumentClass(text);
@@ -70,10 +70,10 @@ engine %@% '
     return list;
   }
 '
-\end{verbatim}
+\end{example}
 We use \code{engine\$invokeFunction} to call the JavaScript function \code{getPartsOfSpeech} from R. The method \code{invokeFunction} takes the name of the function as the first parameter; any other arguments that follow are automatically converted to Java objects and passed to the JavaScript function. The function's return value is converted to an R object. In this case, \pkg{jsr223} intuitively converts the list of JavaScript objects to a list of R data frames as seen in the output below. The parts of speech abbreviations are defined by the Penn Treebank Project \citep{penntreebankproject}. A quick reference is available at \url{https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html}.
 
-\begin{verbatim}
+\begin{example}
 engine$invokeFunction(
   "getPartsOfSpeech",
   "The jsr223 package makes Java objects easy to use. Download it from CRAN."
@@ -99,9 +99,9 @@ engine$invokeFunction(
 ## 3     from      IN           63         67
 ## 4     CRAN     NNP           68         72
 ## 5        .       .           72         73
-\end{verbatim}
+\end{example}
 
-In this example, we effectively used Stanford's Core NLP library with a minimal amount of code. This same functionality can be easily replicated in any of the \pkg{jsr223}-supported programming languages.
+In this example, we effectively used Stanford's Core NLP library with a minimal amount of code. This same functionality can be replicated in any of the \pkg{jsr223}-supported programming languages.
 
 \hypertarget{extending-existing-java-solutions}{}
 \subsection{Extending existing Java solutions}
@@ -123,21 +123,22 @@ Our analysis involves two scripts: (i) a Groovy script to extend and execute the
 
 \paragraph{The Groovy script} To begin, we import the necessary classes. The first line below imports all of the static methods of the \code{"Math"} class. The second line imports the abstract class for the Metropolis sampler. The last line imports a univariate normal proposal class. (This latter class implements the interface \code{"ProposalDistributionUnivariate"}. If we wanted to use a custom proposal distribution, we could do so by creating a class that implements this interface in script.)
 
-\begin{verbatim}
+\begin{example}
 import static java.lang.Math.*;
 import org.fgilbert.jsr223.examples.MetropolisSamplerUnivariateProposal;
 import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
-\end{verbatim}
+\end{example}
 
 The code that follows is the key element of this example; it defines the behavior of a Java class in script. Specifically, we define a class named \code{"Sampler"} that extends the abstract class \code{"MetropolisSamplerUnivariateProposal"}. The \code{"Sampler"} class has just two members: the constructor method and the \code{logPosterior} method. The constructor method takes the parameter values for the prior distributions and computes statistics used in the posterior function. The \code{logPosterior} method implements the log of the posterior function that is called by the sampler.
 
-\begin{verbatim}
+\begin{example}
 public class Sampler extends MetropolisSamplerUnivariateProposal {
   private double alpha, beta, theta, kappa;
   private double dataLength, dataSum, dataZeroCount, dataPositiveCount;
 
   public Sampler(double alpha, double beta, double theta, double kappa, int[] data) {
-    this.alpha = alpha; this.beta = beta; this.theta = theta; this.kappa = kappa;
+    this.alpha = alpha; this.beta = beta;
+    this.theta = theta; this.kappa = kappa;
 
     dataLength = data.length;
     for (int i = 0; i < dataLength; i++) {
@@ -161,24 +162,24 @@ public class Sampler extends MetropolisSamplerUnivariateProposal {
       dataSum * log(lambda);
   }
 }
-\end{verbatim}
+\end{example}
 
 The next lines initialize an array of normal proposal distribution objects that will be used by the sampler. Each distribution object is initialized with a variance. The \code{proposalVariances} array is not defined here; it is supplied by the R script.
-\begin{verbatim}
+\begin{example}
 ProposalDistributionUnivariateNormal[] pd =
   new ProposalDistributionUnivariateNormal[proposalVariances.length];
 for (int i = 0; i < proposalVariances.length; i++)
   pd[i]	= new ProposalDistributionUnivariateNormal(proposalVariances[i]);
-\end{verbatim}
+\end{example}
 
 Finally, we create a \code{"Sampler"} instance and assign it to the variable \code{sampler}. The last line runs the sampler. Because it is the last line in the script, its return value will be automatically returned to the R environment. Notice that all but one of the variables passed as method arguments have not been defined yet. They will be provided by the R script.
-\begin{verbatim}
+\begin{example}
 Sampler sampler = new Sampler(alpha, beta, theta, kappa, data);
 sampler.sample(startingValues, pd, iterations, discard, threads);
-\end{verbatim}
+\end{example}
 
 \paragraph{The R script} First, we instantiate a Groovy script engine. The paths to the required Java libraries are defined in \code{class.path}. The first file is the Groovy script engine; the second file contains the Metropolis sampler; and the last file is the Apache Commons Mathematics Library (\url{http://commons.apache.org/proper/commons-math}).
-\begin{verbatim}
+\begin{example}
 library("jsr223")
 
 class.path <- c(
@@ -187,22 +188,22 @@ class.path <- c(
   "lib/commons-math3-3.6.1.jar"
 )
 engine <- ScriptEngine$new("Groovy", class.path)
-\end{verbatim}
+\end{example}
 
 The matrix \code{starting.values} defined here contains initial values for the Metropolis sampler. Each row is a ($\pi$, $\lambda$) value pair that will be used to initialize a random walk. Hence, we will have four MCMC chains for each parameter. The multi-threaded sampler computes these chains in parallel.
 
-\begin{verbatim}
+\begin{example}
 starting.values <- rbind(
   c(0.999, 0.001),
   c(0.001, 0.001),
   c(0.001, 30),
   c(0.999, 30)
 )
-\end{verbatim}
+\end{example}
 
 In the next step, we initialize global variables that are used by the Groovy script. The \pkg{jsr223} package provides a few ways to do this, but the most convenient approach is the list-like assignment syntax shown below. The first four assignments (alpha, beta, theta, and kappa) correspond to the parameter values for the prior densities; the variable \code{data} contains the counts $y_1,\dots,y_n$; \code{proposalVariances} is an array of variances for the Gaussian proposal distributions; \code{startingValues} contains the initial ($\pi$, $\lambda$) parameter values for four random walks; \code{iterations} indicates the number of MCMC iterations per random walk; \code{discard} is the number of initial draws to ignore; and \code{threads} defines the size of the parallel processing thread pool.
 
-\begin{verbatim}
+\begin{example}
 engine$alpha <- 1
 engine$beta <- 1
 engine$theta <- 2
@@ -213,24 +214,24 @@ engine$startingValues <- starting.values
 engine$iterations <- 10000L
 engine$discard <- as.integer(engine$iterations * 0.20)
 engine$threads <- parallel::detectCores()
-\end{verbatim}
+\end{example}
 
 The Metropolis sampler will return two multi-dimensional arrays. We prefer the arrays to be structured in a specific order, so we change the default ordering using the code here. For the sake of brevity, we refer the reader to the \textit{\pkg{jsr223} User Manual} for details regarding array order settings.
 
-\begin{verbatim}
+\begin{example}
 engine$setArrayOrder("column-minor")
-\end{verbatim}
+\end{example}
 
 Next, we compile and execute the Groovy script. Compiling the script is optional; we could evaluate the code in one step using the \pkg{jsr223} \code{source} method. However, we intend to execute the script more than once, so we compile it for efficiency. The first line below compiles the script and assigns the resulting object to the variable \code{cs}. The second line executes the compiled code and assigns the output to the variable \code{r}. The result is the return value of the last line in the script. In our Groovy script, the last line is a call to the method \code{sample} of the \code{"Sampler"} class.
 
-\begin{verbatim}
+\begin{example}
 cs <- engine$compileSource("metropolis.groovy")
 r <- cs$eval()
-\end{verbatim}
+\end{example}
 
 The \code{sample} method returns a Java map (i.e., an associative array or dictionary) with two members: \code{"acceptance\_rates"} and \code{"chains"}. The \pkg{jsr223} package automatically converts the map and its contents to an R named list with the same member names. Define $k$ as the number of iterations minus the number discarded, $p = 2$ as the number of parameters, and $w = 4$ as the number of random walks. Then the \code{"chains"} member is a 3-dimensional $k \times p \times w$ matrix containing the MCMC results. Here, we output the dimensions of the 3-dimensional array and the top six rows of first random walk.
 
-\begin{verbatim}
+\begin{example}
 dim(r$chains)
 
 ## [1] 8000    2    4
@@ -246,11 +247,11 @@ head(r$chains[, , 1])
 ## [4,] 0.6012411 1.647577
 ## [5,] 0.6012411 1.647577
 ## [6,] 0.4965568 1.647577
-\end{verbatim}
+\end{example}
 
 The \code{"acceptance\_rates"} member is a $w \times p$ matrix containing the acceptance rates for each parameter and random walk. We output those values below.
 
-\begin{verbatim}
+\begin{example}
 colnames(r$acceptance_rates) <- parameter.names
 r$acceptance_rates
 
@@ -259,11 +260,11 @@ r$acceptance_rates
 ## [2,] 0.3655 0.3209
 ## [3,] 0.3638 0.3175
 ## [4,] 0.3708 0.3148
-\end{verbatim}
+\end{example}
 
 For the sake of demonstration, let's say that the acceptance rates are too high. We need to widen the variances for the proposal distributions and re-run the sampler. There is no need to recompile the script; instead, just update the corresponding global variable and execute the compiled script again. We output the acceptance rates here for comparison.
 
-\begin{verbatim}
+\begin{example}
 engine$proposalVariances <- c(0.5^2, 1.7^2)
 r <- cs$eval()
 colnames(r$acceptance_rates) <- parameter.names
@@ -274,7 +275,7 @@ r$acceptance_rates
 ## [2,] 0.2354 0.2383
 ## [3,] 0.2340 0.2305
 ## [4,] 0.2418 0.2304
-\end{verbatim}
+\end{example}
 
 Table \ref{tab:mcmcx} contains a summary for each parameter by individual chain. The code used to summarize the results can be found in the R script \file{metropolis.R} on GitHub.
 
@@ -284,7 +285,7 @@ To put these results in context, we ran another simulation where the Metropolis 
 
 What we have shown here is only one approach to this implementation. The total runtime could be reduced by using simpler data structures or summarizing the data on the Java side. However, R is designed for summarizing data. Therefore, we chose to transfer the full results to R in a convenient format because we believe it represents the most typical use case. Furthermore, we could have implemented this solution using anonymous classes, lambda functions, or closures. These constructs usually require less code, and they are supported within the various \pkg{jsr223}-compatible programming languages. However, we found that they did not execute as quickly.
 
-\vspace{0.33cm}
+%\vspace{0.33cm}
 
 \begin{table}[h!]
 \centering
@@ -304,7 +305,7 @@ $\lambda$ &    4 & 0.875 & 1.303 & 1.532 & 1.803 & 2.364 & 0.230 &  813 \\ \bott
 \label{tab:mcmcx}
 \end{table}
 
-\vspace{0.33cm}
+%\vspace{0.33cm}
 
 \begin{table}[h!]
 \centering
@@ -321,7 +322,7 @@ Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \
 \label{tab:mcmcgroovy}
 \end{table}
 
-\vspace{0.33cm}
+%\vspace{0.33cm}
 
 \begin{table}[h!]
 \centering
@@ -359,7 +360,7 @@ Finally, how does the performance compare to a base R implementation? We created
 
 In addition to using Java libraries, \pkg{jsr223} can easily take advantage of solutions written in other languages. In some cases, integration is as simple as sourcing a script file. For example, many common JavaScript libraries like Underscore (\url{http://underscorejs.org}) and Voca (\url{https://vocajs.com}) can be sourced using a URL. The following example sources Voca and word-wraps a string.
 
-\begin{verbatim}
+\begin{example}
 engine$source(
   "https://raw.githubusercontent.com/panzerdp/voca/master/dist/voca.min.js",
   discard.return.value = TRUE
@@ -372,7 +373,7 @@ engine$invokeMethod(
 )
 
 ## [1] "A long sentence to\nwrap using Voca\nmethods."
-\end{verbatim}
+\end{example}
 
 Compiled Groovy and Kotlin libraries are accessed in the same way as Java libraries: simply include the relevant class or JAR files when instantiating a script engine.
 
@@ -411,7 +412,7 @@ As noted in the introduction, \pkg{rJava} is the preeminent Java integration for
 
 The following code example is taken from \pkg{rJava}'s web site \url{http://www.rforge.net/rJava}. It demonstrates the essential functions of the \textbf{rJava} API by way of creating and displaying a GUI window with a single button. The first two lines are required to initialize \pkg{rJava}. The next lines use the \code{.jnew} function to create two Java objects: a GUI frame and a button. The associated class names are denoted in JNI syntax. Of particular note is the first invocation of \code{.jcall}, the function used to call object methods. In this case, the \code{add} method of the frame object is invoked. For \pkg{rJava} to identify the appropriate method, an explicit return type must be specified in JNI notation as the second parameter to \code{.jcall} (unless the return value is \code{void}). The last parameter to \code{.jcall} specifies the object to be added to the frame object. It must be explicitly cast to the correct interface for the call to be successful.
 
-\begin{verbatim}
+\begin{example}
 library("rJava")
 .jinit()
 f <- .jnew("java/awt/Frame", "Hello")
@@ -422,11 +423,11 @@ b <- .jnew("java/awt/Button", "OK")
 .jcall(f, , "setVisible", TRUE)
 # Close the window.
 .jcall(f, , "dispose")
-\end{verbatim}
+\end{example}
 
 The snippet below reproduces the \pkg{rJava} example above using JavaScript. In comparison, the JavaScript code is more natural for most programmers to write and maintain. The fine details of method lookups and invocation are handled automatically: no explicit class names or type casts are required. This same example can be reproduced in any of the five other \pkg{jsr223}-supported programming languages.
 
-\begin{verbatim}
+\begin{example}
 var f = new java.awt.Frame('Hello');
 f.add(new java.awt.Button('OK'));
 f.pack();
@@ -434,17 +435,17 @@ f.pack();
 f.setVisible(true);
 // Close the window.
 f.dispose();
-\end{verbatim}
+\end{example}
 
 Using \pkg{jsr223}, the preceding code snippet can be embedded in an R script. The first step is to create an instance of a script engine. A JavaScript engine is created as follows.
 
-\begin{verbatim}
+\begin{example}
 library(jsr223)
 engine <- ScriptEngine$new("JavaScript")
-\end{verbatim}
+\end{example}
 This engine object is now ready to evaluate script on demand. Source code can be passed to the engine using character vectors or files. The sample below demonstrates embedding JavaScript code in-line with character vectors. This method is appropriate for small snippets of code. (Note: If you try this example the window may appear in the background. Also, the window must be closed using the last line of code. These are limitations of the code example, not \pkg{jsr223}.)
 
-\begin{verbatim}
+\begin{example}
 # Execute code inline to create and show the window.
 engine %@% "
   var f = new java.awt.Frame('Hello');
@@ -455,7 +456,7 @@ engine %@% "
 
 # Close the window
 engine %@% "f.dispose();"
-\end{verbatim}
+\end{example}
 To execute source code in a file, use the script engine object's \code{source} method:
 \newline \code{engine\$source(file.name)}. The variable \code{file.name} may specify a local file path or a URL. Whether evaluating small code snippets or sourcing script files, embedding source code using \pkg{jsr223} is straightforward.
 
@@ -465,25 +466,25 @@ The \pkg{jsr223}-compatible programming languages also feature support for advan
 
 The \pkg{rJava} package supports exchanging scalars, arrays, and matrices between R and Java. The following R code demonstrates converting an R matrix to a Java object, and vice versa, using \pkg{rJava}.
 
-\begin{verbatim}
+\begin{example}
 a <- matrix(rnorm(10), 5, 2)
 # Copy matrix to a Java object with rJava
 o <- .jarray(a, dispatch = TRUE)
 # Convert it back to an R matrix.
 b <- .jevalArray(o, simplify = TRUE)
-\end{verbatim}
+\end{example}
 
 Again, the \pkg{jsr223} package builds on \pkg{rJava} functionality by extending data exchange. Our package converts R vectors, factors, n-dimensional arrays, data frames, lists, and environments to generic Java objects.\footnote{\pkg{rJava}'s interface can theoretically support n-dimensional arrays, but currently the feature does not produce correct results for n $>$ 2. See the related issue at the \pkg{rJava} Github repository: ``.jarray(..., dispatch=T) on multi-dimensional arrays creates Java objects with wrong content.''} In addition, \pkg{jsr223} can convert Java scalars, n-dimensional arrays, maps, and collections to base R objects. Several data exchange options are available, including row-major and column-major ordering schemes for data frames and n-dimensional arrays.
 
 This code snippet demonstrates data exchange using \pkg{jsr223}. The variable \code{engine} is a \pkg{jsr223} ScriptEngine object. Similar to the preceding \pkg{rJava} example, this code copies a matrix to the Java environment and back again. The same syntax is used for all supported data types and structures.
 
-\begin{verbatim}
+\begin{example}
 a <- matrix(rnorm(10), 5, 2)
 # Copy an R object to Java using jsr223.
 engine$a <- a
 # Retrieve the object.
 engine$a
-\end{verbatim}
+\end{example}
 
 The \pkg{rJava} package does not directly support callbacks into R. Instead, callbacks are implemented through \pkg{JRI}: the Java/R Interface. The \pkg{JRI} interface is included with \pkg{rJava}. However, to use \pkg{JRI}, R must be compiled with the shared library option \samp{-{}-enable-R-shlib}. The \pkg{JRI} interface is technical and extensive. In contrast, \pkg{jsr223} supports callbacks into R using a lightweight interface that provides just three methods to execute R code, set variable values, and retrieve variable values. The \pkg{jsr223} package does not use \pkg{JRI}, so there is no requirement for R to be compiled as a shared library.
 
@@ -496,24 +497,24 @@ Besides \pkg{jsr223}, the only other Groovy language integration available on CR
 
 Class paths must set in the global option \code{GROOVY\_JARS} \textit{before} loading the \pkg{rGroovy} package.
 
-\begin{verbatim}
+\begin{example}
 options(GROOVY_JARS = list("groovy-all.jar", ...))
 library("rGroovy")
-\end{verbatim}
+\end{example}
 
 After the package is loaded, the \code{Initialize} function is called to instantiate an instance of the Groovy script engine that will be used to handle script evaluation. The \code{Initialize} function has one optional argument named \code{binding}. This argument accepts an \pkg{rJava} object reference to a \code{groovy.lang.Binding} object that represents the bindings available to the Groovy script engine. Hence, \pkg{rJava} must be used to create, set, and retrieve values in the \code{bindings} object. The following code example demonstrates instantiating the Groovy script engine. We initialize the script engine bindings with a variable named \code{myValue} that contains a vector of integers. Notice that knowledge of \pkg{rJava} and JNI notation is required to create an instance of the \code{bindings} object, convert the vector to a Java array, cast the resulting Java array to the appropriate interface, and finally, call the \code{setVariable} method of the \code{bindings} object.
 
-\begin{verbatim}
+\begin{example}
 bindings <- rJava::.jnew("groovy/lang/Binding")
 Initialize(bindings)
 myValue <- rJava::.jarray(1:3)
 myValue <- rJava::.jcast(myValue, "java/lang/Object")
 rJava::.jcall(bindings, "V", method = "setVariable", "myValue", myValue)
-\end{verbatim}
+\end{example}
 
 Finally, Groovy code can be executed using the \code{Evaluate} method; it returns the value of the last statement, if any. In this example, we modify the last element of our \code{myValue} array, and return the contents of the array.
 
-\begin{verbatim}
+\begin{example}
 script <- "
   myValue[2] = 5;
   myValue;
@@ -521,13 +522,13 @@ script <- "
 Evaluate(groovyScript = script)
 
 ## [1] 1 2 5
-\end{verbatim}
+\end{example}
 
 The \pkg{rGroovy} package includes another function, \code{Execute}, that allows developers to evaluate Groovy code without using \pkg{rJava}. However, this interface creates a new Groovy script engine instance each time it is called. In other words, it does not allow the developer to preserve state between each script evaluation.
 
 In this code example, we demonstrate Groovy integration with \pkg{jsr223}. After the library is loaded, an instance of a Groovy script engine is created. The class path is defined at the same time the script engine is created. The variable \code{engine} represents the script engine instance; it exposes several methods and properties that control data exchange behavior and code evaluation. The third line creates a binding named \code{myValue} in the script engine's environment; the R vector is automatically converted to a Java array. The fourth line executes Groovy code that changes the last element of the \code{myValue} Java array before returning it to the R environment.
 
-\begin{verbatim}
+\begin{example}
 library("jsr223")
 engine <- ScriptEngine$new("Groovy", "groovy-all.jar")
 engine$myValue <- 1:3
@@ -537,7 +538,7 @@ engine %~% "
 "
 
 ## [1] 1 2 5
-\end{verbatim}
+\end{example}
 
 In comparison to \pkg{rGroovy}, the \pkg{jsr223} implementation is more concise and requires no knowledge of \pkg{rJava} or Java classes. Though not illustrated in this example, \pkg{jsr223} can invoke Groovy functions and methods from within R, it supports callbacks from Groovy into R, and it provides extensive and configurable data exchange between Groovy and R. These features are not available in \pkg{rGroovy}.
 
@@ -554,7 +555,7 @@ Second, all data exchanged between \pkg{V8} and R is serialized using JSON via t
 
 The following code example demonstrates the precision issue using the R constant \code{pi}. The JSON conversion is handled via \pkg{jsonlite}, just as in the \pkg{V8} package. We see that after JSON conversion the value of \code{pi} is not identical to the original value. In contrast, the \pkg{jsr223} conversion result is identical to the original value.
 
-\begin{verbatim}
+\begin{example}
 # `digits = NA` requests maximum precision.
 library("jsonlite")
 identical(pi, fromJSON(toJSON(pi, digits = NA)))
@@ -567,7 +568,7 @@ engine$pi <- pi
 identical(engine$pi, pi)
 
 ## [1] TRUE
-\end{verbatim}
+\end{example}
 
 The third significant difference between \pkg{V8} and \pkg{jsr223} is code validation. \pkg{V8} includes an interface to validate JavaScript code. The Java Scripting API does not provide an interface for code validation, hence, \pkg{jsr223} does not provide this feature. We have investigated other avenues to validate code, but none are uniformly reliable across all of the \pkg{jsr223}-supported languages. Moreover, this feature is not critical for most integration scenarios. Code validation is more common in applications that involve interactive code editing.
 
@@ -605,6 +606,7 @@ In this paper, we provided an introduction to the main features and advantages o
 \bibliography{gilbert-dahl}
 
 \address{Floid R. Gilbert\\
+    Master's Student\\
     Department of Statistics\\
     Brigham Young University\\
     Provo, UT 84602\\
@@ -612,6 +614,7 @@ In this paper, we provided an introduction to the main features and advantages o
 \email{floid.r.gilbert@gmail.com}
 
 \address{David B. Dahl\\
+    Professor, Graduate Coordinator, and Associate Chair\\
     Department of Statistics\\
     Brigham Young University\\
     Provo, UT 84602\\
