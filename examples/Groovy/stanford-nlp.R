@@ -1,5 +1,5 @@
 # Demonstrate the use of Stanford Natural Language Processor via Groovy.
-# The last three files in `class.path` can be downloaded from
+# The last three files in `class.path` are part of the
 # Stanford CoreNLP from https://stanfordnlp.github.io/CoreNLP/
 
 class.path <- c(
@@ -11,6 +11,7 @@ class.path <- c(
 
 library("jsr223")
 engine <- ScriptEngine$new("Groovy", class.path)
+
 engine %@% '
   import edu.stanford.nlp.simple.*;
 

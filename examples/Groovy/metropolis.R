@@ -1,5 +1,5 @@
 # This script requires 'metropolis.groovy' which can be located in the same
-# folder. The required JAR files can be found in the lib subfolder.
+# folder. The referenced JAR files are in the 'lib' subfolder.
 #
 # The example demonstrates dynamic code behavior by extending an abstract Java
 # class, MetropolisSamplerUnivariateProposal. The class defines an abstract
@@ -8,15 +8,16 @@
 #
 # This example also demonstrates script compiling.
 #
-# The basic idea: We are performing a Bayesian analysis for a zero-inflated 
-# Poisson model with pi ~ Beta and lambda ~ Gamma priors. We wish to draw
-# samples from the posterior using a multi-threaded Java class that implements
-# the Metropolis algorithm.
+# The jsr223 User Manual contains a complete write-up on this example. The basic
+# idea: We are performing a Bayesian analysis for a zero-inflated Poisson model
+# with priors pi ~ Beta and lambda ~ Gamma. We wish to draw samples from the
+# posterior using a multi-threaded Java class that implements the Metropolis
+# algorithm.
 #
 # See comments in this script and 'metropolis.groovy' for more
 # information.
 #
-# The Java sampler classes are located on Github under
+# The related Java project is located on Github under
 # examples/Java/org.fgilbert.jsr223.examples.
 
 #  ------------------------------------------------------------------------
@@ -27,8 +28,6 @@ class.path <- c(
   "lib/org.fgilbert.jsr223.examples-0.3.0.jar",
   "lib/commons-math3-3.6.1.jar"
 )
-# Using fully-qualified paths is recommended.
-class.path <- normalizePath(class.path, winslash = "/")
 
 engine <- ScriptEngine$new("Groovy", class.path)
 
@@ -44,13 +43,14 @@ starting.values <- rbind(
 
 # Set global variables in the Groovy environment.
 #
-# `alpha`, `beta`, `theta`, and `kappa` are parameters for the Beta and Gamma
-# priors, respectively. The are used to define the posterior function.
+# `alpha`, `beta` are parameters for the pi ~ Beta `theta`, and `kappa` are
+# parameters for the lambda ~ Gamma prior. The are used to define the posterior
+# function.
 #
 # `data` is an array of the data values. In this case, counts.
 #
 # `proposalVariances` are the variance parameters for the proposal distributions
-# (both Gaussian).
+# (both univariate Gaussian).
 #
 # `startingValues` are the starting values for each random walk.
 #
@@ -75,9 +75,8 @@ engine$threads <- parallel::detectCores()
 engine$setArrayOrder("column-minor")
 
 # Compile the Groovy script to Java byte code. This approach is recommended only
-# for unstructured code (i.e., code not encapsulated in methods or functions).
-# Otherwise, define functions/methods and call them with engine$invokeMethod or
-# engine$invokeFunction.
+# for unstructured code: not methods or functions. For the latter, call them
+# directly from R using engine$invokeMethod or engine$invokeFunction.
 cs <- engine$compileSource("metropolis.groovy")
 
 # Execute the compiled code.
@@ -135,28 +134,31 @@ xtable::print.xtable(xt, include.rownames = FALSE, caption.placement = "top")
 
 # Benchmarks --------------------------------------------------------------
 
+# IMPORTANT: This section may take several minutes to run. Reduce
+# `benchmark.iterations` to reduce run time.
+
 doBenchmarks <- function(cs) {
-  benchmark.iterations <- 20L
-  benchmark.warmup <- 4L
+  benchmark.iterations <- 40L
+  benchmark.warmup <- 2L
   benchmark.control <- list(warmup = benchmark.warmup)
   mcmc.iterations <- c(10000L, 100000L, 1000000L)
 
   f1 <- function(iterations, discard.return.value) {
     engine$iterations <- iterations
     engine$discard <- 0L
-    micro <- microbenchmark::microbenchmark(cs$eval(discard.return.value), times = benchmark.iterations, control = benchmark.control)
-    median(micro$time) / 1000000
+    m <- microbenchmark::microbenchmark(cs$eval(discard.return.value), times = benchmark.iterations, control = benchmark.control)
+    mean(m$time) / 1000000
   }
 
-  median.time.with.return.values <- sapply(mcmc.iterations, f1, FALSE)
+  mean.time.with.return.values <- sapply(mcmc.iterations, f1, FALSE)
 
-  median.time.without.return.values <- sapply(mcmc.iterations, f1, TRUE)
+  mean.time.without.return.values <- sapply(mcmc.iterations, f1, TRUE)
 
   m <- cbind(
     mcmc.iterations,
-    median.time.with.return.values,
-    median.time.without.return.values,
-    median.time.with.return.values - median.time.without.return.values
+    mean.time.with.return.values,
+    mean.time.without.return.values,
+    mean.time.with.return.values - mean.time.without.return.values
   )
   colnames(m) <- c("Iterations", "Run time 1", "Run time 2", "Difference")
 

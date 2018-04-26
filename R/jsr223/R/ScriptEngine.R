@@ -141,10 +141,11 @@ ScriptEngine <- R6::R6Class("ScriptEngine",
         class.path <- trimws(unlist(strsplit(class.path, .Platform$path.sep, fixed = TRUE)))
         class.path <- class.path[nzchar(class.path)]
         if (length(class.path) > 0L) {
-          for (p in class.path) {
-            if (!file.exists(p))
-              stop(sprintf("The file %s specified in the class path does not exist.", shQuote(p, type = "sh")))
-          }
+          if (length(grep("*", class.path, fixed = TRUE)) > 0)
+            stop("Wildcards ('*') are not currently supported in class paths.")
+          # Using fully-qualified paths prevents errors due to changing the working directory when
+          # relative paths are used. normalizePath throws an error if the file/folder does not exist.
+          class.path <- normalizePath(class.path, winslash = .Platform$file.sep, mustWork = TRUE)
           rJava::.jaddClassPath(class.path)
         }
       }

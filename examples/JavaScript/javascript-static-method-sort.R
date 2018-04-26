@@ -9,10 +9,10 @@ engine <- ScriptEngine$new("js")
 # the class.
 
 engine %~% "
-var Arrays = Java.type('java.util.Arrays');
-var random = R.eval('sample(5)');
-Arrays.sort(random);
-random;
+  var Arrays = Java.type('java.util.Arrays');
+  var random = R.eval('sample(5)');
+  Arrays.sort(random);
+  random;
 "
 
 ## [1] 1 2 3 4 5
@@ -21,9 +21,9 @@ random;
 # requires more overhead per call.
 
 engine %~% "
-var random = R.eval('sample(5)');
-java.util.Arrays.sort(random);
-random;
+  var random = R.eval('sample(5)');
+  java.util.Arrays.sort(random);
+  random;
 "
 
 ## [1] 1 2 3 4 5

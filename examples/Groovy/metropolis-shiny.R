@@ -1,3 +1,7 @@
+# This example is similar to 'metropolis.R' except that it displays a
+# Shiny UI that shows how the posterior distributions are affected as
+# the prior distributions are updated in real time.
+
 # Initialize --------------------------------------------------------------
 
 library("shiny")
@@ -14,6 +18,9 @@ engine <- ScriptEngine$new("Groovy", class.path)
 # The sampler takes initial values for each chain. Each chain can be run on a
 # separate thread. The parameters are pi (0 <= pi <= 1) and lambda (0 =>
 # lambda).
+#
+# We use only three threads this time to leave a fourth thread available to
+# update the UI (assuming your processor can execute 4 threads).
 starting.values <- rbind(
   c(0.999, 0.001),
   c(0.001, 0.001),
@@ -23,13 +30,14 @@ starting.values <- rbind(
 
 # Set global variables in the Groovy environment.
 #
-# `alpha`, `beta`, `theta`, and `kappa` are parameters for the Beta and Gamma
-# priors, respectively. The are used to define the posterior function.
+# `alpha`, `beta` are parameters for the pi ~ Beta `theta`, and `kappa` are
+# parameters for the lambda ~ Gamma prior. The are used to define the posterior
+# function.
 #
 # `data` is an array of the data values. In this case, counts.
 #
 # `proposalVariances` are the variance parameters for the proposal distributions
-# (both Gaussian).
+# (both univariate Gaussian).
 #
 # `startingValues` are the starting values for each random walk.
 #
@@ -43,7 +51,7 @@ engine$beta <- 1
 engine$theta <- 2
 engine$kappa <- 1
 engine$data <- as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5))
-engine$proposalVariances <- c(0.5^2, 1.7^2)
+engine$proposalVariances <- c(0.3^2, 1.2^2)
 engine$startingValues <- starting.values
 engine$iterations <- 10000L
 engine$discard <- as.integer(engine$iterations * 0.20)
@@ -54,9 +62,8 @@ engine$threads <- parallel::detectCores()
 engine$setArrayOrder("column-minor")
 
 # Compile the Groovy script to Java byte code. This approach is recommended only
-# for unstructured code (i.e., code not encapsulated in methods or functions).
-# Otherwise, define functions/methods and call them with engine$invokeMethod or
-# engine$invokeFunction.
+# for unstructured code: not methods or functions. For the latter, call them
+# directly from R using engine$invokeMethod or engine$invokeFunction.
 cs <- engine$compileSource("metropolis.groovy")
 
 # Shiny -------------------------------------------------------------------

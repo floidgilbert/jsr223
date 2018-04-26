@@ -6,7 +6,7 @@ library("jsr223")
 # Include the Apache Commons Mathematics library in class.path.
 engine <- ScriptEngine$new(
   engine.name = "js",
-  class.path = "~/my-path/commons-math3-3.6.1.jar"
+  class.path = "lib/commons-math3-3.6.1.jar"
 )
 
 # Define the means and covariance matrix that will be used to create the
@@ -24,7 +24,7 @@ engine %@% "
 
 # This line would throw an error. Nashorn JavaScript supports 'invokeMethod' for
 # native JavaScript objects, but not for Java objects.
-# 
+#
 ## engine$invokeMethod("mvn", "sample")
 
 # Instead, use script...

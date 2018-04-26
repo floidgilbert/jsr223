@@ -4,23 +4,22 @@
 library("jsr223")
 
 # Include both the Groovy script engine and the Apache Commons Mathematics
-# libraries in the class path. Specify the paths seperately in a character
-# vector.
-engine <- ScriptEngine$new(
-  engine.name = "groovy"
-  , class.path = c(
-    "lib/groovy-all-2.4.7.jar",
-    "lib/commons-math3-3.6.1.jar"
-  )
+# libraries in the class path. We recommend specifying the paths seperately.
+
+class.path <-  c(
+  "lib/groovy-all-2.4.7.jar",
+  "lib/commons-math3-3.6.1.jar"
 )
+
+engine <- ScriptEngine$new("groovy", class.path)
 
 # Define the means and covariance matrix that will be used to create the
 # bivariate normal distribution.
 engine$means <- c(0, 2)
 engine$covariances <- diag(1, nrow = 2)
 
-# Import the package member and instantiate a new class. Declare 'mvn'
-# a global variable by excluding the type specifier.
+# Import the package member and instantiate a new class. Excluding the type
+# declaration for the variable 'mvn' tells Groovy that it is a global variable.
 engine %@% "
   import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
   mvn = new MultivariateNormalDistribution(means, covariances);

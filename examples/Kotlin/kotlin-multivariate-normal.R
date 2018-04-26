@@ -7,15 +7,14 @@ library("jsr223")
 kotlin.directory <- Sys.getenv("KOTLIN_HOME")
 
 # Include both the Kotlin script engine jars and the Apache Commons Mathematics
-# libraries in the class path. Specify the paths seperately in a character
-# vector.
-engine <- ScriptEngine$new(
-  engine.name = "kotlin"
-  , class.path = c(
-    getKotlinScriptEngineJars(kotlin.directory),
-    "../commons-math3-3.6.1.jar"
-  )
+# libraries in the class path. Use `getKotlinScriptEngineJars` to list the
+# Kotlin jars.
+class.path <- c(
+  getKotlinScriptEngineJars(kotlin.directory),
+  "lib/commons-math3-3.6.1.jar"
 )
+
+engine <- ScriptEngine$new("kotlin", class.path)
 
 # Define the means and covariance matrix that will be used to create the
 # bivariate normal distribution.

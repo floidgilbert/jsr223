@@ -46,6 +46,8 @@ public abstract class MetropolisHastingsSamplerUnivariateProposal implements Sam
 			double[] state = startingValues.clone();
 			double[] proposal = startingValues.clone();
 			double probabilityRatio;
+			double logPosteriorProposal;
+			double logPosteriorState = logPosterior(startingValues);
 			
 			/*
 			 * Run MCMC.
@@ -55,10 +57,13 @@ public abstract class MetropolisHastingsSamplerUnivariateProposal implements Sam
 			for (int i = 1; i < iterations; i++) {
 				for (int j = 0; j < parameterCount; j++) {
 					proposal[j] = proposalDistributions[j].sample(state[j]);
-					probabilityRatio = (logPosterior(proposal) - proposalDistributions[j].logDensity(proposal[j], state[j])) -
-							(logPosterior(state) - proposalDistributions[j].logDensity(state[j], proposal[j]));
+					logPosteriorProposal = logPosterior(proposal);
+					
+					probabilityRatio = (logPosteriorProposal - proposalDistributions[j].logDensity(proposal[j], state[j])) -
+							(logPosteriorState - proposalDistributions[j].logDensity(state[j], proposal[j]));
 					if (probabilityRatio >= log(unif.sample())) {
 						state[j] = proposal[j];
+						logPosteriorState = logPosteriorProposal;
 						proposalsAccepted[j]++;
 					} else {
 						proposal[j] = state[j];

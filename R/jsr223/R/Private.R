@@ -32,15 +32,44 @@ strintrplt <- function (snippet, envir = parent.frame()) {
   else snippet
 }
 
-tempFile <- function(file.name) {
-  paste0(formatPath(tempdir(), TRUE), file.name)
+terminateString <- function(x, t) {
+  if (typeof(x) != "character" || typeof(t) != "character")
+    stop("The argumentx 'x' and 't' require character vectors.")
+  length.x <- length(x)
+  length.t <- length(t)
+  if (length.x == 0 || length.t == 0)
+    return(x)
+
+  # Make recycling work as expected.
+  if (length.x == 1 && length.t > 1) {
+    x <- rep(x, times = length.t)
+  } else if (length.x > 1 && length.t == 1) {
+    t <- rep(t, times = length.x)
+  }
+
+  nchar.x <- nchar(x)
+  nchar.t <- nchar(t)
+  b <- substring(x, nchar.x - nchar.t + 1, nchar.x) != t
+  x[b] <- paste0(x[b], t[b])
+  x
 }
 
-formatPath <- function(path, terminate.with.separator = FALSE) {
-  path <- gsub("\\", .Platform$file.sep, path, fixed = TRUE)
-  if (!terminate.with.separator)
-    return(path)
-  if (substring(path, nchar(path)) == .Platform$file.sep)
-    return(path)
-  paste0(path, .Platform$file.sep)
-}
+# terminateString(c(1), c("b")) # Throws error.
+# terminateString(c("a"), c(1)) # Throws error.
+# terminateString(character(), c("b"))
+# terminateString(c("a"), character())
+# terminateString(c("a"), c("b"))
+# terminateString(c(""), c("b"))
+# terminateString(c("a"), c(""))
+# terminateString(c("a"), c("a"))
+# terminateString(c("a"), c("a", "b"))
+# terminateString(c("a"), c("a", "a"))
+# terminateString(c("a"), c("a", "b", "a"))
+# terminateString(c("a", "b"), c("a"))
+# terminateString(c("a", "b"), c("a", "b"))
+# terminateString(c("a", "b"), c("d", "e"))
+# terminateString(c("a", "b"), c("d", "e", "f")) # Throws error
+# terminateString(c("abc"), c("def"))
+# terminateString(c("abc", "def"), c("def"))
+# terminateString(c("abc", "def"), c("def", "hij"))
+# terminateString(c("abcdef", "hijklm"), c("def"))

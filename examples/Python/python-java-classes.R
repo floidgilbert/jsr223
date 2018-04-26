@@ -5,7 +5,7 @@
 library("jsr223")
 engine <- ScriptEngine$new(
   engine.name = "python",
-  class.path = "~/my-path/engines/jython-standalone.jar"
+  class.path = "lib/jython-standalone-2.7.0.jar"
 )
 
 # Create an object from the java.util.Random class.

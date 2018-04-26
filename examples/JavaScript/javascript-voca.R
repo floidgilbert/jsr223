@@ -24,7 +24,7 @@ engine$invokeMethod("v", "prune", "A long string to prune.", 12)
 ## [1] "A long..."
 
 # Provide a different suffix to 'prune'.
-engine$invokeMethod("v", "prune", "A long string to prune.", 12, "(more)")
+engine$invokeMethod("v", "prune", "A long string to prune.", 12, " (more)")
 
 ## [1] "A long (more)"
 

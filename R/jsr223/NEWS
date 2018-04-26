@@ -4,6 +4,18 @@
 //                                                                         //
 // // // // // // // // // // // // // // // // // // // // // // // // // //
 
+* * * 2018-04-26 v 0.3.2 * * *
+
+- ScriptEngine$new() will automatically convert paths in `class.path` to
+  fully-qualified paths. This resolves errors caused when relative class
+  paths are used and the current working directory changes.
+
+- The function getKotlinScriptEngineJars() will always return fully-qualified
+  paths.
+
+- Suppressed data exchange testing that requires long doubles on platforms
+  that do not support long doubles.
+
 * * * 2018-03-28 v 0.3.1 * * *
 
 - Changed data exchange tests involving Java bytes and JavaScript Nashorn

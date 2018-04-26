@@ -10,7 +10,7 @@ metropolisSamplerUnivariateProposal <- function(log.posterior, starting.values, 
   # Validate
   parameter.count <- length(proposal.functions)
   if (!is.function(log.posterior))
-    stop("The parameter 'log.posterior' must be a function.")
+    stop("The argument 'log.posterior' must be a function.")
   if (parameter.count == 0)
     stop("Invalid number of proposal distributions. There is a one-to-one relationship between the number of parameters and proposal distributions.")
   if (dim(starting.values)[2] != parameter.count)
@@ -23,23 +23,27 @@ metropolisSamplerUnivariateProposal <- function(log.posterior, starting.values, 
     stop("The value 'cores' must be greater than zero.")
   chain.count <- dim(starting.values)[1]
 
-  mcmc <- function(starting.values, proposal.functions, iterations, discard) {
+  mcmc <- function(starting.values) {
     chains = array(0, c(iterations - discard, parameter.count))
     proposals.accepted = integer(parameter.count)
     state <- starting.values
     proposal <- starting.values
     probability.ratio <- 0
+    log.posterior.state <- log.posterior(starting.values)
+    log.posterior.proposal <- 0
 
     if (discard == 0)
       chains[1, ] <- starting.values
     for (i in 2:iterations) {
       for (j in 1:parameter.count) {
         proposal[j] <- proposal.functions[[j]](state[j])
-        probability.ratio <- log.posterior(proposal) - log.posterior(state)
+        log.posterior.proposal <- log.posterior(proposal)
+        probability.ratio <- log.posterior.proposal - log.posterior.state
         if (is.nan(probability.ratio))
           probability.ratio <- -Inf
         if (probability.ratio >= log(runif(1))) {
           state[j] <- proposal[j]
+          log.posterior.state <- log.posterior.proposal
           proposals.accepted[j] <- proposals.accepted[j] + 1
         } else {
           proposal[j] <- state[j]
@@ -56,7 +60,7 @@ metropolisSamplerUnivariateProposal <- function(log.posterior, starting.values, 
 
   cluster <- parallel::makeCluster(cores)
   tryCatch (
-    r <- parallel::parApply(cluster, starting.values, 1, mcmc, proposal.functions, iterations, discard)
+    r <- parallel::parApply(cluster, starting.values, 1, mcmc)
     , finally = parallel::stopCluster(cluster)
   )
   chains <- sapply(1:chain.count, function(i) r[[i]]$chains)
@@ -89,16 +93,19 @@ makePosterior <- function(alpha, beta, theta, kappa, data) {
 }
 
 logPosterior <- makePosterior(1, 1, 2, 1, as.integer(c(rep(0, 25), rep(1, 6), rep(2, 4), rep(3, 3), 5)))
+
 starting.values <- rbind(
   c(0.999, 0.001),
   c(0.001, 0.001),
   c(0.001, 30),
   c(0.999, 30)
 )
+
 proposal.functions <- list(
   function(x) {rnorm(1, x, sqrt(0.5^2))}
   , function(x) {rnorm(1, x, sqrt(1.7^2))}
 )
+
 iterations <- 10000L
 discard <- as.integer(iterations * 0.20)
 cores <- parallel::detectCores()
@@ -121,8 +128,8 @@ r$acceptance_rates
 # Benchmarks --------------------------------------------------------------
 
 doBenchmarks <- function() {
-  benchmark.iterations <- 20L
-  benchmark.warmup <- 4L
+  benchmark.iterations <- 40L
+  benchmark.warmup <- 2L
   benchmark.control <- list(warmup = benchmark.warmup)
   mcmc.iterations <- c(10000L, 100000L, 1000000L)
 
@@ -133,14 +140,14 @@ doBenchmarks <- function() {
       times = benchmark.iterations,
       control = benchmark.control
     )
-    median(micro$time) / 1000000
+    mean(micro$time) / 1000000
   }
 
-  median.time.with.return.values <- sapply(mcmc.iterations, f1, FALSE)
+  mean.time.with.return.values <- sapply(mcmc.iterations, f1, FALSE)
 
   m <- cbind(
     mcmc.iterations,
-    median.time.with.return.values
+    mean.time.with.return.values
   )
   colnames(m) <- c("Iterations", "Run time 1")
 

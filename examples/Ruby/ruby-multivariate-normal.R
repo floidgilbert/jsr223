@@ -6,15 +6,13 @@ library("jsr223")
 # Include both the JRuby script engine and the Apache Commons Mathematics
 # libraries in the class path. Specify the paths seperately in a character
 # vector.
-engine <- ScriptEngine$new(
-  engine.name = "ruby", 
-  class.path = c(
-    "~/my-path/engines/jruby-complete-9.1.2.0.jar",
-    "~/my-path/commons-math3-3.6.1.jar"
-  )
+class.path = c(
+  "lib/jruby-complete-9.1.2.0.jar",
+  "lib/commons-math3-3.6.1.jar"
 )
+engine <- ScriptEngine$new("ruby", class.path)
 
-# Define the means vector and covariance matrix that will be used to create the 
+# Define the means vector and covariance matrix that will be used to create the
 # bivariate normal distribution.
 engine$means <- c(0, 2)
 engine$covariances <- diag(1, nrow = 2)
@@ -27,7 +25,7 @@ $mvn = MultivariateNormalDistribution.new($means, $covariances)
 
 # This line would throw an error. JRuby supports 'invokeMethod' for
 # native Ruby objects, but not for Java objects.
-# 
+#
 ## engine$invokeMethod("mvn", "sample")
 
 # Instead, use script...

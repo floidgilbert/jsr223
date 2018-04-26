@@ -1,6 +1,6 @@
 /*
  * This script is sourced by 'metropolis.R' See that script for an
- * overview. We follow Java syntax very formally in this script.
+ * overview. We follow Java syntax very closely in this script.
  */
 
 import static java.lang.Math.*;
@@ -8,13 +8,12 @@ import org.fgilbert.jsr223.examples.MetropolisSamplerUnivariateProposal;
 import org.fgilbert.jsr223.examples.ProposalDistributionUnivariateNormal;
 
 /*
- * Extend the abstract class MetropolisSamplerUnivariateProposal. While it is 
+ * Extend the abstract class MetropolisSamplerUnivariateProposal. While it is
  * possible to achieve this same functionality with anonymous classes or closures
  * (a Groovy construct similar to Java lambdas), we found that this implementation
  * improved performance by more than two times.
  *
- * The abstract class exposes one abstract method: logPosterior, which we 
- * implement here in script.
+ * The abstract class exposes one abstract method: logPosterior.
  */
 public class Sampler extends MetropolisSamplerUnivariateProposal {
   private double alpha, beta, theta, kappa;
@@ -55,7 +54,7 @@ public class Sampler extends MetropolisSamplerUnivariateProposal {
  * Initialize an array of proposal distributions to pass to the sampler. The
  * ProposalDistributionUnivariateNormal class is an implementation of the
  * ProposalDistributionUnivariate interface. We are free to implement other
- * proposal distributions.
+ * proposal distributions if needed.
  */
 ProposalDistributionUnivariateNormal[] pd =
   new ProposalDistributionUnivariateNormal[proposalVariances.length];
@@ -64,7 +63,7 @@ for (int i = 0; i < proposalVariances.length; i++)
 
 /*
  * Create a new instance of our subclass. Note that the parameters to the
- * constructor are the bindings dynamically passed in from the R script.
+ * constructor are the bindings passed in from the R script.
  */
 Sampler sampler = new Sampler(alpha, beta, theta, kappa, data);
 sampler.sample(startingValues, pd, iterations, discard, threads);

@@ -279,9 +279,9 @@ r$acceptance_rates
 
 Table \ref{tab:mcmcx} contains a summary for each parameter by individual chain. The code used to summarize the results can be found in the R script \file{metropolis.R} on GitHub.
 
-\paragraph{Performance} So far we have shown that we can extend compiled Java classes from within R. But, is the runtime performance acceptable? We report some performance metrics here. The scripts were run on a typical notebook computer with an Intel i7-5500U, 2.40Ghz processor and 8GB RAM. The processor can execute four threads in parallel. We allocated all four threads to the Metropolis sampler to execute the four walks in parallel. We ran the simulation for 10,000, 100,000, and 1,000,000 MCMC iterations per random walk. No values were discarded. Timings were recorded using the \CRANpkg{microbenchmark} package \citep{microbenchmark}. We report the median run time over 20 simulations in Table \ref{tab:mcmcgroovy}. The first column contains the number of MCMC iterations per random walk. The second column contains the median run times for the expression \code{cs\$eval()} as in our preceding example. The third column contains the median run times for the expression \code{cs\$eval(discard.return.value = TRUE)}. This expression executes the Groovy script but discards the results instead of converting them to R objects. The last column contains the difference of columns two and three; hence, it roughly represents the time required to convert the Java results to R. The number of values returned to R for each simulation is $p \times w + iterations \times p \times w$. For example, when one million MCMC iterations are requested, a total of 8,000,008 numeric values are returned. The size of the resulting R object is about 61MB (see \code{object.size(r)}).
+\paragraph{Performance} So far we have shown that we can extend compiled Java classes from within R. But, is the runtime performance acceptable? We report some performance metrics here. The scripts were run on a typical notebook computer with an Intel i7-5500U, 2.40Ghz processor and 8GB RAM. The processor can execute four threads in parallel. We allocated all four threads to the Metropolis sampler to execute four walks in parallel. We ran the simulation for 10,000, 100,000, and 1,000,000 MCMC iterations per random walk. No values were discarded. Timings were recorded using the \CRANpkg{microbenchmark} package \citep{microbenchmark}. We report the mean run time over 40 simulations in Table \ref{tab:mcmcgroovy}. The first column contains the number of MCMC iterations per random walk. The second column contains the mean run times for the expression \code{cs\$eval()} as in our preceding example. The third column contains the mean run times for the expression \code{cs\$eval(discard.return.value = TRUE)}. This expression executes the Groovy script but discards the results instead of converting them to R objects. The last column contains the difference of columns two and three; hence, it roughly represents the time required to convert the Java results to R. The number of values returned to R for each simulation is $p \times w + iterations \times p \times w$. For example, when one million MCMC iterations are requested, a total of 8,000,008 numeric values are returned. The size of the resulting R object is about 61MB (see \code{object.size(r)}).
 
-To put these results in context, we ran another simulation where the Metropolis abstract class is extended in a compiled Java class instead of Groovy. Otherwise, the simulation is identical to the foregoing example. Table \ref{tab:mcmcjava} summarizes those results. In the maximum case (one million MCMC iterations), the difference between the implementations is roughly two seconds. We find this performance to be acceptable. Hence, the Groovy solution is a good balance of scripting convenience and compiled performance. These results may vary depending on the scripting language used.
+To put these results in context, we ran another simulation where the Metropolis abstract class is extended in a compiled Java class instead of Groovy. Otherwise, the simulation is identical to the foregoing example. Table \ref{tab:mcmcjava} summarizes those results. In the maximum case (one million MCMC iterations), the difference between the implementations is well under two seconds. We find this performance to be acceptable. Hence, the Groovy solution is a good balance of scripting convenience and compiled performance. These results may vary depending on the scripting language used.
 
 What we have shown here is only one approach to this implementation. The total runtime could be reduced by using simpler data structures or summarizing the data on the Java side. However, R is designed for summarizing data. Therefore, we chose to transfer the full results to R in a convenient format because we believe it represents the most typical use case. Furthermore, we could have implemented this solution using anonymous classes, lambda functions, or closures. These constructs usually require less code, and they are supported within the various \pkg{jsr223}-compatible programming languages. However, we found that they did not execute as quickly.
 
@@ -309,15 +309,15 @@ $\lambda$ &    4 & 0.875 & 1.303 & 1.532 & 1.803 & 2.364 & 0.230 &  813 \\ \bott
 
 \begin{table}[h!]
 \centering
-\caption{Benchmark timings for the Java Metropolis sampler extended in Groovy. All times are in milliseconds. The first column indicates the number of MCMC iterations computed for each of the four random walks run in parallel. The second column contains the median runtime for the expression \code{cs\$eval()} over 20 simulations. The third column is the median runtime for \code{cs\$eval(TRUE)} (i.e., the return value is discarded). The last column is the difference between columns two and three; hence, it roughly represents the time required to convert the Java results to R objects.}
+\caption{Benchmark timings for the Java Metropolis sampler extended in Groovy. All times are in milliseconds. The first column indicates the number of MCMC iterations computed for each of the four random walks run in parallel. The second column contains the mean runtime for the expression \code{cs\$eval()} over 40 simulations. The third column is the mean runtime for \code{cs\$eval(TRUE)} (i.e., the return value is discarded). The last column is the difference between columns two and three; hence, it roughly represents the time required to convert the Java results to R objects.}
 \begin{tabular}{rrrrrr}
 \toprule
 & & \multicolumn{2}{c}{With Return Values} & & \\
 \cline{3-4} \\[-8pt]
 Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \\ \midrule 
-10,000 & & 53.0 & 37.1 & & 15.9 \\
-100,000 & & 513.6 & 455.8 & & 57.8 \\
-1,000,000 & & 7,280.7 & 4,973.5 & & 2,307.2 \\ \bottomrule
+10,000 & & 43.6 & 28.5 & & 15.2 \\
+100,000 & & 426.2 & 294.0 & & 132.2 \\
+1,000,000 & & 6,004.1 & 3,783.7 & & 2,220.4 \\ \bottomrule
 \end{tabular}
 \label{tab:mcmcgroovy}
 \end{table}
@@ -332,27 +332,27 @@ Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \
 & & \multicolumn{2}{c}{With Return Values} & & \\
 \cline{3-4} \\[-8pt]
 Iterations & & \multicolumn{1}{r}{Yes} & \multicolumn{1}{r}{No} & & Difference \\ \midrule
-10,000 & & 33.0 & 21.7 & & 11.3 \\
-100,000 & & 324.7 & 200.2 & & 124.5 \\
-1,000,000 & & 5,678.7 & 2,711.4 & & 2,967.1 \\ \bottomrule
+10,000 & & 33.6 & 17.9 & & 15.8 \\
+100,000 & & 293.2 & 171.1 & & 122.2 \\
+1,000,000 & & 5,348.2 & 2,391.5 & & 2,956.7 \\ \bottomrule
 \end{tabular}
 \label{tab:mcmcjava}
 \end{table}
 
 \begin{table}[h!]
 \centering
-\caption{Performance comparison for the Metropolis samplers. The values are the median run-times over 20 iterations reported in milliseconds.}
+\caption{Performance comparison for the Metropolis samplers. The values are the mean run-times over 40 iterations reported in milliseconds.}
 \begin{tabular}{rrrrrrr}
 \toprule
 Iterations & & R        & & Groovy Class & & Java Class \\ \midrule
-10,000     & & 1,246.3  & & 53.0         & & 33.0       \\
-100,000    & & 4,942.2  & & 513.6        & & 324.7      \\
-1,000,000  & & 41,897.5 & & 7,280.7      & & 5,676.7    \\ \bottomrule
+10,000     & & 1,185.3  & & 43.6         & & 33.6       \\
+100,000    & & 4,174.6  & & 426.2        & & 293.2      \\
+1,000,000  & & 34,202.5 & & 6,004.1      & & 5,348.2    \\ \bottomrule
 \end{tabular}
 \label{tab:mcmccomparison}
 \end{table}
 
-Finally, how does the performance compare to a base R implementation? We created a generic Metropolis sampler in R that is very similar to the Java sampler (see \file{metropolis-base-r.R} on GitHub). Table \ref{tab:mcmccomparison} reports the median run times over 20 simulations. For comparison, the table includes the timings for the implementations featuring the Groovy class and the Java class. For 10,000 iterations, the Groovy class implementation is 23.5 times faster than the R implementation. The Java class implementation is 37.8 times faster. Part of the performance difference can be attributed to how parallelization is implemented in Java vs. R. The Java sampler uses a thread pool whereas the R approach uses a process pool. The latter requires significantly more overhead. When we consider one million iterations, the difference in parallelization implementations becomes insignificant and the Groovy implementation is only 5.8 times faster than the R implementation. However, the reduction in performance ratio is due, in part, to the conversion of large Java objects to R objects. If we exclude the data conversion time we have a more direct comparison of execution performance. Using the run times excluding data conversion in Table \ref{tab:mcmcgroovy} and Table \ref{tab:mcmcjava}, we find that the Groovy implementation executes 8.4 times faster than the R implementation and the Java implementation executes 15.4 times faster. This comparison is not comprehensive; we report these numbers only to give the reader some basic expectation of performance benefits.
+Finally, how does the performance compare to a base R implementation? We created a parallel Metropolis sampler in R that is very similar to the Java sampler (see \file{metropolis-base-r.R} on GitHub). Table \ref{tab:mcmccomparison} reports the mean run times over 40 simulations. For comparison, the table includes the timings for the implementations featuring the Groovy class and the Java class. For 10,000 iterations, the Groovy class implementation is 27.2 times faster than the R implementation. The Java class implementation is 35.3 times faster. Part of the performance difference can be attributed to how parallelization is implemented in Java vs. R. The Java sampler uses a thread pool whereas the R approach uses a process pool. The latter requires significantly more overhead. When we consider one million iterations, the difference in parallelization implementations becomes insignificant and the Groovy implementation is only 5.7 times faster than the R implementation. However, the reduction in performance ratio is due, in part, to the conversion of large Java objects to R objects. If we exclude the data conversion time we have a more direct comparison of code execution performance. Using the run times excluding data conversion in Table \ref{tab:mcmcgroovy} and Table \ref{tab:mcmcjava}, we find that the Groovy implementation executes 9.0 times faster than the R implementation and the Java implementation executes 14.3 times faster. This comparison is not comprehensive; we report these numbers only to give the reader some basic expectation of performance benefits.
 
 \paragraph{Conclusion} This example illustrated how \pkg{jsr223} facilitates the development of advanced Java solutions. Java interfaces can be implemented and classes extended within script promoting rapid application development and quick execution times.
 

@@ -48,6 +48,7 @@ engine %~% '(bindings["R"] as org.fgilbert.jsr223.RClient).set("c", 3)'
 # To work around this, jsr223 automatically creates a variable R in the
 # global scope of the Kotlin environment to facilitate callbacks.
 engine %~% 'R.set("c", 4)'
+c
 
 # Terminate the script engine.
 engine$terminate()

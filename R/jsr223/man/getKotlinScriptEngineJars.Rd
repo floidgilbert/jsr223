@@ -6,7 +6,7 @@ Search for Required Kotlin JAR Files
 }
 
 \description{
-The \code{\link{getKotlinScriptEngineJars}} function searches a directory recursively for \file{kotlin*.jar} files required to create an instances of the Kotlin script engine. Because Kotlin does not provide a standalone script engine JAR file, we include this convenience function to simplify adding JAR files to the class path.
+The \code{\link{getKotlinScriptEngineJars}} function searches a directory recursively for \file{kotlin*.jar} files required to create an instance of the Kotlin script engine. Because Kotlin does not provide a standalone script engine JAR file, we include this convenience function to simplify adding JAR files to the class path.
 }
 
 \usage{
@@ -26,9 +26,9 @@ A logical vector of length one. When \code{TRUE} (the default), the function ret
 }
 
 \details{
-The function searches the given directory recursively. If the one or more of the required JAR files are not found, the function throws an error with a message listing the required files.
+The function searches the given directory recursively. If one or more of the required JAR files are not found, the function throws an error with a message listing the required files.
 
-As of this writing, a Kotlin compiler installation does not contain all of the required files to create a script engine instance. See section ``Script engine installation and instantiation'' in the \href{../doc/jsr223.pdf}{User Manual} for more information.
+As of this writing, a standalone Kotlin compiler installation does not contain all of the required files to create a script engine instance. See section ``Script engine installation and instantiation'' in the \href{../doc/jsr223.pdf}{User Manual} for more information.
 }
 
 \value{
