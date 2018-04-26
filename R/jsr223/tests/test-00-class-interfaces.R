@@ -45,7 +45,8 @@ assertMessage(
   {
     js <- ScriptEngine$new("javascript", class.path = sprintf(" %s badfile %s b ", .Platform$path.sep, .Platform$path.sep))
   }
-  , "path[1]=\"badfile\": The system cannot find the file specified"
+  , "badfile"
+  , FALSE
 )
 
 assertMessage(

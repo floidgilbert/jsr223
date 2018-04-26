@@ -43,7 +43,7 @@ This document contains build and release instructions for jsr223. Instructions a
 
 - Push changes to GitHub.
 
-- Create release tag in GIT repository. https://github.com/floidgilbert/jsr223/releases
-
 - Send changes to CRAN.
+
+- When accepted by CRAN, create release tag in GIT repository. https://github.com/floidgilbert/jsr223/releases
 
