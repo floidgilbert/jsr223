@@ -5,9 +5,19 @@
 # /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// //
 
 # Demonstrate the use of Stanford Natural Language Processor via JavaScript.
-# Download Stanford CoreNLP from https://stanfordnlp.github.io/CoreNLP/
+# 
+# To run the example, download Stanford CoreNLP from
+# https://stanfordnlp.github.io/CoreNLP/ Set the variable
+# `stanford.installation.folder` to the path of the installation folder.
 #
-# Note: The Stanford Parser takes a moment to load the first time.
+# Note: The Stanford Parser takes a moment to load the first time. It outputs
+# a message that looks like a warning when it loads. That is normal behavior.
+# 
+# The first few lines here are different than the paper example only in that we 
+# include code to locate the required JAR files for the class path. This is
+# simpler for you to run the example, especially if the CoreNLP version changes,
+# but it requires more code. We chose to keep the code in the paper focused on
+# the package's functionality instead of path-parsing.
 
 # Set this path to the Stanford CoreNLP installation folder.
 stanford.installation.folder <- "~/stanford-corenlp-full-2018-01-31"
@@ -22,10 +32,11 @@ class.path <- list.files(stanford.installation.folder, file.patterns)
 class.path <- file.path(stanford.installation.folder, class.path)
 class.path <- normalizePath(class.path, winslash = "/")
 
+# Now we return to the paper's example verbatim.
 library("jsr223")
 engine <- ScriptEngine$new("JavaScript", class.path)
 
-# Declare JavaScript function `getPartsOfSpeech``
+# Declare JavaScript function `getPartsOfSpeech`
 {
   engine %@% '
     var DocumentClass = Java.type("edu.stanford.nlp.simple.Document");
@@ -48,7 +59,10 @@ engine <- ScriptEngine$new("JavaScript", class.path)
   '
 }
 
-engine$invokeFunction("getPartsOfSpeech", "The jsr223 package makes Java objects easy to use. Download it from CRAN.")
+engine$invokeFunction(
+  "getPartsOfSpeech",
+  "The jsr223 package makes Java objects easy to use. Download it from CRAN."
+)
 
 engine$terminate()
 
@@ -59,10 +73,15 @@ engine$terminate()
 #
 # /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// //
 
-# Set the working directory of this script to the script's folder.
-#
-# This script requires 'metropolis.groovy' and several jar files which are all
-# located in the 'lib' subfolder.
+# This script requires 'metropolis.groovy' and some JAR files which can be 
+# downloaded using the following link. We would have included these files in our
+# submission, but the web form would not accept the larger file (~8 MB). Please
+# extract the contents, preserving folder structure, to the same folder as
+# 'gilbert-dahl.R'. A folder 'lib' should be created containing the required
+# files.
+# 
+# To run this section of the script, please set the current working directory 
+# to the folder containing this script ('gilbert-dahl.R').
 #
 # The example demonstrates dynamic code behavior by extending an abstract Java
 # class, MetropolisSamplerUnivariateProposal. The class defines an abstract
@@ -87,8 +106,7 @@ library("jsr223")
 
 class.path <- c(
   "lib/groovy-all-2.4.7.jar",
-  "lib/org.fgilbert.jsr223.examples-0.3.0.jar",
-  "lib/commons-math3-3.6.1.jar"
+  "lib/org.fgilbert.jsr223.examples-0.3.0.jar"
 )
 
 engine <- ScriptEngine$new("Groovy", class.path)
