@@ -80,6 +80,8 @@ engine$terminate()
 # 'gilbert-dahl.R'. A folder 'lib' should be created containing the required
 # files.
 # 
+# https://github.com/floidgilbert/jsr223/blob/master/paper/submission01/gilbert-dahl-lib.zip?raw=true
+# 
 # To run this section of the script, please set the current working directory 
 # to the folder containing this script ('gilbert-dahl.R').
 #
@@ -105,6 +107,7 @@ engine$terminate()
 library("jsr223")
 
 class.path <- c(
+  "lib/commons-math3-3.6.1.jar",
   "lib/groovy-all-2.4.7.jar",
   "lib/org.fgilbert.jsr223.examples-0.3.0.jar"
 )
@@ -385,6 +388,7 @@ library("jsr223")
 engine <- ScriptEngine$new("Groovy", "lib/groovy-all-2.4.7.jar")
 engine$myValue <- 1:3
 engine %~% "myValue[2] = 5; myValue"
+engine$terminate()
 
 
 # /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// /// //
@@ -407,4 +411,5 @@ library("jsr223")
 engine <- ScriptEngine$new("JavaScript")
 engine$pi <- pi
 identical(engine$pi, pi)
+engine$terminate()
 
