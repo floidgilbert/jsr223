@@ -5,15 +5,14 @@
 \maketitle
 
 \abstract{
-The R package \CRANpkg{jsr223} is a high-level integration for the Java platform that makes Java objects easy to use from within R; provides a unified interface to integrate R with several programming languages; and features extensive data exchange between R and Java. In all, \pkg{jsr223} significantly extends the computing capabilities of the R software environment.
+The R package \CRANpkg{jsr223} is a high-level integration for the Java platform that makes Java objects easy to use from within R; provides a unified interface to integrate R with several programming languages; and features extensive data exchange between R and Java. In all, \pkg{jsr223} significantly extends the computing capabilities of the R software environment. ///Need to expand.
 }
 
-%///put new example in repo. update repo info. remember subfolder is engines. not sure if that is nec. with maven these days.
 %///synchronize user manual with this document.
-%///review bib. need to add DL4J. treebank is broken. need better citation.
-%///update kotlin manual to use maven
-%//////make sure class path doesn't get to github.
-%///DOI
+%///review bib. need to add DL4J. need better citation for treebank.
+%///add DOIs
+%///remove paper from github
+
 
 \hypertarget{introduction}{}
 \section{Introduction}
@@ -44,7 +43,7 @@ The primary goal of \pkg{jsr223} is to enable R developers to leverage existing 
 
 For Java developers, \pkg{jsr223} facilitates writing high-performance, cross-platform R extensions using their preferred platform. \pkg{jsr223} also allows organizations that run enterprise Java applications to more readily develop dashboards and other business intelligence tools. Instead of writing R code to query raw data from a database, \pkg{jsr223} enables R packages to consume data directly from their application's Java object model where the data has been coalesced according to business rules. Java developers will also be interested to know that the \pkg{jsr223}-supported programming languages can implement interfaces and extend classes, just like the Java programming language. and compiling. See ``Extending existing Java solutions'' in the \textit{\pkg{jsr223} User Manual} for an in-depth code example that demonstrates extending Java classes and several other features.
 
-///Insert some concluding statement for the introduction.
+\noindent ///Insert some concluding statement for the introduction. Suggestions?
 
 \begin{table}[t]
 \centering
@@ -81,7 +80,7 @@ The \pkg{jsr223} package also supports converting the most common data structure
 
 The \pkg{jsr223} programming interface follows design cues from \CRANpkg{rscala}, and \CRANpkg{V8} \citep{v8pkg}. The interface is implemented using \CRANpkg{R6} \citep{r6} classes for a more traditional object-oriented style of programming. \pkg{R6} objects wrap methods in an R environment to make them accessible from the associated variable using list-like syntax (e.g., \code{myObject\$myMethod()}).
 
-\pkg{jsr223} uses \pkg{rJava} to load and communicate with the Java Virtual Machine (JVM): the abstract computing environment that executes compiled Java code. \pkg{jsr223} employs a client-server architecture and a custom multi-threaded messaging protocol to exchange data and handle script execution. This protocol optimizes performance by reducing \pkg{rJava} calls to inspect objects and convert data, both which incur significant overhead. The protocol also facilitates callbacks that allow embedded scripts to manipulate variables and call functions in the R session. This implementation is lightweight, does not require any special configuration, and supports infinite callback recursion between R and the script engine (limited only by stack space).
+\pkg{jsr223} uses \pkg{rJava} to load and communicate with the Java Virtual Machine (JVM): the abstract computing environment that executes compiled Java code. \pkg{jsr223} employs a client-server architecture and a custom multi-threaded messaging protocol to exchange data and handle script execution. This protocol optimizes performance by eliminating \pkg{rJava} calls to inspect generic return values and transform data, both which incur significant overhead. The protocol also facilitates callbacks that allow embedded scripts to manipulate variables and call functions in the R session. This callback implementation is lightweight, does not require any special R software configuration, and supports infinite callback recursion between R and the script engine (limited only by stack space).
 
 Other distinguishing features of the \pkg{jsr223} package include script compiling and string interpolation. Complete feature documentation is available in the \textit{\pkg{jsr223} User Manual} vignette.
 
@@ -166,7 +165,7 @@ In this example, we effectively used Stanford's Core NLP library with a minimal 
 \hypertarget{using-java-libraries-with-complex-dependencies}{}
 \subsection{Using Java libraries with complex dependencies}
 
-In this example we use \href{https://deeplearning4j.org/}{Deeplearning4j} (DL4J) ///citation to build a neural network. DL4J is an open-source deep learning solution for the Java platform. It is notable both for its scalability and performance. DL4J can run on a local computer with a standard CPU, or it can use Spark for distributed computing and GPUs for massively parallel processing. DL4J is a typical example of a Java library that does not have a simple installation package. It is both modular in design and it has a large number of dependencies. As with many other Java solutions, it is designed to be installed using a software project management utility like \href{https://maven.apache.org/}{Apache Maven}, \href{https://gradle.org/}{Gradle}, or \href{https://www.scala-sbt.org/}{sbt}. These utilities feature dependency managers that automatically download a library's dependencies from a central repository and make them accessible to your project. This is similar to installing an R package from CRAN using \code{install.packages}; by default, any referenced packages are also downloaded and installed.
+In this example we use \href{https://deeplearning4j.org/}{Deeplearning4j} (DL4J) (///add citation) to build a neural network. DL4J is an open-source deep learning solution for the Java platform. It is notable both for its scalability and performance. DL4J can run on a local computer with a standard CPU, or it can use Spark for distributed computing and GPUs for massively parallel processing. DL4J is a typical example of a Java library that does not have a simple installation package. It is both modular in design and it has a large number of dependencies. As with many other Java solutions, it is designed to be installed using a software project management utility like \href{https://maven.apache.org/}{Apache Maven}, \href{https://gradle.org/}{Gradle}, or \href{https://www.scala-sbt.org/}{sbt}. These utilities feature dependency managers that automatically download a library's dependencies from a central repository and make them accessible to your project. This is similar to installing an R package from CRAN using \code{install.packages}; by default, any referenced packages are also downloaded and installed.
 
 The primary goal of this example is to show how \pkg{jsr223} can easily leverage complex Java solutions with the help of a project management utility. We will install both Groovy and DL4J using Apache Maven. We will then integrate Groovy script with R to create a simple neural network. The process is straightforward: i.) create a skeleton Java project; ii.) add dependencies to the project; iii.) build a class path referencing all of the dependencies; and iv.) pass the class path to \pkg{jsr223}. Though we use Maven here, the same concepts apply to any project management utility that supports Java.
 
