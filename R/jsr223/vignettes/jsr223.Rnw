@@ -557,7 +557,7 @@ The JRE can be obtained from  \href{http://www.oracle.com/technetwork/java/javas
 \begin{verbatim}
 install.packages("jsr223")
 \end{verbatim}
-This command will also download and install the \pkg{rJava} dependency necessary. However, the \pkg{rJava} installation will fail if R is not yet configured to use Java on Unix, Linux, or OSX. To configure R for Java, execute \samp{sudo R CMD javareconf} in a terminal. This command is not required for Windows systems. If the Java reconfiguration command generates errors, address the errors and execute the command again. One common error can be resolved by determining whether the GNU Compiler Collection (GCC) is accessible. To check for GCC, execute `gcc --help` from a terminal. This command will fail if GCC is not installed or if the license agreement has not been accepted.
+This command will also download and install the \pkg{rJava} dependency. However, the \pkg{rJava} installation will fail if R is not yet configured to use Java on Unix, Linux, or OSX. To configure R for Java, execute \samp{sudo R CMD javareconf} in a terminal. This command is not required for Windows systems. If the Java reconfiguration command generates errors, address the errors and execute the command again. One common error can be resolved by determining whether the GNU Compiler Collection (GCC) is accessible. To check for GCC, execute \samp{gcc --help} from a terminal. This command will fail if GCC is not installed or if the license agreement has not been accepted.
 
 \hypertarget{script-engine-installation}{}
 \subsection{Script engine installation and instantiation}

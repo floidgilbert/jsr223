@@ -7,4 +7,5 @@ java/org.fgilbert.jsr223/src/nodist
 examples/Java/org.fgilbert.jsr223.examples/bin
 examples/Java/org.fgilbert.jsr223.examples/src/nodist
 private
+jsr223.classpath
 .Rproj.user
