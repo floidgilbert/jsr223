@@ -72,7 +72,7 @@ for (int i = 0; i < 200; i++) {
 /*
  * Evaluate the model against test data and show the results.
 */
-Evaluation eval = new Evaluation(3);
+Evaluation eval = new Evaluation(3); // 3 is the number of possible classes
 INDArray output = model.output(test.getFeatures());
 eval.eval(test.getLabels(), output);
 eval.stats();
