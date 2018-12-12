@@ -5,5 +5,5 @@ The R package **jsr223** is a high-level integration for the Java platform. It m
 
 The **jsr223** package is available on [CRAN](https://cran.r-project.org/package=jsr223). A complete user manual is included in the vignettes.
 
-
+**Note: The JavaScript engine Nashorn is deprecated in Java 11. Do not use Nashorn for future development.**
 

@@ -4,6 +4,15 @@
 //                                                                         //
 // // // // // // // // // // // // // // // // // // // // // // // // // //
 
+* * * 2018-12-12 v 0.3.3 * * *
+
+- Documentation updated to reflect paper accepted by The R Journal. Also,
+  documentation includes notes regarding Nashorn's deprecation in Java 11.
+
+- Due to Nashorn's deprecation, no script engines are guaranteed to be
+  available during installation of the package. Therefore, all automated
+  tests have been removed from the package.
+
 * * * 2018-04-26 v 0.3.2 * * *
 
 - ScriptEngine$new() will automatically convert paths in `class.path` to

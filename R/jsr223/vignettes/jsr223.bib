@@ -1,12 +1,5 @@
 \usepackage{url}
 
-@Manual{beanshell,
-	title     =   {Beanshell},
-	author    =   {{Beanshell developers}},
-	year      =   {2018},
-	url       =   {http://www.beanshell.org/},
-}
-
 @misc{faker,
   author = {Benjamin Curtis},
   title = {Faker: A library for generating fake data such as names, addresses, and phone numbers.},
@@ -16,11 +9,21 @@
   url = {https://github.com/stympy/faker},
 }
 
-@Manual{groovy,
-  title   = {{Groovy}},
-  author  = {James Strachan},
-  year    = {2018},
-  url     = {http://www.groovy-lang.org},
+@book{java8jvmspecification,
+ author = {Lindholm, Tim and Yellin, Frank and Bracha, Gilad and Buckley, Alex},
+ title = {The Java Virtual Machine Specification, Java SE 8 Edition},
+ year = {2014},
+ isbn = {013390590X, 9780133905908},
+ edition = {1st},
+ publisher = {Addison-Wesley Professional},
+} 
+
+@Manual{dl4j,
+  author = {{Eclipse Deeplearning4j Development Team}},
+  title = {Deeplearning4j: Open-source distributed deep learning for the JVM},
+  year = {2018},
+  url = {http://deeplearning4j.org},
+  urldate = {2018},
 }
 
 @Article{javainsidestory,
@@ -62,27 +65,6 @@
   url = {https://CRAN.R-project.org/package=jsr223},
 }
 
-@Manual{jsrhino,
-  title   =   {{Rhino}},
-  author  =   {{Mozilla Developer Network}},
-  year    =   {2016},
-  url     =   {https://developer.mozilla.org/en-US/docs/Mozilla/Projects/Rhino},
-}
-
-@Manual{jython,
-  title     =   {{Jython}: {Python} for the {Java} Platform},
-  author    =   {{Jython developers}},
-  year      =   {2018},
-  url       =   {http://www.jython.org/},
-}
-
-@Manual{jruby,
-  title     =   {{JRuby}: The {Ruby} Programming Language on the JVM},
-  author    =   {{JRuby team}},
-  year      =   {2018},
-  url       =   {http://jruby.org/},
-}
-
 @Manual{jsa,
   title   = {{Java Scripting API}},
   author  = {Oracle},
@@ -97,7 +79,16 @@
   url     = {https://jcp.org/en/jsr/detail?id=223},
 }
 
-@article{metropolis,
+@Manual{kotlin-release,
+  title = {{Kotlin 1.0 Released: Pragmatic Language for JVM and Android}},
+  author = {Andrey Breslav},
+  year = {2016},
+  date = {2016},
+  url = {https://blog.jetbrains.com/kotlin/2016/02/kotlin-1-0-released-pragmatic-language-for-jvm-and-android/},
+  urldate = {2018},
+}
+
+@Article{metropolis,
    author = {{Metropolis}, N. and {Rosenbluth}, A.W. and {Rosenbluth}, M.N. and {Teller}, A.H. and {Teller}, E.},
     title = "{Equation of State Calculations by Fast Computing Machines}",
   journal = {The Journal of Chemical Physics},
@@ -108,20 +99,6 @@
       doi = {10.1063/1.1699114},
    adsurl = {http://adsabs.harvard.edu/abs/1953JChPh..21.1087M},
   adsnote = {Provided by the SAO/NASA Astrophysics Data System}
-}
-
-@Manual{kotlin,
-  title     =   {{Kotlin}: {Kotlin} Programming Language},
-  author    =   {{Kotlin developers}},
-  year      =   {2018},
-  url       =   {http://www.jython.org/},
-}
-
-@online{kotlin-release,
-  title = {Kotlin 1.0 Released: Pragmatic Language for JVM and Android},
-  date = {2016},
-  url = {https://blog.jetbrains.com/kotlin/2016/02/kotlin-1-0-released-pragmatic-language-for-jvm-and-android/},
-  OPTurldate = {2018},
 }
 
 @Manual{microbenchmark,
@@ -150,17 +127,16 @@
   editor    = { St\'efan van der Walt and Jarrod Millman }
 }
 
-@MISC{penntreebankproject,
-    author = {Ann Taylor and Mitchell Marcus and Beatrice Santorini},
-    title = {The Penn Treebank: An Overview},
-    year = {2003}
-}
-
-@Manual{python,
-  title   = {{Python}},
-  author  = {{Python developers}},
-  year    = {2018},
-  url     = {https://www.python.org/},
+@incollection{penntreebankproject,
+author = {Ann Taylor and Mitchell Marcus and Beatrice Santorini},
+editor = {Nancy Ide},
+title = {The Penn Treebank: An Overview},
+booktitle = {Text, Speech and Language Technology},
+date = {2003},
+OPTvolume = {20},
+OPTpublisher = {Springer},
+OPTlocation = {Dordrecht},
+doi = {10.1007/978-94-010-0201-1_1},
 }
 
 @Manual{pythoninr,
@@ -169,6 +145,14 @@
   year = {2018},
   note = {R package version 0.1-4},
   url = {https://CRAN.R-project.org/package=PythonInR},
+}
+
+@Manual{r6,
+    title = {{R6}: Classes with Reference Semantics},
+    author = {Winston Chang},
+    year = {2017},
+    note = {R package version 2.2.2},
+    url = {https://CRAN.R-project.org/package=R6},
 }
 
 @Manual{renjin,
@@ -234,13 +218,6 @@
   url  = {http://CRAN.R-project.org/package=Rserve},
 }
 
-@Manual{ruby,
-  title   = {{Ruby Programming Language}},
-  author  = {Yukihiro Matsumoto},
-  year    = {2016},
-  url     = {http://www.ruby-lang.org},
-}
-
 @Manual{rubyvideo,
   title   = {{Ruby 1.9}},
   author  = {Yukihiro Matsumoto},
@@ -248,20 +225,12 @@
   url     = {https://www.youtube.com/watch?v=oEkJvvGEtB4},
 }
 
-@Manual{scala,
-	title     =   {{The Scala Programming Language}},
-	author    =   {{Scala developers}},
-	year      =   {2018},
-	url       =   {https://www.scala-lang.org/},
-}
-
 @InProceedings{stanfordcorenlp,
   author    = {Manning, Christopher D. and  Surdeanu, Mihai  and  Bauer, John  and  Finkel, Jenny  and  Bethard, Steven J. and  McClosky, David},
   title     = {The {Stanford} {CoreNLP} Natural Language Processing Toolkit},
   booktitle = {Association for Computational Linguistics (ACL) System Demonstrations},
   year      = {2014},
-  pages     = {55--60},
-  url       = {http://www.aclweb.org/anthology/P/P14/P14-5010}
+  pages     = {55--60}
 }
 
 @Manual{v8javascript,
