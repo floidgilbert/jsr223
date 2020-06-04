@@ -1,4 +1,4 @@
-exportClass("CompiledScript")
+export("CompiledScript")
 S3method("names", "CompiledScript")
 S3method("print", "CompiledScript")
 S3method("toString", "CompiledScript")

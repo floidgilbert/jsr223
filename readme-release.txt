@@ -1,5 +1,7 @@
 This document contains build and release instructions for jsr223. Instructions are specific to RStudio and Eclipse IDE.
 
+- Install the latest 'devel' edition of R. IMPORTANT: Do not install the 32-bit modules to avoid build/installation issues.
+
 - Make sure the following R packages are installed/updated.
 
   pander
